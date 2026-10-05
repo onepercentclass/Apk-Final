@@ -1,0 +1,12 @@
+/* N6 - css/owner/polish/block-8.css */
+/* Extracted verbatim from owner.html. Cascade order matters: load this file after
+   everything listed before it in css/owner/ORDER.txt */
+
+
+/* ---- owner.html : original style block #8 ---- */
+
+.n6-report-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:18px 0;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.n6-report-tools label{font-size:12px;font-weight:700;color:var(--asphalt);display:flex;flex-direction:column;gap:5px}
+.n6-report-tools input[type=month]{min-height:39px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--white);color:var(--ink)}
+.n6-report-tools .n6-report-btn{margin:0;min-height:39px}
+.n6-report-tools small{flex-basis:100%;color:var(--asphalt);font-size:11px}

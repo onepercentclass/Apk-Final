@@ -1,0 +1,7 @@
+/* N6 - css/headcoach/polish/block-14.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+/* ---- headcoach.html : original style block #14 ---- */
+.m-msg-controls{display:grid;grid-template-columns:minmax(160px,.7fr) minmax(280px,1.3fr);gap:14px;margin-bottom:18px}.m-msg-controls label{display:grid;gap:7px;font-size:12px;font-weight:700;color:var(--asphalt);align-content:start}.m-msg-controls input,.m-msg-controls select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px}.m-msg-controls #mClientPick{padding:4px;min-height:115px}.m-msg-controls #mClientPick option{padding:9px 10px;border-radius:5px}.m-msg-controls #mClientPick option:checked{background:var(--accent);color:white}.m-chat-thread{min-height:250px;max-height:450px;overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px}.m-bubble{max-width:83%;margin:10px 0;padding:11px 13px;border:1px solid var(--line);background:var(--white);border-radius:11px;overflow-wrap:anywhere}.m-bubble.me{margin-left:auto;background:var(--paper-dim);border-color:var(--accent)}.m-bubble small{display:block;margin-bottom:5px;color:var(--asphalt)}@media(max-width:700px){.m-msg-controls{grid-template-columns:1fr}}

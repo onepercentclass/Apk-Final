@@ -1,0 +1,95 @@
+/* N6 - css/headcoach/modules/extras.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+  /* ---------- 30-DAY CALENDAR ---------- */
+  .cal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .cal-header .range{font-size:12.5px; color:var(--asphalt);}
+  .cal-legend{display:flex; gap:14px; font-size:11.5px; color:var(--asphalt); align-items:center;}
+  .cal-legend .dot{width:7px; height:7px; border-radius:50%; display:inline-block; margin-right:5px;}
+  .cal-grid{display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;}
+  .cal-dow{font-size:10.5px; font-weight:700; color:var(--asphalt); text-align:center; padding-bottom:4px; text-transform:uppercase;}
+  .cal-cell{
+    aspect-ratio:1/0.85; border:1px solid var(--line); border-radius:6px; padding:6px;
+    display:flex; flex-direction:column; justify-content:space-between; cursor:default;
+    background:var(--white); transition:border-color 0.15s ease;
+  }
+  .cal-cell.has-session{cursor:pointer;}
+  .cal-cell.has-session:hover{border-color:var(--ink);}
+  .cal-cell .num{font-size:12px; font-weight:600;}
+  .cal-cell.outside{opacity:0.35;}
+  .cal-cell.today{border-color:var(--red); border-width:2px; background:var(--red-tint);}
+  .cal-cell.selected{border-color:var(--ink); border-width:2px;}
+  .cal-cell .dots{display:flex; gap:3px;}
+  .cal-cell .dots span{width:6px; height:6px; border-radius:50%; background:var(--red);}
+  .cal-detail{margin-top:18px; border-top:1px solid var(--line); padding-top:16px;}
+  .cal-detail h4{font-size:13px; font-weight:700; margin-bottom:10px;}
+  .cal-empty{font-size:12.5px; color:var(--asphalt); font-style:italic;}
+
+  /* ---------- HEAD COACH SPECIFIC ---------- */
+  .coach-card{
+    border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:12px;
+    cursor:pointer; transition:border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .coach-card:hover{border-color:var(--ink); box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+  .coach-card:last-child{margin-bottom:0;}
+  .coach-card-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .coach-card-name{font-size:14.5px; font-weight:700;}
+  .coach-card-meta{font-size:12px; color:var(--asphalt); margin-top:2px;}
+  .coach-card-stats{display:flex; gap:16px; margin-top:12px; flex-wrap:wrap;}
+  .coach-card-stat{font-size:11.5px; color:var(--asphalt);}
+  .coach-card-stat b{display:block; font-size:15px; color:var(--ink); font-weight:800;}
+
+  .action-btns{display:flex; gap:8px; flex:none;}
+  .btn-approve, .btn-reject{
+    border:none; border-radius:6px; padding:7px 14px; font-size:12px; font-weight:700; cursor:pointer;
+  }
+  .btn-approve{background:var(--green-tint); color:var(--green);}
+  .btn-approve:hover{background:var(--green); color:var(--white);}
+  .btn-reject{background:var(--red-tint); color:var(--red);}
+  .btn-reject:hover{background:var(--red); color:var(--white);}
+
+  .attention-item{
+    display:flex; align-items:flex-start; gap:12px; padding:13px 0; border-bottom:1px solid #F5F4EF;
+  }
+  .attention-item:last-child{border-bottom:none;}
+  .attention-dot{width:8px; height:8px; border-radius:50%; margin-top:6px; flex:none;}
+  .attention-dot.red{background:var(--red);}
+  .attention-dot.amber{background:var(--amber);}
+  .attention-body .name{font-size:13.5px; font-weight:700;}
+  .attention-body .desc{font-size:12px; color:var(--asphalt); margin-top:2px;}
+
+  .review-item{padding:14px 0; border-bottom:1px solid #F5F4EF;}
+  .review-item:last-child{border-bottom:none;}
+  .review-item-top{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .review-item-top .who{font-size:13.5px; font-weight:700;}
+  .review-item-top .when{font-size:11.5px; color:#A3A196;}
+  .review-item .stats{font-size:12px; color:var(--asphalt); margin:4px 0;}
+  .review-item .note{font-size:12.5px; color:#3B3A36; margin-bottom:8px;}
+
+  /* ---------- COPY BUTTON / NOTE BOX / PAY ROW (reused pattern) ---------- */
+  .note-box{
+    border-left:3px solid var(--red); background:var(--paper-dim);
+    padding:14px 18px; font-size:12.5px; color:var(--asphalt); border-radius:0 6px 6px 0;
+  }
+  .pay-row{display:flex; justify-content:space-between; align-items:center; font-size:13.5px; padding:6px 0; gap:12px;}
+  .pay-val{display:flex; align-items:center; gap:8px;}
+  .copy-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    border:1px solid var(--ink); background:var(--white); color:var(--ink);
+    font-family:'Inter',sans-serif; font-size:11.5px; font-weight:700;
+    padding:6px 11px; border-radius:6px; cursor:pointer; transition:background 0.15s ease, color 0.15s ease;
+    flex:none;
+  }
+  .copy-btn:hover{background:var(--ink); color:var(--white);}
+  .copy-btn svg{width:12px; height:12px; flex:none;}
+  .copy-btn.copied{background:var(--green); border-color:var(--green); color:var(--white);}
+
+  .week-review-item{padding:14px 0; border-bottom:1px solid #F5F4EF;}
+  .week-review-item:last-child{border-bottom:none;}
+  .week-review-top{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  .week-review-day{font-size:13px; font-weight:700;}
+  .week-review-link{font-size:12px; color:var(--blue); word-break:break-all; display:block; margin-top:6px;}
+  .week-review-note{font-size:12.5px; color:var(--asphalt); margin-top:4px;}
+  .week-review-empty{font-size:12.5px; color:#A3A196; font-style:italic; margin-top:6px;}
+

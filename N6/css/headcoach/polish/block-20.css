@@ -1,0 +1,7 @@
+/* N6 - css/headcoach/polish/block-20.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+/* ---- headcoach.html : original style block #20 ---- */
+#mPaceCard .m-pace-table th,#mPaceCard .m-pace-table td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}#mPaceCard .m-pace-table select{min-width:95px;width:100%;padding:8px}#mPaceCard .m-pace-table td:first-child{font-weight:800;color:var(--accent)}#mTrainEditor .hc-form{margin-top:10px}

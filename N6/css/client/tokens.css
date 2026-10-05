@@ -1,0 +1,18 @@
+/* N6 - css/client/tokens.css */
+/* Extracted verbatim from client.html. Cascade order matters: load this file after
+   everything listed before it in css/client/ORDER.txt */
+
+
+  :root{
+    --ink:#111110;
+    --paper:#F5F3EE;
+    --paper-dim:#EAE7DE;
+    --red:#D62828;
+    --red-dim:#B71F1F;
+    --asphalt:#6E6C64;
+    --white:#FFFFFF;
+    --line:rgba(17,17,16,0.12);
+    --green:#2E7D4F;
+    --green-bg:#E5F2EA;
+    --shell-w:460px;
+  }

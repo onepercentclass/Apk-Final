@@ -1,0 +1,29 @@
+# N6 Split5 - API backend
+#
+#   python -m venv .venv
+#   .venv\Scripts\activate          (Windows)
+#   source .venv/bin/activate       (macOS / Linux)
+#   pip install -r requirements.txt
+#
+# Pins are lower bounds with a ceiling on the ones where a major release would
+# change behaviour. Nothing here is allowed to float silently: bcrypt >= 4.1
+# breaks passlib, pydantic 3 changes the settings API, and SQLAlchemy 3 has not
+# been promised to exist.
+
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+
+# Settings from backend/.env
+pydantic>=2.8,<3.0
+pydantic-settings>=2.4,<3.0
+
+# Sync SQLAlchemy 2.0 over psycopg 3
+sqlalchemy>=2.0.30,<3.0
+psycopg[binary]>=3.2,<4.0
+
+# Password hashing and tokens
+bcrypt>=4.1,<6.0
+pyjwt>=2.9,<3.0
+
+# Migrations, once the schema starts moving. create_all covers the first run.
+alembic>=1.13,<2.0

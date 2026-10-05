@@ -1,0 +1,7 @@
+/* N6 - css/owner/polish/block-4.css */
+/* Extracted verbatim from owner.html. Cascade order matters: load this file after
+   everything listed before it in css/owner/ORDER.txt */
+
+
+/* ---- owner.html : original style block #4 ---- */
+.n6-password-wrap{display:flex;align-items:center;gap:8px}.n6-password-wrap input{flex:1;min-width:0}.n6-password-wrap button{padding:10px 12px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:7px;cursor:pointer}.n6-login-hint{font-size:11px;color:var(--asphalt);margin-top:10px;line-height:1.5}.analytics-heading h1{letter-spacing:.045em;font-weight:800}.health-head:has(>div:empty){justify-content:flex-end}

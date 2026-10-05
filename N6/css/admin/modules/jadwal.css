@@ -1,0 +1,53 @@
+/* N6 - css/admin/modules/jadwal.css */
+/* Extracted verbatim from admin.html. Cascade order matters: load this file after
+   everything listed before it in css/admin/ORDER.txt */
+
+  /* ---------- JADWAL COACH (SCHEDULE GRID) ---------- */
+  .sched-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .sched-table th{background:var(--paper); font-size:10.5px; text-transform:uppercase; letter-spacing:0.02em; color:var(--asphalt); padding:8px 6px; text-align:center; border:1px solid var(--line);}
+  .sched-table td{border:1px solid var(--line); padding:6px; vertical-align:top; text-align:center; min-width:120px;}
+  .sched-table td.coach-name-cell{text-align:left; font-weight:700; background:var(--paper); min-width:120px;}
+  .slot-btn{width:100%; border:none; border-radius:6px; padding:8px 6px; font-size:11px; font-weight:700; cursor:pointer; line-height:1.3;}
+  .slot-btn.kosong{background:var(--green-tint); color:var(--green);}
+  .slot-btn.kosong:hover{background:var(--green); color:var(--white);}
+  .slot-btn.terisi{background:var(--red-tint); color:var(--red);}
+  .slot-btn.terisi:hover{background:var(--red); color:var(--white);}
+  .slot-btn .cn{display:block; font-size:10px; font-weight:600; margin-top:2px; opacity:0.9;}
+  .coach-roster-item{display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid #F5F4EF;}
+  .coach-roster-item:last-child{border-bottom:none;}
+
+  /* ---------- KALENDER 30 HARI (COACH) ---------- */
+  .cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .cal-head .range{font-size:13px; font-weight:700;}
+  .cal-nav{display:flex; gap:6px;}
+  .cal-nav button{width:30px; height:30px; border:1px solid var(--line); background:var(--white); border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .cal-nav button:hover{border-color:var(--ink);}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px;}
+  .cal-dow{font-size:10.5px; font-weight:700; color:var(--asphalt); text-align:center; padding-bottom:4px; text-transform:uppercase;}
+  .cal-cell{aspect-ratio:1/0.78; border:1px solid var(--line); border-radius:6px; padding:5px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer; background:var(--white); transition:border-color 0.15s ease;}
+  .cal-cell:hover{border-color:var(--ink);}
+  .cal-cell.outside{opacity:0.32; cursor:default;}
+  .cal-cell.today{border-color:var(--red); border-width:2px;}
+  .cal-cell.selected{border-color:var(--ink); border-width:2px; background:var(--paper);}
+  .cal-cell .num{font-size:11.5px; font-weight:700;}
+  .cal-cell .cnt{font-size:9.5px; font-weight:700; padding:2px 5px; border-radius:8px; align-self:flex-start;}
+  .cal-cell .cnt.green{background:var(--green-tint); color:var(--green);}
+  .cal-cell .cnt.red{background:var(--red-tint); color:var(--red);}
+  .cal-cell .off-dot{width:6px; height:6px; border-radius:50%; background:var(--amber); align-self:flex-end;}
+  .cal-legend-dot{width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:5px; vertical-align:middle;}
+  .cal-detail{margin-top:16px; border-top:1px solid var(--line); padding-top:16px;}
+  .cal-detail h4{font-size:13px; font-weight:700; margin-bottom:10px;}
+  .cal-coach-block{padding:10px 0; border-bottom:1px solid #F5F4EF;}
+  .cal-coach-block:last-child{border-bottom:none;}
+  .cal-coach-block-top{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;}
+  .cal-coach-block-top .nm{font-size:13px; font-weight:700;}
+  .cal-slots-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .cal-slot-chip{font-size:10.5px; font-weight:600; padding:4px 8px; border-radius:6px;}
+  .cal-slot-chip.kosong{background:var(--green-tint); color:var(--green);}
+  .cal-slot-chip.terisi{background:var(--red-tint); color:var(--red);}
+  @media (max-width:900px){
+    .cal-cell{padding:3px; }
+    .cal-cell .num{font-size:10px;}
+    .cal-cell .cnt{font-size:8px; padding:1px 4px;}
+  }
+

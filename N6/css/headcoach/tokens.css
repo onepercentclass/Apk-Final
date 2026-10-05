@@ -1,0 +1,22 @@
+/* N6 - css/headcoach/tokens.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+  :root{
+    --ink:#111110;
+    --ink-soft:#1C1C1A;
+    --paper:#F5F3EE;
+    --line:#E7E4DB;
+    --red:#D62828;
+    --red-dim:#B71F1F;
+    --red-tint:#FCEBEB;
+    --asphalt:#6E6C64;
+    --white:#FFFFFF;
+    --green:#1E8E3E;
+    --green-tint:#E8F5EC;
+    --amber:#B7791F;
+    --amber-tint:#FBF1DF;
+    --blue:#2563AE;
+    --blue-tint:#E8F0FB;
+  }

@@ -1,0 +1,25 @@
+=== PREFIX ===
+
+  const CLIENT_HEADER_LOGO = 'assets/img/logo-client-header.png';
+  const LOGO_B64 = 'assets/img/logo-client-print.png';
+
+
+  function escapeClientHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function setClientTheme(mode){
+    const next=mode==='dark'?'dark':'light';
+    document.documentElement.setAttribute('data-client-theme',next);
+    try{localStorage.setItem('n6-client-theme',next);}catch(e){}
+    document.querySelectorAll('[data-client-theme]').forEach(b=>b.classList.toggle('selected',b.dataset.clientTheme===next));
+  }
+  function initClientAccountMenu(){
+    const btn=document.getElementById('clientAccountBtn'),menu=document.getElementById('clientAccountMenu');
+    if(!btn||!menu)return;
+    btn.addEventListener('click',e=>{e.stopPropagation();const opening=menu.hidden;menu.hidden=!opening;btn.setAttribute('aria-expanded',String(opening));});
+    menu.addEventListener('click',e=>e.stopPropagation());
+    menu.querySelectorAll('[data-client-theme]').forEach(b=>b.addEventListener('click',()=>setClientTheme(b.dataset.clientTheme)));
+    document.addEventListener('click',()=>{menu.hidden=true;btn.setAttribute('aria-expanded','false');});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;btn.setAttribute('aria-expanded','false');}});
+    setClientTheme(document.documentElement.getAttribute('data-client-theme')||'light');
+  }
+  (function(){=== SUFFIX ===
+})();

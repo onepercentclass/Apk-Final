@@ -1,0 +1,152 @@
+/* N6 - css/client/modules/extras.css */
+/* Extracted verbatim from client.html. Cascade order matters: load this file after
+   everything listed before it in css/client/ORDER.txt */
+
+  /* ---------- HEADER ---------- */
+  .app-header{
+    position:sticky; top:0; z-index:20; background:var(--ink); color:var(--paper);
+    padding:18px 20px 20px; display:flex; align-items:center; gap:12px;
+  }
+  .app-header img{height:38px; width:auto; object-fit:contain;}
+  .app-header .greet .hi{font-size:11px; color:#B9B7AC; letter-spacing:0.03em;}
+  .app-header .greet .name{font-size:17px; font-weight:700; font-family:'Inter',sans-serif;}
+
+  /* ---------- INFO PROGRAM (PB & tanggal) ---------- */
+  .pb-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .pb-item{background:var(--paper-dim); border-radius:8px; padding:12px;}
+  .pb-item .label{font-size:10.5px; font-weight:700; color:var(--asphalt); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.03em;}
+  .pb-item .value{font-size:15px; font-weight:800; color:var(--ink);}
+  .pb-item .value.empty{font-size:12px; font-weight:600; color:var(--asphalt);}
+
+  .error-text{color:var(--red); font-size:12px; margin-top:6px; display:none;}
+  .error-text.show{display:block;}
+  .save-msg{font-size:12px; color:var(--green); margin-top:8px; display:none;}
+  .save-msg.show{display:block;}
+
+  .report-row{padding:12px 0; border-top:1px solid var(--line); font-size:13px;}
+  .report-row:last-child{padding-bottom:0;}
+  .report-row .date{font-weight:700; margin-bottom:2px;}
+  .report-row .meta{color:var(--asphalt);}
+  .report-row .meta a{color:var(--ink); text-decoration:underline;}
+  .empty-note{padding:8px 0; color:var(--asphalt); font-size:13px; text-align:center;}
+
+  .chart-wrap{overflow-x:auto;}
+  .chart-svg{display:block; min-width:100%;}
+
+  .cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .cal-head h3{font-family:'Inter',sans-serif; text-transform:none; font-weight:700; font-size:14px; letter-spacing:0;}
+  .cal-nav{display:flex; gap:6px;}
+  .cal-nav button{
+    width:28px; height:28px; border:1px solid var(--ink); background:none; border-radius:6px;
+    font-size:13px; display:flex; align-items:center; justify-content:center;
+  }
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px;}
+  .cal-dow{font-size:10px; font-weight:700; color:var(--asphalt); text-align:center; padding-bottom:4px;}
+  .cal-cell{
+    aspect-ratio:1; border:1px solid var(--line); border-radius:6px;
+    padding:3px; font-size:10.5px; position:relative;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .cal-cell.empty{border:none;}
+  .cal-cell.has-report{background:var(--green-bg); border-color:var(--green);}
+  .cal-cell.has-score{background:var(--paper-dim); border-color:var(--ink);}
+  .cal-cell .num{font-weight:700;}
+  .cal-cell .score-badge{
+    align-self:flex-end; background:var(--ink); color:var(--paper);
+    font-size:8.5px; font-weight:700; padding:1px 4px; border-radius:3px;
+  }
+  .cal-cell.today{outline:2px solid var(--red); outline-offset:-1px;}
+  .legend{display:flex; gap:12px; margin-top:12px; flex-wrap:wrap; font-size:11px; color:var(--asphalt);}
+  .legend span{display:inline-flex; align-items:center; gap:5px;}
+  .legend i{width:10px; height:10px; border-radius:3px; display:inline-block; border:1px solid var(--line);}
+
+  .day-detail{margin-top:14px; padding:14px; background:var(--paper-dim); border-radius:8px; font-size:13px; display:none;}
+  .day-detail.show{display:block;}
+  .day-detail h4{font-family:'Inter',sans-serif; text-transform:none; font-weight:700; font-size:13px; margin-bottom:6px;}
+  .day-detail p{margin-bottom:4px; color:var(--asphalt);}
+  .day-detail a{color:var(--ink); text-decoration:underline;}
+
+  /* ---------- ERROR / EMPTY STATE ---------- */
+  .invalid-state{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:40px 28px; text-align:center;
+  }
+  .invalid-state h2{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:26px; margin-bottom:10px;}
+  .invalid-state p{color:var(--asphalt); font-size:14px; margin-bottom:22px;}
+
+  /* Riwayat skor — grid kolom fleksibel yang otomatis mengisi sisa ruang sampai pas 1 lembar */
+  .sum-history-wrap{flex:none; display:flex; gap:24px; margin-bottom:22px;}
+  .sum-history-col{flex:1; min-width:0; display:flex; flex-direction:column; border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .sum-history-col-head{flex:none; display:flex; gap:6px; background:var(--ink); color:var(--paper); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; padding:9px 18px;}
+  .sum-history-col-head .d{flex:0 0 58px;}
+  .sum-history-col-head .s{flex:0 0 52px;}
+  .sum-history-col-head .n{flex:1;}
+  .sum-history-rows{display:flex; flex-direction:column;}
+  .sum-hist-row{flex:none; display:flex; align-items:center; gap:6px; padding:0 18px; border-bottom:1px solid var(--line);}
+  .sum-hist-row:nth-child(even){background:var(--paper-dim);}
+  .sum-hist-row .d{flex:0 0 58px; font-weight:700;}
+  .sum-hist-row .s{flex:0 0 52px;}
+  .sum-hist-row .n{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--asphalt);}
+  .sum-hist-row.empty{justify-content:center; color:var(--asphalt); font-style:italic;}
+  .sum-hist-row .score-pill{
+    display:inline-block; background:var(--red); color:var(--white); font-weight:800;
+    padding:2px 10px; border-radius:20px; white-space:nowrap;
+  }
+  .dens-lg .sum-hist-row{height:60px; font-size:16px;}
+  .dens-md .sum-hist-row{height:48px; font-size:14px;}
+  .dens-sm .sum-hist-row{height:35px; font-size:12px;}
+  .dens-xs .sum-hist-row{height:26px; font-size:10px;}
+  .dens-xs .sum-hist-row .score-pill{padding:1px 8px; font-size:0.9em;}
+
+  .sum-footer{
+    flex:none; margin-top:auto; padding-top:16px; border-top:2px solid var(--paper-dim);
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11.5px; color:var(--asphalt);
+  }
+  .sum-footer .brand{font-weight:800; color:var(--ink); letter-spacing:0.03em;}
+
+  /* N6 client premium refresh — keeps existing application IDs and data flows */
+  :root{--shell-w:520px;--paper:#f4f5f5;--paper-dim:#ebeeee;--ink:#181c1b;--asphalt:#67706e;--line:rgba(29,37,34,.11);--white:#fff;--green-bg:#e6f3eb}
+  body{background:#e6e9e8;color:var(--ink)}
+  .app-shell{box-shadow:0 12px 45px rgba(19,28,24,.09)}
+  .app-header{min-height:94px;padding:17px 19px;justify-content:space-between;gap:12px;background:#151917;border-bottom:3px solid var(--red)}
+  .brand-lockup{display:flex;align-items:center;gap:11px;min-width:0}
+  .brand-lockup img{height:48px;width:60px;object-fit:contain;flex:none}
+  .brand-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .brand-copy strong{font-size:16px;letter-spacing:.035em;line-height:1.1;color:#fff;font-weight:800;white-space:nowrap}
+  .brand-copy span{font-size:9px;font-weight:800;letter-spacing:.15em;color:#d8a8a8;white-space:nowrap}
+  .header-actions{display:flex;align-items:center;gap:9px;margin-left:auto;position:relative;min-width:0}
+  .client-greeting{display:flex;flex-direction:column;text-align:right;min-width:0;max-width:120px}
+  .client-greeting span{font-size:9px;color:#adb8b2;letter-spacing:.12em;font-weight:700}
+  .client-greeting strong{font-size:12px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .account-trigger{flex:none;width:39px;height:39px;border-radius:12px;border:1px solid #525c55;background:#282f2b;color:#fff;display:grid;place-items:center;cursor:pointer}
+  .account-trigger svg{width:21px;height:21px}
+  .account-menu{position:absolute;z-index:55;right:0;top:calc(100% + 16px);width:252px;border-radius:13px;padding:15px;background:var(--white);color:var(--ink);box-shadow:0 15px 40px rgba(0,0,0,.23);border:1px solid var(--line)}
+  .account-menu[hidden]{display:none!important}
+  .account-menu-title{font-size:10px;letter-spacing:.12em;font-weight:800;color:var(--asphalt)}
+  .account-person{font-size:15px;font-weight:800;margin:6px 0 13px;overflow-wrap:anywhere}
+  .theme-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .theme-picker button{padding:10px 4px;background:var(--paper);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-weight:800;cursor:pointer}
+  .theme-picker button.selected{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red);color:var(--red)}
+  .account-menu-foot{border-top:1px solid var(--line);padding-top:12px;margin-top:13px;font-size:10px;color:var(--asphalt)}
+  .app-content{padding:21px 17px 115px}
+  .card{border-radius:15px;padding:20px;margin-bottom:17px;box-shadow:0 4px 14px rgba(18,28,23,.035)}
+  .card h2{font-size:17px;letter-spacing:-.025em}
+  .btn{border-radius:10px;min-height:47px}
+  input[type=date],input[type=url],textarea,.chat-input-row input{border-radius:9px}
+  .bottom-nav{padding:9px 10px calc(9px + env(safe-area-inset-bottom,0px));box-shadow:0 -5px 25px rgba(0,0,0,.06)}
+  .bottom-nav button.active .icon-pill{background:rgba(214,40,40,.11)}
+  .cal-nav button{color:var(--ink);cursor:pointer}
+  html[data-client-theme=dark]{--ink:#e8eeea;--paper:#151b19;--paper-dim:#2a332e;--white:#202824;--asphalt:#a7b3aa;--line:rgba(228,240,229,.14);--green-bg:#1d3d2a;--green:#7fcda1}
+  html[data-client-theme=dark] body{background:#0d1210;color:var(--ink)}
+  html[data-client-theme=dark] .app-shell{background:var(--paper)}
+  html[data-client-theme=dark] .card{box-shadow:none}
+  html[data-client-theme=dark] .app-header{background:#101411}
+  html[data-client-theme=dark] .btn{background:#e7eee8;border-color:#e7eee8;color:#171e19}
+  html[data-client-theme=dark] .btn-outline{background:transparent;color:var(--ink);border-color:var(--line)}
+  html[data-client-theme=dark] .chat-bubble.client{background:#33443a;color:#fff}
+  html[data-client-theme=dark] .chat-input-row button{background:#d62828;color:#fff}
+  html[data-client-theme=dark] .bottom-nav{background:var(--white)}
+  html[data-client-theme=dark] .cal-cell.has-score{border-color:#9cb6a2}
+  html[data-client-theme=dark] .cal-cell .score-badge{background:#dce9de;color:#1b271d}
+  html[data-client-theme=dark] .chart-svg text{fill:#b8c5bc}

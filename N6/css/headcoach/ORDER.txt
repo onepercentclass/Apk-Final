@@ -1,0 +1,25 @@
+# N6 css load order for role: headcoach
+# files MUST be included in this sequence (cascade depends on it)
+tokens.css	346
+base.css	373
+layout.css	9925
+components.css	8594
+modules/laporan.css	555
+modules/jadwal.css	268
+modules/extras.css	5356
+modules/keuangan.css	246
+modules/periode.css	683
+modules/monitoring.css	3562
+modules/koreksi.css	2083
+modules/pesan.css	1290
+modules/program.css	1120
+themes.css	24994
+polish/block-6.css	1245
+polish/block-10.css	2415
+polish/block-13.css	1408
+polish/block-14.css	1143
+polish/block-15.css	574
+polish/block-16.css	404
+polish/block-18.css	337
+polish/block-19.css	459
+polish/block-20.css	388

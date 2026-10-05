@@ -1,0 +1,8 @@
+.toast-wrap{position:fixed; bottom:20px; right:20px; z-index:200; display:flex; flex-direction:column; gap:8px;}
+.toast{
+  background:var(--toast-bg); border:1px solid var(--line); border-left:3px solid var(--red);
+  padding:11px 16px; border-radius:8px; font-size:13px; box-shadow:0 8px 24px var(--shadow-color);
+  animation:slidein .2s ease;
+}
+.toast.success{border-left-color:var(--green);}
+@keyframes slidein{from{transform:translateY(8px); opacity:0;} to{transform:translateY(0); opacity:1;}}

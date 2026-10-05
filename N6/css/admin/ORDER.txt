@@ -1,0 +1,14 @@
+# N6 css load order for role: admin
+# files MUST be included in this sequence (cascade depends on it)
+tokens.css	346
+base.css	356
+layout.css	12751
+modules/harga.css	961
+modules/tiket.css	600
+modules/pesan.css	1169
+modules/jadwal.css	3901
+components.css	1414
+themes.css	44537
+polish/block-4.css	908
+polish/block-5.css	794
+polish/block-6.css	635

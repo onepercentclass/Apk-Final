@@ -1,0 +1,9 @@
+/* N6 - css/owner/polish/block-7.css */
+/* Extracted verbatim from owner.html. Cascade order matters: load this file after
+   everything listed before it in css/owner/ORDER.txt */
+
+
+/* ---- owner.html : original style block #7 ---- */
+
+/* Coach request management */
+.n6-request-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:16px 0}.n6-request-form label{font-size:12px;font-weight:700;color:var(--asphalt)}.n6-request-form input,.n6-request-form select,.n6-request-form textarea{margin-top:5px;width:100%}.n6-request-form .wide{grid-column:1/-1}.n6-request-item{border:1px solid var(--line);border-radius:8px;padding:14px;margin:10px 0;background:var(--white)}.n6-request-item .meta{font-size:12px;color:var(--asphalt);margin:5px 0}.n6-request-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.n6-request-hint{font-size:12px;color:var(--asphalt);margin:10px 0}@media(max-width:640px){.n6-request-form{grid-template-columns:1fr}}

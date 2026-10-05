@@ -1,0 +1,14 @@
+.app{display:flex; min-height:100vh;}
+
+/* Sidebar */
+.main{flex:1; margin-left:236px; display:flex; flex-direction:column; min-width:0;}
+.content{padding:22px 26px 60px; max-width:1360px; width:100%;}
+
+.page-head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:20px; flex-wrap:wrap;}
+.page-title{font-size:23px; font-weight:700; letter-spacing:.2px;}
+.page-sub{font-size:13px; color:var(--muted); margin-top:3px;}
+.grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:18px;}
+.grid-3{display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:18px;}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px;}
+.view{display:none;}
+.view.active{display:block;}

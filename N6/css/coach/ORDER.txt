@@ -1,0 +1,12 @@
+# N6 css load order for role: coach
+# files MUST be included in this sequence (cascade depends on it)
+tokens.css	346
+base.css	373
+layout.css	8635
+components.css	8594
+modules/laporan.css	555
+modules/jadwal.css	268
+modules/extras.css	9019
+modules/keuangan.css	246
+modules/periode.css	683
+themes.css	11241

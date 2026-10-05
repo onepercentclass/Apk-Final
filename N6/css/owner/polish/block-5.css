@@ -1,0 +1,16 @@
+/* N6 - css/owner/polish/block-5.css */
+/* Extracted verbatim from owner.html. Cascade order matters: load this file after
+   everything listed before it in css/owner/ORDER.txt */
+
+
+/* ---- owner.html : original style block #5 ---- */
+
+/* Four aligned actions on desktop; two tidy rows on smaller screens. */
+#panel-beranda .analytics-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+#panel-beranda .analytics-heading>div:first-child{flex:0 0 auto}
+#panel-beranda .analytics-controls{display:grid;grid-template-columns:minmax(155px,1.1fr) minmax(150px,1.1fr) minmax(125px,.9fr) minmax(160px,1.1fr);gap:10px;align-items:stretch;width:min(100%,720px);flex:0 1 720px}
+#panel-beranda .analytics-controls>select,#panel-beranda .analytics-controls>button{width:100%;min-width:0;height:42px;box-sizing:border-box;margin:0;display:flex;align-items:center;justify-content:center;white-space:nowrap;font-size:12px;border-radius:9px}
+#panel-beranda .analytics-controls>select{display:block;padding:0 30px 0 12px;text-overflow:ellipsis}
+#panel-beranda #openKpiSettings{font-weight:700}
+@media(max-width:1250px){#panel-beranda .analytics-heading{align-items:stretch;flex-direction:column}#panel-beranda .analytics-controls{width:100%;flex:auto}}
+@media(max-width:600px){#panel-beranda .analytics-heading{gap:12px}#panel-beranda .analytics-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#panel-beranda .analytics-controls>select,#panel-beranda .analytics-controls>button{height:44px;font-size:11.5px}#panel-beranda .analytics-controls>select{padding-left:9px}}

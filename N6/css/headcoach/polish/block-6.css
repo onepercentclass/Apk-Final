@@ -1,0 +1,7 @@
+/* N6 - css/headcoach/polish/block-6.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+/* ---- headcoach.html : original style block #6 ---- */
+#panel-hcintensity .n6-calc-fields{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:14px;align-items:end}#panel-hcintensity .n6-calc-fields label{display:grid;gap:7px;color:var(--ink);font-weight:650}#panel-hcintensity .n6-calc-fields input,#panel-hcintensity .n6-calc-fields select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--white);color:var(--ink)}#panel-hcintensity .n6-calc-result{overflow-x:auto;margin:22px 0}#panel-hcintensity .n6-calc-result table{width:100%;border-collapse:collapse;min-width:580px}#panel-hcintensity .n6-calc-result th,#panel-hcintensity .n6-calc-result td{padding:12px;border-bottom:1px solid var(--line);text-align:left;color:var(--ink)}#panel-hcintensity .n6-calc-result th{background:var(--paper-dim)}#panel-hcintensity .n6-calc-result tr:nth-child(even){background:var(--paper-dim)}#panel-hcweekly .n6-pace-hint{font-size:12px;color:var(--asphalt);margin:5px 0 0}#panel-hcweekly .n6-pace-input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--white);color:var(--ink)}@media(max-width:720px){#panel-hcintensity .n6-calc-fields{grid-template-columns:1fr}}

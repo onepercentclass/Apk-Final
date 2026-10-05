@@ -1,0 +1,437 @@
+/* Halaman Beranda: kartu statistik, grid widget, aksi cepat. */
+
+.stat .st-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--mu);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.st-v {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  margin: 12px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.st-s {
+  font-size: 12px;
+  color: var(--mu);
+}
+
+.eye {
+  color: var(--mu);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+}
+
+.home {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  order: 1;
+}
+
+.stats .card:first-child {
+  grid-column: 1/-1;
+}
+
+.stats .st-v {
+  font-size: 21px;
+}
+
+.h-quick {
+  order: 2;
+}
+
+.h-sum {
+  order: 3;
+}
+
+.h-recent {
+  order: 4;
+}
+
+.h-bills {
+  order: 5;
+}
+
+.h-cat {
+  order: 6;
+}
+
+.h-cash {
+  order: 7;
+}
+
+.h-goals {
+  order: 8;
+}
+
+.h-acc {
+  order: 9;
+}
+
+.h-inv {
+  order: 10;
+}
+
+.quick {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+}
+
+.q {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px 4px;
+  border-radius: 16px;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+}
+
+.hdr-acts {
+  display: none;
+}
+
+.home-r .btn {
+  padding: 9px 13px;
+}
+
+.greet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.greet h1 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.greet p {
+  color: var(--mu);
+  font-size: 12.5px;
+}
+
+@media (min-width:720px) {
+  .stats {
+    grid-template-columns: repeat(4,1fr);
+  }
+  .stats .card:first-child {
+    grid-column: auto;
+  }
+  .home {
+    grid-template-columns: repeat(2,1fr);
+  }
+  .stats {
+    grid-column: 1/-1;
+  }
+  .h-quick {
+    grid-column: 1/-1;
+  }
+  .h-cash, .h-inv {
+    grid-column: 1/-1;
+  }
+}
+
+@media (min-width:1360px) {
+  .h-goals, .h-acc, .h-sum, .h-inv {
+    grid-column: span 3;
+  }
+}
+
+@media (min-width:1024px) {
+  .greet {
+    display: none;
+  }
+  .home {
+    grid-template-columns: repeat(12,minmax(0,1fr));
+    gap: 16px;
+    align-items: stretch;
+  }
+  .home>* {
+    order: 0;
+  }
+  .stats {
+    grid-column: span 12;
+    gap: 16px;
+  }
+  .h-cash {
+    grid-column: span 7;
+  }
+  .h-cat {
+    grid-column: span 5;
+  }
+  .h-recent {
+    grid-column: span 7;
+  }
+  .h-bills {
+    grid-column: span 5;
+  }
+  .h-goals, .h-acc, .h-sum, .h-inv {
+    grid-column: span 6;
+  }
+  .quick {
+    display: none;
+  }
+  .hdr-acts {
+    display: flex;
+    gap: 8px;
+  }
+  .home-h .only-d {
+    display: flex!important;
+  }
+  .home-h {
+    align-items: center;
+  }
+  .h-cat .dn {
+    height: calc(100% - 40px);
+    align-content: center;
+  }
+}
+
+.home-r {
+  width: 100%;
+}
+
+.home-r .mp {
+  flex: 1;
+  justify-content: space-between;
+}
+
+.home-r .mp span {
+  min-width: 0;
+  flex: 1;
+}
+
+.home-r .btn {
+  flex: none;
+}
+
+@media (min-width:720px) {
+  .home-r {
+    width: auto;
+  }
+  .home-r .mp {
+    flex: none;
+  }
+  .home-r .mp span {
+    flex: none;
+    min-width: 118px;
+  }
+}
+
+.sumbody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex: 1;
+}
+
+.sumgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 18px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sumgrid small {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.sumgrid b {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: -.01em;
+}
+
+.st-v>span {
+  white-space: nowrap;
+  min-width: 0;
+}
+
+@media (max-width:1023px) {
+  .sumbody {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (min-width:1024px) and (max-width:1279px) {
+  .stats {
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+@media (min-width:1280px) {
+  .stat .st-v {
+    font-size: clamp(21px,1.7vw,25px);
+  }
+}
+
+.st-h span:not(.ci) {
+  min-width: 0;
+}
+
+@media (min-width:1024px) {
+  .home {
+    gap: 18px;
+  }
+  .h-goals, .h-acc, .h-sum, .h-inv {
+    grid-column: span 6;
+  }
+  .stat .st-v {
+    font-size: 25px;
+  }
+  .h-recent .list, .h-bills .list {
+    margin-top: -4px;
+  }
+  .h-cat .dn {
+    justify-content: space-around;
+  }
+}
+
+@media (min-width:1700px) {
+  .h-goals, .h-acc, .h-sum, .h-inv {
+    grid-column: span 3;
+  }
+}
+
+@media (min-width:1700px) {
+  .sumbody {
+    flex-direction: column-reverse;
+    gap: 18px;
+    align-items: stretch;
+  }
+  .sumbody .donut {
+    align-self: center;
+  }
+}
+
+@media (max-width:719px) {
+  .home-r {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    width: 100%;
+  }
+  .home-r .mp {
+    flex: 1;
+    min-width: 0;
+  }
+  .home-r .mp span {
+    min-width: 0;
+    flex: 1;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  .home-r>.btn {
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    flex: none;
+  }
+  .home-r>.btn .lbl {
+    display: none;
+  }
+  .home-h {
+    margin-bottom: 14px;
+  }
+  .stats {
+    gap: 10px;
+  }
+  .stats .card {
+    padding: 14px;
+  }
+  .stats .card:first-child {
+    background: linear-gradient(140deg,rgba(16,185,129,.2),transparent 65%),var(--sf);
+  }
+  .stat .st-h {
+    gap: 10px;
+    font-size: 12.5px;
+  }
+  .stat .ci.lg {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+  .stat .ci.lg svg {
+    width: 18px;
+    height: 18px;
+  }
+  .st-v {
+    font-size: min(17px,4.1vw);
+    white-space: nowrap;
+    margin: 10px 0 3px;
+    letter-spacing: -.02em;
+  }
+  .stats .card:first-child .st-v {
+    font-size: 27px;
+  }
+  .stats .card:nth-child(4) {
+    grid-column: 1/-1;
+  }
+  .stats .card:not(:first-child) .tr i {
+    display: none;
+  }
+  .stats .card:nth-child(4) .tr i {
+    display: inline;
+  }
+  .h-sum {
+    display: none;
+  }
+  .q {
+    padding: 12px 2px;
+    font-size: 11px;
+  }
+}
+
+@media (min-width:720px) and (max-width:1023px) {
+  .stats {
+    grid-template-columns: repeat(2,1fr);
+  }
+  .h-sum {
+    grid-column: 1/-1;
+  }
+  .sumbody {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .h-sum {
+    order: 3;
+  }
+  .stats .card {
+    padding: 16px;
+  }
+  .st-v {
+    font-size: 20px;
+  }
+}

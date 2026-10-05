@@ -1,0 +1,7 @@
+/* N6 - css/owner/polish/block-6.css */
+/* Extracted verbatim from owner.html. Cascade order matters: load this file after
+   everything listed before it in css/owner/ORDER.txt */
+
+
+/* ---- owner.html : original style block #6 ---- */
+#panel-jadwalcoach #coachGuide{line-height:1.7}#panel-beranda .analytics-controls input[type=date]{width:auto;min-width:145px;background:#14243a;color:#f1f6ff;border:1px solid #304660;border-radius:7px;padding:9px}@media(max-width:640px){#panel-beranda .analytics-controls input[type=date]{width:100%;min-width:0}}

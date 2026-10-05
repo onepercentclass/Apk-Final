@@ -1,0 +1,14 @@
+.print-header{display:none;}
+@media print{
+  body{background:#fff; color:#000;}
+  .sidebar, .topbar, .no-print, .toast-wrap, .overlay{display:none !important;}
+  .main{margin-left:0 !important;}
+  .content{padding:0 !important; max-width:100% !important;}
+  .card{background:#fff !important; border:1px solid #ccc !important; color:#000 !important; break-inside:avoid;}
+  .stat-value, .section-title, h2{color:#000 !important;}
+  .stat-label{color:#555 !important;}
+  table{color:#000 !important;}
+  th{color:#333 !important; border-bottom:1px solid #999 !important;}
+  td{border-bottom:1px solid #ddd !important;}
+  .print-header{display:block !important; margin-bottom:14px;}
+}

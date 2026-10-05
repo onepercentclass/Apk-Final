@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="NUMBER SIX Running Training - dashboard operasional, satu entri untuk Owner, Admin CS, Head Coach, Coach dan Client.">
+<meta name="robots" content="noindex, nofollow">
+<title>NUMBER SIX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/img/logo-black.png">
+
+<!--
+  Third-party libraries, deduplicated across the five dashboards.
+
+  jspdf 2.5.1 and 2.5.2 were both present in headcoach.html; 2.5.2 wins once it
+  arrives, so both are kept and the original `defer` is preserved. Order and the
+  defer flag matter for the export/print features, so do not reshuffle these.
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+
+<!--
+  Stylesheets are NOT linked here on purpose.
+
+  Each role ships its own cascade under css/<role>/, loaded in the order
+  recorded by tools/build.ps1 into js/core/bundles.js. js/app.js injects them
+  before the markup, so the cascade is identical to the five original
+  single-file dashboards. See css/<role>/ORDER.txt for the sequence.
+
+  Boot splash, inlined on purpose: it must be visible before any stylesheet
+  has loaded, otherwise there is a blank flash on a cold cache.
+-->
+<style>
+  html, body { margin: 0; padding: 0; background: #DEDCD2; }
+  body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; color: #111110; }
+  .n6-boot {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 18px; padding: 24px; text-align: center;
+  }
+  .n6-boot__bar {
+    width: 190px; height: 3px; border-radius: 3px; background: rgba(17,17,16,.12);
+    overflow: hidden; position: relative;
+  }
+  .n6-boot__bar::after {
+    content: ''; position: absolute; inset: 0; width: 40%; border-radius: 3px;
+    background: #D62828; animation: n6-boot-slide 1.05s ease-in-out infinite;
+  }
+  @keyframes n6-boot-slide {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+  }
+  .n6-boot__text { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .04em; color: #6E6C64; }
+  .n6-boot h1 { margin: 0; font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; }
+  .n6-boot p { margin: 0; max-width: 46ch; font-size: 14px; color: #6E6C64; }
+  .n6-boot--error { color: #B71F1F; }
+  .n6-boot__hint { font-size: 12px; opacity: .75; }
+  @media (prefers-reduced-motion: reduce) {
+    .n6-boot__bar::after { animation: none; width: 100%; }
+  }
+</style>
+</head>
+
+<body>
+  <!--
+    One mount point for all five dashboards.
+
+    Pick a dashboard with ?role=... :
+
+      ?role=owner                              Owner, tier 0, full access
+      ?role=admin                              Admin CS, tier 1
+      ?role=headcoach                          Head Coach, tier 2
+      ?role=coach                              Coach, tier 3
+      ?role=client&amp;client=&lt;id&gt;            Client portal, tier 4
+
+    Omitting ?role= defaults to owner. Which menus and actions a tier may reach
+    is defined in backend/tiers/tier-*.json and enforced by js/core/access.js
+    before the role's own code runs, and again by backend/app/api/deps.py.
+  -->
+  <div id="n6-app"></div>
+
+  <noscript>
+    <div style="padding:32px;font-family:system-ui,sans-serif">
+      <h1 style="font-size:20px">NUMBER SIX</h1>
+      <p>Dashboard ini membutuhkan JavaScript aktif.</p>
+    </div>
+  </noscript>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

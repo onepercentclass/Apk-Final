@@ -1,0 +1,8 @@
+# N6 css load order for role: client
+# files MUST be included in this sequence (cascade depends on it)
+tokens.css	262
+base.css	554
+modules/extras.css	10111
+layout.css	2694
+modules/pesan.css	1172
+print.css	3133

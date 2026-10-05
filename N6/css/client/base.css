@@ -1,0 +1,21 @@
+/* N6 - css/client/base.css */
+/* Extracted verbatim from client.html. Cascade order matters: load this file after
+   everything listed before it in css/client/ORDER.txt */
+
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:#DEDCD2; color:var(--ink);
+    font-family:'Inter', sans-serif; font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3{font-family:'Anton', sans-serif; font-weight:400; text-transform:uppercase; letter-spacing:0.01em; line-height:0.95;}
+  a{color:inherit;}
+
+  .app-shell{
+    max-width:var(--shell-w); margin:0 auto; background:var(--paper);
+    min-height:100vh; position:relative;
+    box-shadow:0 0 0 1px var(--line);
+  }
+

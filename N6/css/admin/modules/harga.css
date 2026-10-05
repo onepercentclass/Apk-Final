@@ -1,0 +1,15 @@
+/* N6 - css/admin/modules/harga.css */
+/* Extracted verbatim from admin.html. Cascade order matters: load this file after
+   everything listed before it in css/admin/ORDER.txt */
+
+  /* ---------- HARGA / PROGRAM ---------- */
+  .price-box{background:var(--paper); border-radius:8px; padding:12px 14px; margin-top:6px;}
+  .price-box .row{display:flex; justify-content:space-between; font-size:12.5px; color:var(--asphalt); padding:2px 0;}
+  .price-box .total{display:flex; justify-content:space-between; font-size:15px; font-weight:800; margin-top:6px; padding-top:8px; border-top:1px dashed var(--line);}
+  .price-list-item{display:flex; justify-content:space-between; align-items:flex-start; padding:12px 0; border-bottom:1px solid #F5F4EF; gap:10px;}
+  .price-list-item:last-child{border-bottom:none;}
+  .price-list-item .nm{font-weight:700; font-size:13.5px;}
+  .price-list-item .ct{font-size:11.5px; color:var(--asphalt); margin-top:2px;}
+  .price-list-item .pv{font-weight:800; font-size:14px; text-align:right; white-space:nowrap;}
+  .price-list-item .pv small{display:block; font-weight:500; font-size:10.5px; color:var(--asphalt);}
+

@@ -1,0 +1,94 @@
+/* Layout: shell, sidebar, topbar */
+.app-bg {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+  background: linear-gradient(135deg, #fff1d0 0%, #fff8ea 45%, #fffaf2 100%);
+}
+.app-shell {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: transparent;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: 24px 12px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.6);
+}
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 10px 26px; }
+.brand-logo { width: 50px; height: 38px; }
+.brand-name { font-size: 22px; font-weight: 800; color: var(--navy); line-height: 1.05; }
+.brand-sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+.menu { display: flex; flex-direction: column; gap: 4px; }
+.menu-item {
+  display: flex; align-items: center; gap: 14px;
+  height: 46px; padding: 0 18px;
+  border-radius: 24px; border: 0; background: transparent;
+  color: var(--text); font-size: 14px; font-weight: 500; text-align: left;
+  transition: background .15s, transform .15s;
+}
+.menu-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+.menu-item:hover { background: #fff3d3; }
+.menu-item.active {
+  background: linear-gradient(90deg, #fdc23a, #fcb02a);
+  font-weight: 700; color: var(--navy);
+  box-shadow: 0 6px 14px rgba(253, 184, 39, 0.35);
+}
+
+.sidebar-quote { margin-top: auto; padding: 14px; border-radius: 14px; background: #eff5ee; font-size: 11.5px; color: #4b5a6e; line-height: 1.6; }
+.sidebar-quote svg { display: block; margin-bottom: 6px; }
+
+/* Main + Topbar */
+.main { flex: 1; min-width: 0; padding: 26px 28px 28px; display: flex; flex-direction: column; }
+.topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.topbar-left { display: flex; gap: 12px; align-items: flex-start; }
+.greeting { font-size: 19px; font-weight: 800; color: var(--navy); }
+.greeting-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.topbar-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end; position: relative; padding-bottom: 22px; }
+
+.search {
+  display: flex; align-items: center; gap: 8px;
+  width: 280px; height: 38px; padding: 0 14px;
+  background: #f3f4f9; border-radius: 20px; color: var(--muted);
+}
+.search input { border: 0; background: transparent; outline: 0; flex: 1; font-size: 12px; color: var(--text); }
+.icon-btn { position: relative; border: 0; background: transparent; color: var(--muted); padding: 6px; display: grid; place-items: center; }
+.menu-toggle { display: none; font-size: 22px; color: var(--navy); }
+.badge-dot {
+  position: absolute; top: 0; right: 0; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--red); color: #fff; font-size: 10px; font-weight: 700; display: grid; place-items: center;
+}
+.user-chip { display: flex; align-items: center; gap: 10px; }
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #14234b); color: #fff;
+  font-weight: 700; font-size: 14px; display: grid; place-items: center;
+}
+.user-meta { display: flex; flex-direction: column; line-height: 1.3; }
+.user-meta strong { font-size: 13px; color: var(--navy); }
+.user-meta small { font-size: 11px; color: var(--muted); }
+.chev { color: var(--muted); }
+.today { position: absolute; right: 0; bottom: 0; font-size: 11.5px; color: var(--muted); }
+.today::before { content: "▦ "; }
+
+.view { flex: 1; }
+
+/* Navigasi bawah & backdrop drawer: hanya muncul di layar kecil (lihat responsive.css) */
+.bottom-nav, .drawer-backdrop { display: none; }
+@media (max-width: 900px) { .bottom-nav, .drawer-backdrop { display: block; } .bottom-nav { display: grid; } }
+html { -webkit-text-size-adjust: 100%; }
+body { overflow-x: hidden; -webkit-tap-highlight-color: transparent; }

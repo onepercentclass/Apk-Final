@@ -1,0 +1,38 @@
+/* Design tokens + reset */
+:root {
+  --navy: #14234b;
+  --text: #1c2a4d;
+  --muted: #7385a8;
+  --line: #eef0f5;
+  --yellow: #fdb827;
+  --yellow-soft: #fff4d6;
+  --purple: #a855f7;
+  --purple-soft: #f1e6ff;
+  --green: #22c58b;
+  --green-soft: #e0f7ee;
+  --blue: #3b82f6;
+  --blue-soft: #e3eeff;
+  --pink: #f472b6;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --white: #ffffff;
+  --card: rgba(255, 255, 255, 0.78);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 6px 22px rgba(80, 90, 130, 0.08);
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  font-size: 14px;
+  background: #fdf3df;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, p { margin: 0; }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+a { color: inherit; text-decoration: none; }

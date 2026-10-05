@@ -1,0 +1,19 @@
+/* N6 - css/headcoach/base.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    font-size:14.5px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  button, input, textarea, select{font-family:inherit;}
+  a{color:inherit; text-decoration:none;}
+
+  .app{display:flex; min-height:100vh;}
+

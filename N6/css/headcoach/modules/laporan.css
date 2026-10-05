@@ -1,0 +1,12 @@
+/* N6 - css/headcoach/modules/laporan.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+  /* ---------- RAPOR (report) ---------- */
+  .rapor-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;}
+  @media (max-width:720px){ .rapor-grid{grid-template-columns:repeat(2,1fr);} }
+  .rapor-stat{border:1px solid var(--line); border-radius:8px; padding:14px;}
+  .rapor-stat .l{font-size:11px; color:var(--asphalt); margin-bottom:6px;}
+  .rapor-stat .v{font-size:18px; font-weight:800;}
+  .rapor-note{border:1px solid var(--line); border-radius:8px; padding:16px; font-size:13px; color:#3B3A36; background:#FAFAF7;}
+

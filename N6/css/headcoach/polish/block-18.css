@@ -1,0 +1,9 @@
+/* N6 - css/headcoach/polish/block-18.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+/* ---- headcoach.html : original style block #18 ---- */
+/* Logo tanpa bidang hitam tambahan; mengikuti warna sidebar Owner/Admin */
+.side-brand,.side-brand .brand-logo,.side-brand .brand-logo img{background:transparent!important;box-shadow:none!important;border-radius:0!important}
+.side-brand .brand-logo{overflow:visible!important}

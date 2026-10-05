@@ -1,0 +1,14 @@
+/* N6 - css/owner/modules/tiket.css */
+/* Extracted verbatim from owner.html. Cascade order matters: load this file after
+   everything listed before it in css/owner/ORDER.txt */
+
+  /* ---------- TICKETS ---------- */
+  .ticket-item{padding:14px 0; border-bottom:1px solid #F5F4EF;}
+  .ticket-item:last-child{border-bottom:none;}
+  .ticket-top{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:flex-start;}
+  .ticket-top .who{font-size:13.5px; font-weight:700;}
+  .ticket-top .when{font-size:11.5px; color:#A3A196;}
+  .ticket-subject{font-size:13px; font-weight:600; margin-top:2px;}
+  .ticket-detail{font-size:12.5px; color:#3B3A36; margin-top:4px;}
+  .ticket-actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center;}
+

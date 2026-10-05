@@ -1,0 +1,7 @@
+/* N6 - css/headcoach/polish/block-19.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+/* ---- headcoach.html : original style block #19 ---- */
+#mCustomCard,#mPaceCard{margin-top:18px}#mCustomBody[hidden],#mPaceBody[hidden]{display:none!important}#mPaceResult table{border-collapse:collapse;width:100%;font-size:12px}#mPaceResult th,#mPaceResult td{padding:11px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}#mPaceResult th{background:var(--paper-dim);color:var(--ink)}#mPaceResult tr:hover{background:var(--paper-dim)}

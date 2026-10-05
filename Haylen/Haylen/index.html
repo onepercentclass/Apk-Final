@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fdb827">
+  <title>AquaFlow Swimming School - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- CSS (setiap file punya fungsi berbeda) -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-bg">
+    <div class="app-shell" id="app">
+
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <svg class="brand-logo" viewBox="0 0 64 48" aria-hidden="true">
+            <path d="M2 18c8-10 16-10 24-3s16 7 24-1" fill="none" stroke="#3B82F6" stroke-width="7" stroke-linecap="round"/>
+            <path d="M8 33c8-10 16-10 24-3s16 7 24-1" fill="none" stroke="#FDB827" stroke-width="7" stroke-linecap="round"/>
+          </svg>
+          <div>
+            <div class="brand-name">AquaFlow</div>
+            <div class="brand-sub">Swimming School</div>
+          </div>
+        </div>
+
+        <nav class="menu" id="menu"></nav>
+
+        <div class="sidebar-quote">
+          <svg viewBox="0 0 64 24" width="34" aria-hidden="true"><path d="M2 12c8-8 16-8 24-2s16 6 24-1" fill="none" stroke="#3B82F6" stroke-width="5" stroke-linecap="round"/></svg>
+          <p>"Bersama membentuk generasi yang lebih sehat dan percaya diri melalui renang."</p>
+        </div>
+      </aside>
+
+      <section class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+            <div>
+              <h1 class="greeting">Selamat Datang, <span id="roleName">Owner</span> <span class="wave">👋</span></h1>
+              <p class="greeting-sub">Berikut adalah ringkasan performa bisnis renang Anda hari ini.</p>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <label class="search">
+              <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <input id="globalSearch" type="text" placeholder="Cari member, kelas, atau laporan...">
+            </label>
+            <button class="icon-btn bell" aria-label="Notifikasi">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7Zm4 10a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="badge-dot" id="notifCount">3</span>
+            </button>
+            <div class="user-chip">
+              <div class="avatar" id="userAvatar">BS</div>
+              <div class="user-meta">
+                <strong id="userName">Budi Santoso</strong>
+                <small id="userRole">Owner</small>
+              </div>
+              <span class="chev">⌄</span>
+            </div>
+            <div class="today" id="todayLabel"></div>
+          </div>
+        </header>
+
+        <div class="view" id="view"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <nav class="bottom-nav" id="bottomNav" aria-label="Navigasi utama"></nav>
+  <div class="toast-root" id="toastRoot"></div>
+
+  <!-- JS: inti -->
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/access.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/crud.js"></script>
+
+  <!-- JS: logika per menu sidebar -->
+  <script src="js/dashboard.js"></script>
+  <script src="js/member.js"></script>
+  <script src="js/kelas-program.js"></script>
+  <script src="js/coach.js"></script>
+  <script src="js/jadwal.js"></script>
+  <script src="js/transaksi.js"></script>
+  <script src="js/laporan.js"></script>
+  <script src="js/fasilitas.js"></script>
+  <script src="js/pengaturan.js"></script>
+
+  <!-- JS: router & bootstrap -->
+  <script src="js/app.js"></script>
+</body>
+</html>

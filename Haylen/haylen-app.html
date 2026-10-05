@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HAYLEN Coach Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0E2A3D; --navy-soft:#4A6478; --pool:#0E7FB0; --pool-deep:#0A5E86;
+  --cyan:#7FD8DA; --green:#3FB98B; --coral:#F0725B;
+  --bg:#F5F7F8; --card:#FFFFFF; --line:#E7ECEE; --line-soft:#EFF3F4;
+  --radius:12px; --shadow:0 1px 2px rgba(14,42,61,.04),0 8px 24px rgba(14,42,61,.05);
+  box-sizing:border-box;
+}
+*{box-sizing:inherit;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--navy);-webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+h1,h2,h3,.brand-name{font-family:'Plus Jakarta Sans',sans-serif;}
+button{font-family:inherit;cursor:pointer;}
+.app{display:grid;grid-template-columns:236px 1fr 280px;min-height:100vh;}
+/* SIDEBAR */
+.sidebar{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 14px;}
+.brand{display:flex;align-items:center;gap:9px;padding:4px 8px 24px;}
+.brand-name{font-weight:800;font-size:16px;line-height:1.1;}
+.brand-sub{font-size:10.5px;color:var(--navy-soft);font-weight:700;letter-spacing:.3px;}
+nav.mainnav{display:flex;flex-direction:column;gap:2px;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;color:var(--navy-soft);font-size:13.5px;font-weight:600;text-decoration:none;border:none;background:none;width:100%;text-align:left;transition:background .15s;}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;}
+.nav-item.active{background:linear-gradient(90deg,rgba(14,127,176,.10),rgba(14,127,176,.02));color:var(--pool-deep);box-shadow:inset 3px 0 0 var(--pool);}
+.nav-item:hover:not(.active){background:var(--line-soft);}
+.sidebar-footer{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid var(--line);margin-top:18px;}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7FD8DA,#0E7FB0);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;}
+.coach-name{font-size:13px;font-weight:700;} .coach-role{font-size:11px;color:var(--navy-soft);}
+/* MAIN */
+main{padding:20px 24px 40px;overflow-x:hidden;min-width:0;}
+header.topbar{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.search{flex:1;display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--navy-soft);font-size:13px;}
+.search svg{width:15px;height:15px;flex-shrink:0;}
+.search input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;color:var(--navy);width:100%;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.icon-btn{position:relative;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--navy-soft);}
+.icon-btn svg{width:16px;height:16px;}
+.dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--coral);border:1.5px solid #fff;}
+.date-chip{font-size:12.5px;font-weight:600;color:var(--navy-soft);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 13px;white-space:nowrap;}
+.profile-chip{display:flex;align-items:center;gap:9px;}
+.page{display:none;} .page.active{display:block;}
+.hero{background:linear-gradient(120deg,#0A5E86 0%,#0E7FB0 55%,#17A3C4 100%);border-radius:16px;padding:24px 28px;color:#fff;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 70%);}
+.hero h1{font-size:21px;font-weight:800;margin-bottom:5px;}
+.hero p{font-size:13px;color:rgba(255,255,255,.82);max-width:440px;line-height:1.5;}
+.hero-tag{font-size:12px;font-weight:700;background:rgba(255,255,255,.16);padding:8px 14px;border-radius:20px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+.kpi-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.kpi-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kpi-icon svg{width:16px;height:16px;}
+.kpi-label{font-size:12px;color:var(--navy-soft);font-weight:600;}
+.kpi-value{font-size:24px;font-weight:800;margin-bottom:3px;}
+.kpi-delta{font-size:11.5px;font-weight:700;}
+.up{color:var(--green);} .warn{color:var(--coral);}
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.qa{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:9px;align-items:flex-start;box-shadow:var(--shadow);}
+.qa:hover{border-color:var(--pool);}
+.qa .qa-icon{width:32px;height:32px;border-radius:9px;background:var(--line-soft);display:flex;align-items:center;justify-content:center;color:var(--pool-deep);}
+.qa .qa-icon svg{width:15px;height:15px;}
+.qa-label{font-size:12.5px;font-weight:700;}
+.content-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+.panel-head h2{font-size:15px;font-weight:800;}
+.link-btn{font-size:12px;font-weight:700;color:var(--pool-deep);text-decoration:none;background:none;border:none;}
+.schedule-row{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line-soft);}
+.schedule-row:last-child{border-bottom:none;}
+.time-block{width:68px;font-size:12px;font-weight:700;color:var(--pool-deep);flex-shrink:0;}
+.sched-main{flex:1;min-width:0;} .sched-title{font-size:13px;font-weight:700;} .sched-meta{font-size:11.5px;color:var(--navy-soft);margin-top:2px;}
+.badge{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:20px;white-space:nowrap;border:none;}
+.badge-live{background:#E6F7EF;color:var(--green);} .badge-wait{background:#FFF3E4;color:#C98A2C;}
+.badge-sched{background:#EAF3F8;color:var(--pool-deep);} .badge-izin{background:#FFF3E4;color:#C98A2C;} .badge-absen{background:#FDEAE7;color:var(--coral);}
+.member-row{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-soft);}
+.member-row:last-child{border-bottom:none;}
+.m-avatar{width:34px;height:34px;border-radius:50%;background:var(--line-soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--pool-deep);flex-shrink:0;}
+.m-info{flex:1;min-width:0;} .m-name{font-size:12.5px;font-weight:700;} .m-tag{font-size:11.5px;color:var(--navy-soft);}
+.progress-track{width:80px;height:6px;border-radius:4px;background:var(--line-soft);overflow:hidden;flex-shrink:0;}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--pool),var(--cyan));}
+.progress-pct{font-size:12px;font-weight:700;width:32px;text-align:right;flex-shrink:0;}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:460px;}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:var(--navy-soft);font-weight:700;padding:0 9px 9px;border-bottom:1px solid var(--line);}
+td{padding:10px 9px;border-bottom:1px solid var(--line-soft);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.cell-name{display:flex;align-items:center;gap:9px;font-weight:700;}
+.status-btn{border-radius:20px;font-size:10.5px;font-weight:700;padding:5px 10px;}
+.eval-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.eval-card{border:1px solid var(--line);border-radius:10px;padding:14px;}
+.eval-card input[type=range]{width:100%;margin-top:8px;accent-color:var(--pool);}
+.eval-label{font-size:12px;color:var(--navy-soft);font-weight:600;margin-bottom:7px;}
+.eval-value{font-size:19px;font-weight:800;}
+.eval-delta{font-size:11px;font-weight:700;color:var(--green);margin-top:3px;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+.stat-card{border:1px solid var(--line);border-radius:10px;padding:15px;}
+.stat-value{font-size:20px;font-weight:800;} .stat-label{font-size:11.5px;color:var(--navy-soft);font-weight:600;margin-top:3px;}
+.btn-primary{background:var(--pool);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{background:var(--pool-deep);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;font-weight:700;color:var(--navy-soft);}
+.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--navy);}
+.pool-card{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;}
+.pool-card h3{font-size:13.5px;font-weight:700;margin-bottom:6px;}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.tab{font-size:12px;font-weight:700;padding:7px 12px;border-radius:8px;color:var(--navy-soft);background:var(--line-soft);border:none;}
+.tab.active{background:var(--pool);color:#fff;}
+/* RIGHT RAIL */
+.right-rail{padding:20px 18px 40px;border-left:1px solid var(--line);background:var(--card);}
+.notif-item{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line-soft);}
+.notif-item:last-child{border-bottom:none;}
+.notif-dot{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.notif-dot svg{width:13px;height:13px;}
+.notif-title{font-size:12px;font-weight:700;} .notif-desc{font-size:11px;color:var(--navy-soft);margin-top:2px;line-height:1.4;} .notif-time{font-size:10px;color:#A7B4BC;margin-top:3px;}
+.promo-card{margin-top:16px;border-radius:14px;overflow:hidden;position:relative;min-height:190px;background:linear-gradient(160deg,#0A5E86,#123B52);color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;}
+.promo-card h3{font-size:14px;font-weight:800;line-height:1.3;margin-bottom:4px;} .promo-card p{font-size:11.5px;color:rgba(255,255,255,.75);margin-bottom:10px;}
+.promo-btn{align-self:flex-start;background:#fff;color:var(--pool-deep);font-size:11.5px;font-weight:700;padding:8px 13px;border-radius:8px;border:none;}
+/* BOTTOM NAV (mobile only) */
+.bottom-nav{display:none;}
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--navy);color:#fff;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s;z-index:50;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* RESPONSIVE */
+@media (max-width:1080px){ .app{grid-template-columns:220px 1fr;} .right-rail{display:none;} }
+@media (max-width:880px){
+  .app{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  main{padding:14px 14px calc(84px + env(safe-area-inset-bottom,0px));}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .qa-grid{grid-template-columns:repeat(4,1fr);gap:8px;}
+  .qa{padding:10px 6px;align-items:center;text-align:center;}
+  .qa-label{font-size:10px;}
+  .content-grid{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .eval-grid{grid-template-columns:repeat(2,1fr);}
+  .date-chip{display:none;}
+  .hero{padding:18px;}
+  .hero h1{font-size:18px;}
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);overflow-x:auto;gap:2px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:20;scrollbar-width:none;}
+  .bottom-nav::-webkit-scrollbar{display:none;}
+  .bottom-nav .nav-item{flex-direction:column;flex:0 0 62px;align-items:center;gap:4px;padding:6px 2px;font-size:9.5px;text-align:center;box-shadow:none !important;}
+  .bottom-nav .nav-item.active{background:none;color:var(--pool-deep);}
+  .bottom-nav .nav-item svg{width:19px;height:19px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR (desktop) -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="17" fill="#0E7FB0"/><path d="M8 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M8 20c2-2 4-2 6 0s4 2 6 0 4-2 6 0" stroke="#7FD8DA" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      <div><div class="brand-name">HAYLEN</div><div class="brand-sub">SWIMMING CLUB</div></div>
+    </div>
+    <nav class="mainnav" id="navDesktop"></nav>
+    <div class="sidebar-footer"><div class="avatar">AS</div><div><div class="coach-name">Andi Setiawan</div><div class="coach-role">Coach</div></div></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <header class="topbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="globalSearch" placeholder="Cari nama member, jadwal, atau program..." oninput="doSearch(this.value)">
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="toast('Belum ada notifikasi baru')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="dot"></span></button>
+        <div class="date-chip">Rabu, 23 September 2026</div>
+        <div class="profile-chip"><div class="avatar" style="width:32px;height:32px;font-size:11px;">AS</div><div><div class="coach-name">Andi Setiawan</div><div class="coach-role" style="font-size:10.5px;">Coach</div></div></div>
+      </div>
+    </header>
+
+    <!-- PAGE: DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <section class="hero">
+        <div><h1>Selamat Pagi, Coach Andi 👋</h1><p>Semangat untuk hari ini — pantau jadwal, kehadiran, dan progress member dari satu tempat.</p></div>
+        <div class="hero-tag" id="heroTag">28 member aktif hari ini</div>
+      </section>
+      <section class="kpi-grid" id="kpiGrid"></section>
+      <section class="qa-grid">
+        <button class="qa" onclick="goPage('jadwal');openAddSchedule();"><div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div><div class="qa-label">Tambah Jadwal</div></button>
+        <button class="qa" onclick="goPage('penilaian')"><div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 20.5l1.1-6.4-4.6-4.5 6.4-.9L12 3l2.9 5.7 6.4.9-4.6 4.5 1.1 6.4Z"/></svg></div><div class="qa-label">Input Nilai</div></button>
+        <button class="qa" onclick="goPage('member')"><div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 12h8M8 16h5"/></svg></div><div class="qa-label">Catatan Latihan</div></button>
+        <button class="qa" onclick="goPage('komunikasi')"><div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.7 8.4 8.6 8.6 0 0 1-3.6-.8L3 20l1-4.8a8.3 8.3 0 0 1-1-4 8.4 8.4 0 0 1 8.7-8.4A8.5 8.5 0 0 1 21 11.5Z"/></svg></div><div class="qa-label">Pesan ke Member</div></button>
+      </section>
+      <section class="content-grid">
+        <div>
+          <div class="panel">
+            <div class="panel-head"><h2>Jadwal Latihan Hari Ini</h2><button class="link-btn" onclick="goPage('jadwal')">Lihat Semua →</button></div>
+            <div id="scheduleListDash"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Member Hari Ini</h2><button class="link-btn" onclick="goPage('member')">Lihat Semua →</button></div>
+            <div class="table-scroll"><table><thead><tr><th>Nama</th><th>Program</th><th>Level</th><th>Status</th></tr></thead><tbody id="memberTableDash"></tbody></table></div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="panel-head"><h2>Progress Member</h2><button class="link-btn" onclick="goPage('member')">Lihat Semua →</button></div>
+            <div id="progressListDash"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Laporan Ringkas</h2><button class="link-btn" onclick="goPage('laporan')">Detail →</button></div>
+            <div class="stat-grid" style="grid-template-columns:repeat(2,1fr);" id="statGridDash"></div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- PAGE: JADWAL LATIHAN -->
+    <section class="page" id="page-jadwal">
+      <div class="panel">
+        <div class="panel-head"><h2>Jadwal Latihan</h2><button class="btn-primary" onclick="openAddSchedule()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Tambah Jadwal</button></div>
+        <div id="scheduleForm" style="display:none;margin-bottom:16px;">
+          <div class="form-grid">
+            <div class="field"><label>Jam</label><input id="fTime" placeholder="06:00–07:00"></div>
+            <div class="field"><label>Nama Kelompok</label><input id="fTitle" placeholder="Beginner (6–8 th)"></div>
+            <div class="field"><label>Kolam</label><input id="fPool" placeholder="Kolam 1"></div>
+            <div class="field"><label>Jumlah Member</label><input id="fCount" type="number" placeholder="8"></div>
+            <div class="field"><label>Coach</label><input id="fCoach" placeholder="Andi Setiawan"></div>
+            <div class="field"><label>Status</label>
+              <select id="fStatus"><option>Terjadwal</option><option>Menunggu</option><option>Berlangsung</option></select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="addSchedule()">Simpan Jadwal</button>
+        </div>
+        <div id="scheduleListFull"></div>
+      </div>
+    </section>
+
+    <!-- PAGE: MEMBER -->
+    <section class="page" id="page-member">
+      <div class="panel">
+        <div class="panel-head"><h2>Daftar Member</h2><span style="font-size:12px;color:var(--navy-soft);">Klik status untuk ubah kehadiran</span></div>
+        <div class="table-scroll"><table><thead><tr><th>Nama</th><th>Program</th><th>Level</th><th>Status</th><th>Progress</th></tr></thead><tbody id="memberTableFull"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- PAGE: PROGRAM LATIHAN -->
+    <section class="page" id="page-program">
+      <div class="panel">
+        <div class="panel-head"><h2>Kelompok / Program Latihan</h2></div>
+        <div class="tabs" id="programTabs"></div>
+        <div id="programList"></div>
+      </div>
+    </section>
+
+    <!-- PAGE: PENILAIAN -->
+    <section class="page" id="page-penilaian">
+      <div class="panel">
+        <div class="panel-head"><h2>Penilaian &amp; Evaluasi</h2><span style="font-size:12px;color:var(--navy-soft);">Geser untuk ubah skor</span></div>
+        <div class="eval-grid" id="evalGrid"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Catatan Latihan</h2></div>
+        <div class="form-grid">
+          <div class="field" style="grid-column:1/-1;"><label>Catatan baru</label><textarea id="noteText" rows="2" placeholder="Tulis catatan latihan untuk member..."></textarea></div>
+          <div class="field"><label>Member</label>
+            <select id="noteMember"></select>
+          </div>
+          <div class="field"><label>&nbsp;</label><button class="btn-primary" onclick="addNote()">Tambah Catatan</button></div>
+        </div>
+        <div id="noteList"></div>
+      </div>
+    </section>
+
+    <!-- PAGE: LAPORAN -->
+    <section class="page" id="page-laporan">
+      <div class="panel">
+        <div class="panel-head"><h2>Laporan &amp; Statistik</h2></div>
+        <div class="stat-grid" id="statGridFull"></div>
+        <button class="btn-primary" onclick="toast('Laporan bulanan sedang disiapkan')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg>
+          Download Laporan Bulanan
+        </button>
+      </div>
+    </section>
+
+    <!-- PAGE: KOMUNIKASI -->
+    <section class="page" id="page-komunikasi">
+      <div class="panel">
+        <div class="panel-head"><h2>Pesan Masuk</h2></div>
+        <div id="msgList"></div>
+        <div class="form-grid" style="margin-top:10px;">
+          <div class="field"><label>Kirim ke</label><select id="msgTo"></select></div>
+          <div class="field"><label>Pesan</label><input id="msgText" placeholder="Tulis pesan..."></div>
+        </div>
+        <button class="btn-primary" onclick="sendMsg()">Kirim Pesan</button>
+      </div>
+    </section>
+
+    <!-- PAGE: PENGUMUMAN -->
+    <section class="page" id="page-pengumuman">
+      <div class="panel">
+        <div class="panel-head"><h2>Pengumuman</h2></div>
+        <div class="form-grid">
+          <div class="field" style="grid-column:1/-1;"><label>Pengumuman baru</label><input id="annText" placeholder="Contoh: Libur latihan 25 September 2026"></div>
+        </div>
+        <button class="btn-primary" onclick="addAnnouncement()">Terbitkan</button>
+        <div id="annList" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- PAGE: PENGATURAN -->
+    <section class="page" id="page-pengaturan">
+      <div class="panel">
+        <div class="panel-head"><h2>Pengaturan Akun</h2></div>
+        <div class="form-grid">
+          <div class="field"><label>Nama Coach</label><input id="setName" value="Andi Setiawan"></div>
+          <div class="field"><label>Peran</label><input value="Coach" disabled></div>
+          <div class="field"><label>Email</label><input id="setEmail" placeholder="andi@haylenswim.com"></div>
+          <div class="field"><label>Nomor HP</label><input id="setPhone" placeholder="08xx-xxxx-xxxx"></div>
+        </div>
+        <button class="btn-primary" onclick="saveSettings()">Simpan Perubahan</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- RIGHT RAIL -->
+  <aside class="right-rail">
+    <div class="panel-head" style="margin-bottom:6px;"><h2 style="font-size:14px;">Notifikasi Terbaru</h2></div>
+    <div id="notifList"></div>
+    <div class="promo-card">
+      <h3>Bersama kita membentuk atlet berprestasi</h3>
+      <p>Disiplin hari ini, juara esok hari.</p>
+      <button class="promo-btn" onclick="goPage('laporan')">Lihat Laporan Bulanan ↓</button>
+    </div>
+  </aside>
+</div>
+
+<nav class="bottom-nav" id="navMobile"></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- SHARED STATE (single source of truth, all pages read/write this) ---------- */
+let state = {
+  members: [
+    {id:1,name:'Raka Pratama',program:'Beginner',level:'Pemula',status:'Hadir',progress:90},
+    {id:2,name:'Siti Nurhaliza',program:'Intermediate',level:'Menengah',status:'Hadir',progress:75},
+    {id:3,name:'Budi Santoso',program:'Advanced',level:'Mahir',status:'Hadir',progress:86},
+    {id:4,name:'Maya Sari',program:'Beginner',level:'Pemula',status:'Hadir',progress:65},
+    {id:5,name:'Dewi Lestari',program:'Intermediate',level:'Menengah',status:'Izin',progress:70},
+    {id:6,name:'Fahri Hidayat',program:'Advanced',level:'Mahir',status:'Tidak Hadir',progress:60},
+  ],
+  schedules: [
+    {time:'06:00–07:00',title:'Beginner (6–8 th)',pool:'Kolam 1',count:8,coach:'Andi Setiawan',status:'Berlangsung'},
+    {time:'07:00–08:00',title:'Intermediate (8–12 th)',pool:'Kolam 1',count:6,coach:'Andi Setiawan',status:'Menunggu'},
+    {time:'16:00–17:00',title:'Advanced (12+ th)',pool:'Kolam 2',count:7,coach:'Rizky Pratama',status:'Terjadwal'},
+    {time:'17:00–18:00',title:'Competition (Atlet)',pool:'Kolam 2',count:5,coach:'Andi Setiawan',status:'Terjadwal'},
+  ],
+  evals: [
+    {label:'Teknik Dasar',value:4.5,delta:0.3},
+    {label:'Daya Tahan',value:4.2,delta:0.2},
+    {label:'Kecepatan',value:4.0,delta:0.4},
+    {label:'Disiplin',value:4.7,delta:0.1},
+  ],
+  notes: [
+    {date:'22 Sep',member:'Raka Pratama',text:'Sudah mulai percaya diri di air'},
+    {date:'22 Sep',member:'Siti Nurhaliza',text:'Perbaikan teknik kaki'},
+    {date:'21 Sep',member:'Budi Santoso',text:'Stamina meningkat'},
+  ],
+  announcements: [{date:'Kemarin',text:'Libur latihan 25 September 2026'}],
+  messages: [{from:'Dewi Lestari (Ortu Raka)',text:'Terima kasih atas bimbingannya!',time:'Kemarin'}],
+};
+try{ const saved = localStorage.getItem('haylenState'); if(saved) state = JSON.parse(saved); }catch(e){}
+function persist(){ try{ localStorage.setItem('haylenState', JSON.stringify(state)); }catch(e){} }
+
+const NAV = [
+  {id:'dashboard',label:'Dashboard',icon:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>'},
+  {id:'jadwal',label:'Jadwal',icon:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/>'},
+  {id:'member',label:'Member',icon:'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="18" cy="9" r="2.5"/>'},
+  {id:'program',label:'Program',icon:'<path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 12h8M8 16h5"/>'},
+  {id:'penilaian',label:'Penilaian',icon:'<path d="M12 17.3 6.2 20.5l1.1-6.4-4.6-4.5 6.4-.9L12 3l2.9 5.7 6.4.9-4.6 4.5 1.1 6.4Z"/>'},
+  {id:'laporan',label:'Laporan',icon:'<path d="M4 19h16M7 19V9M12 19V5M17 19v-7"/>'},
+  {id:'komunikasi',label:'Pesan',icon:'<path d="M21 11.5a8.4 8.4 0 0 1-8.7 8.4 8.6 8.6 0 0 1-3.6-.8L3 20l1-4.8a8.3 8.3 0 0 1-1-4 8.4 8.4 0 0 1 8.7-8.4A8.5 8.5 0 0 1 21 11.5Z"/>'},
+  {id:'pengumuman',label:'Info',icon:'<path d="M4 10h4l6-4v12l-6-4H4z"/><path d="M17 8a4 4 0 0 1 0 6"/>'},
+  {id:'pengaturan',label:'Setelan',icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.9 7.9 0 0 0 0-2l2-1.6-2-3.5-2.4.5a8 8 0 0 0-1.7-1l-.4-2.4h-4l-.4 2.4a8 8 0 0 0-1.7 1l-2.4-.5-2 3.5L2.6 11a7.9 7.9 0 0 0 0 2l-2 1.6 2 3.5 2.4-.5a8 8 0 0 0 1.7 1l.4 2.4h4l.4-2.4a8 8 0 0 0 1.7-1l2.4.5 2-3.5Z"/>'},
+];
+let currentPage = 'dashboard';
+
+function buildNav(){
+  const mk = (n) => `<button class="nav-item ${n.id===currentPage?'active':''}" onclick="goPage('${n.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${n.icon}</svg><span>${n.label}</span></button>`;
+  document.getElementById('navDesktop').innerHTML = NAV.map(mk).join('');
+  document.getElementById('navMobile').innerHTML = NAV.map(mk).join('');
+}
+function goPage(id){
+  currentPage = id;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  buildNav();
+  window.scrollTo({top:0,behavior:'smooth'});
+  renderAll();
+}
+function toast(msg){
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt); window._tt = setTimeout(()=>t.classList.remove('show'),2200);
+}
+function statusBadgeClass(s){ return s==='Hadir'||s==='Berlangsung'?'badge-live':s==='Izin'||s==='Menunggu'?'badge-izin':s==='Tidak Hadir'?'badge-absen':'badge-sched'; }
+function cycleMemberStatus(id){
+  const m = state.members.find(x=>x.id===id);
+  const order = ['Hadir','Izin','Tidak Hadir'];
+  m.status = order[(order.indexOf(m.status)+1)%order.length];
+  persist(); renderAll();
+}
+function cycleScheduleStatus(i){
+  const order = ['Terjadwal','Menunggu','Berlangsung'];
+  const s = state.schedules[i];
+  s.status = order[(order.indexOf(s.status)+1)%order.length];
+  persist(); renderAll();
+}
+
+/* ---------- RENDER: every render reads the SAME state, so all pages stay in sync ---------- */
+function renderAll(){
+  renderKpis(); renderHero();
+  renderScheduleDash(); renderScheduleFull();
+  renderMemberDash(); renderMemberFull();
+  renderProgressDash();
+  renderPrograms();
+  renderEvals();
+  renderNotes();
+  renderStats();
+  renderMessages();
+  renderAnnouncements();
+  renderNotifs();
+}
+function counts(){
+  const total = state.members.length;
+  const hadir = state.members.filter(m=>m.status==='Hadir').length;
+  const attendance = Math.round((hadir/total)*100);
+  const avgProgress = Math.round(state.members.reduce((a,m)=>a+m.progress,0)/total);
+  return {total, jadwal: state.schedules.length, dalamProgram: total, tugasPending: state.notes.length ? 3 : 0, attendance, avgProgress};
+}
+function renderHero(){ document.getElementById('heroTag').textContent = counts().total + ' member aktif hari ini'; }
+function renderKpis(){
+  const c = counts();
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi"><div class="kpi-top"><div class="kpi-icon" style="background:#EAF3F8;color:var(--pool-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/></svg></div><div class="kpi-label">Total Member Aktif</div></div><div class="kpi-value">${c.total}</div><div class="kpi-delta up">↑ 12% vs bulan lalu</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-icon" style="background:#E6F7EF;color:var(--green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18"/></svg></div><div class="kpi-label">Jadwal Hari Ini</div></div><div class="kpi-value">${c.jadwal}</div><div class="kpi-delta" style="color:var(--navy-soft);">${c.jadwal} sesi latihan</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-icon" style="background:#F1EEFB;color:#6C5CE0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3 6.2 20.5l1.1-6.4-4.6-4.5 6.4-.9L12 3l2.9 5.7 6.4.9-4.6 4.5 1.1 6.4Z"/></svg></div><div class="kpi-label">Member Dalam Program</div></div><div class="kpi-value">${c.dalamProgram}</div><div class="kpi-delta" style="color:var(--navy-soft);">dari ${c.total} member</div></div>
+    <div class="kpi"><div class="kpi-top"><div class="kpi-icon" style="background:#FDEAE7;color:var(--coral);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="kpi-label">Tugas Pending</div></div><div class="kpi-value">${c.tugasPending}</div><div class="kpi-delta warn">Perlu perhatian</div></div>`;
+}
+function schedRow(s,i,full){
+  return `<div class="schedule-row"><div class="time-block">${s.time}</div><div class="sched-main"><div class="sched-title">${s.title} · ${s.pool}</div><div class="sched-meta">${s.count} member · ${s.coach}</div></div><button class="badge ${statusBadgeClass(s.status)} status-btn" onclick="cycleScheduleStatus(${i})">${s.status}</button></div>`;
+}
+function renderScheduleDash(){ document.getElementById('scheduleListDash').innerHTML = state.schedules.map((s,i)=>schedRow(s,i)).join(''); }
+function renderScheduleFull(){ document.getElementById('scheduleListFull').innerHTML = state.schedules.map((s,i)=>schedRow(s,i)).join(''); }
+function openAddSchedule(){ document.getElementById('scheduleForm').style.display='block'; }
+function addSchedule(){
+  const t=document.getElementById('fTime').value.trim(), ti=document.getElementById('fTitle').value.trim();
+  if(!t||!ti){ toast('Isi jam dan nama kelompok dulu'); return; }
+  state.schedules.push({time:t,title:ti,pool:document.getElementById('fPool').value||'-',count:+document.getElementById('fCount').value||0,coach:document.getElementById('fCoach').value||'Andi Setiawan',status:document.getElementById('fStatus').value});
+  persist(); document.getElementById('scheduleForm').style.display='none';
+  ['fTime','fTitle','fPool','fCount','fCoach'].forEach(id=>document.getElementById(id).value='');
+  toast('Jadwal ditambahkan'); renderAll();
+}
+function memberRow(m,full){
+  return `<tr><td class="cell-name"><div class="m-avatar">${m.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>${m.name}</td><td>${m.program}</td><td>${m.level}</td><td><button class="badge ${statusBadgeClass(m.status)} status-btn" onclick="cycleMemberStatus(${m.id})">${m.status}</button></td>${full?`<td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-track"><div class="progress-fill" style="width:${m.progress}%;"></div></div><span style="font-size:12px;font-weight:700;">${m.progress}%</span></div></td>`:''}</tr>`;
+}
+function renderMemberDash(){ document.getElementById('memberTableDash').innerHTML = state.members.slice(0,5).map(m=>memberRow(m,false)).join(''); }
+function renderMemberFull(){ document.getElementById('memberTableFull').innerHTML = state.members.map(m=>memberRow(m,true)).join(''); }
+function renderProgressDash(){
+  document.getElementById('progressListDash').innerHTML = [...state.members].sort((a,b)=>b.progress-a.progress).slice(0,4).map(m=>`
+    <div class="member-row"><div class="m-avatar">${m.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div class="m-info"><div class="m-name">${m.name}</div><div class="m-tag">${m.program}</div></div><div class="progress-track"><div class="progress-fill" style="width:${m.progress}%;"></div></div><div class="progress-pct">${m.progress}%</div></div>`).join('');
+}
+function renderPrograms(){
+  const groups = {};
+  state.members.forEach(m=>{ (groups[m.program]=groups[m.program]||[]).push(m); });
+  const tabs = ['Semua',...Object.keys(groups)];
+  document.getElementById('programTabs').innerHTML = tabs.map(t=>`<button class="tab ${t==='Semua'?'active':''}" onclick="filterProgram('${t}',this)">${t}</button>`).join('');
+  renderProgramList('Semua');
+}
+function filterProgram(t,btn){
+  document.querySelectorAll('#programTabs .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderProgramList(t);
+}
+function renderProgramList(filter){
+  const groups = {};
+  state.members.forEach(m=>{ (groups[m.program]=groups[m.program]||[]).push(m); });
+  const list = filter==='Semua'?Object.keys(groups):[filter];
+  document.getElementById('programList').innerHTML = list.map(p=>{
+    const arr = groups[p]||[];
+    const avg = arr.length?Math.round(arr.reduce((a,m)=>a+m.progress,0)/arr.length):0;
+    const sched = state.schedules.find(s=>s.title.toLowerCase().includes(p.toLowerCase()));
+    return `<div class="pool-card"><h3>${p}</h3><div style="font-size:12px;color:var(--navy-soft);margin-bottom:8px;">${arr.length} member ${sched?('· '+sched.pool+' · '+sched.time):''}</div><div class="progress-track" style="width:100%;"><div class="progress-fill" style="width:${avg}%;"></div></div><div style="font-size:11.5px;color:var(--navy-soft);margin-top:6px;">Rata-rata progress: ${avg}%</div></div>`;
+  }).join('');
+}
+function renderEvals(){
+  document.getElementById('evalGrid').innerHTML = state.evals.map((e,i)=>`
+    <div class="eval-card"><div class="eval-label">${e.label}</div><div class="eval-value">${e.value.toFixed(1)} / 5</div><div class="eval-delta">↑ ${e.delta.toFixed(1)}</div>
+    <input type="range" min="0" max="5" step="0.1" value="${e.value}" oninput="updateEval(${i},this.value)"></div>`).join('');
+}
+function updateEval(i,val){ state.evals[i].value = +val; persist(); renderEvals(); }
+function renderNotes(){
+  const sel = document.getElementById('noteMember');
+  sel.innerHTML = state.members.map(m=>`<option>${m.name}</option>`).join('');
+  document.getElementById('noteList').innerHTML = state.notes.map(n=>`<div class="member-row"><div class="m-info"><div class="m-name">${n.member} — ${n.date}</div><div class="m-tag">${n.text}</div></div></div>`).join('');
+}
+function addNote(){
+  const text = document.getElementById('noteText').value.trim();
+  if(!text){ toast('Tulis catatan dulu'); return; }
+  state.notes.unshift({date:'23 Sep',member:document.getElementById('noteMember').value,text});
+  persist(); document.getElementById('noteText').value=''; toast('Catatan ditambahkan'); renderAll();
+}
+function renderStats(){
+  const c = counts();
+  const html = `
+    <div class="stat-card"><div class="stat-value">${state.schedules.length*24+70}</div><div class="stat-label">Total latihan bulan ini</div></div>
+    <div class="stat-card"><div class="stat-value">${c.attendance}%</div><div class="stat-label">Rata-rata kehadiran</div></div>
+    <div class="stat-card"><div class="stat-value">${c.avgProgress}%</div><div class="stat-label">Progress member</div></div>
+    <div class="stat-card"><div class="stat-value">4.8 / 5</div><div class="stat-label">Kepuasan member</div></div>`;
+  document.getElementById('statGridFull').innerHTML = html;
+  document.getElementById('statGridDash').innerHTML = html;
+}
+function renderMessages(){
+  const sel = document.getElementById('msgTo');
+  sel.innerHTML = state.members.map(m=>`<option>${m.name}</option>`).join('');
+  document.getElementById('msgList').innerHTML = state.messages.map(m=>`<div class="member-row"><div class="m-info"><div class="m-name">${m.from}</div><div class="m-tag">"${m.text}"</div></div><div style="font-size:11px;color:var(--navy-soft);">${m.time}</div></div>`).join('');
+}
+function sendMsg(){
+  const text = document.getElementById('msgText').value.trim(), to = document.getElementById('msgTo').value;
+  if(!text){ toast('Tulis pesan dulu'); return; }
+  state.messages.unshift({from:'Anda → '+to, text, time:'Baru saja'});
+  persist(); document.getElementById('msgText').value=''; toast('Pesan terkirim ke '+to); renderAll();
+}
+function renderAnnouncements(){
+  document.getElementById('annList').innerHTML = state.announcements.map(a=>`<div class="member-row"><div class="m-info"><div class="m-name">${a.date}</div><div class="m-tag">${a.text}</div></div></div>`).join('');
+}
+function addAnnouncement(){
+  const text = document.getElementById('annText').value.trim();
+  if(!text){ toast('Tulis pengumuman dulu'); return; }
+  state.announcements.unshift({date:'Hari ini',text});
+  persist(); document.getElementById('annText').value=''; toast('Pengumuman diterbitkan'); renderAll();
+}
+function renderNotifs(){
+  const c = counts();
+  const items = [
+    {bg:'#EAF3F8',color:'var(--pool-deep)',icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',title:'Tugas Penilaian',desc:c.tugasPending+' catatan menunggu ditinjau',time:'Baru saja'},
+    {bg:'#E6F7EF',color:'var(--green)',icon:'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/>',title:'Kehadiran Hari Ini',desc:c.attendance+'% member hadir',time:'Update otomatis'},
+    {bg:'#FFF3E4',color:'#C98A2C',icon:'<path d="M4 10h4l6-4v12l-6-4H4z"/><path d="M17 8a4 4 0 0 1 0 6"/>',title:'Pengumuman',desc:state.announcements[0]?state.announcements[0].text:'-',time:state.announcements[0]?state.announcements[0].date:''},
+  ];
+  document.getElementById('notifList').innerHTML = items.map(n=>`<div class="notif-item"><div class="notif-dot" style="background:${n.bg};color:${n.color};"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${n.icon}</svg></div><div><div class="notif-title">${n.title}</div><div class="notif-desc">${n.desc}</div><div class="notif-time">${n.time}</div></div></div>`).join('');
+}
+function saveSettings(){ toast('Pengaturan disimpan'); }
+function doSearch(q){
+  q=q.toLowerCase();
+  if(!q) return;
+  const hit = state.members.find(m=>m.name.toLowerCase().includes(q));
+  if(hit){ goPage('member'); toast('Menampilkan hasil untuk "'+q+'"'); }
+}
+
+buildNav(); renderAll();
+</script>
+</body>
+</html>

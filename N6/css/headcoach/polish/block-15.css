@@ -1,0 +1,7 @@
+/* N6 - css/headcoach/polish/block-15.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+/* ---- headcoach.html : original style block #15 ---- */
+.side-brand .brand-logo{background:#050505;border-radius:8px;padding:5px 9px;display:flex;align-items:center;justify-content:center;min-width:0}.side-brand .brand-logo img{width:116px!important;max-width:100%!important;height:49px!important;object-fit:contain!important}.side-brand .logo-black{display:none!important}.side-brand .logo-white{display:block!important}.side-nav [data-panel="hcclientchat"]{display:flex;align-items:center;gap:10px;white-space:nowrap}.side-nav [data-panel="hcclientchat"] .ic{flex:none}

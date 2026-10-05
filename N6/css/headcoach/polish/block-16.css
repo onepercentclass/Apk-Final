@@ -1,0 +1,9 @@
+/* N6 - css/headcoach/polish/block-16.css */
+/* Extracted verbatim from headcoach.html. Cascade order matters: load this file after
+   everything listed before it in css/headcoach/ORDER.txt */
+
+
+/* ---- headcoach.html : original style block #16 ---- */
+/* Align Pesan with every other sidebar item */
+.side-nav button[data-panel="hcclientchat"]{display:flex;align-items:center;gap:11px;padding:11px 12px;text-align:left}
+.side-nav button[data-panel="hcclientchat"] .ic{width:18px;height:18px;flex:0 0 18px;display:inline-flex;align-items:center;justify-content:center;font-size:17px;line-height:1}
