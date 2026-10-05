@@ -84,6 +84,26 @@ Hash & token lama tidak berlaku — user lama harus dibuat ulang
 `API_BASE` ke namespace barunya. Push repo ini: `~/workspace/github-push.sh`
 (kredensial `custom.github-apkfinal`; token lama Anonimz7 tidak bisa push ke sini).
 
+## Wiring frontend ke API (2026-10-05)
+
+Atas permintaan user: 5 folder `backend/` dihapus (sudah digantikan unified-backend).
+Kelima frontend di-wiring ke backend unified:
+
+| Aplikasi | API_BASE | Login |
+|---|---|---|
+| Haylen | `https://n6sport.id/api/haylen` | Form login baru (gate di boot.js) |
+| N6 | `https://n6sport.id/api/n6` | Form login baru + refresh token otomatis |
+| DB Accounting | `https://n6sport.id/api/dbacc` | page-auth.js di-wire ke API; ApiClient kirim Bearer |
+| DB Finance | `https://n6sport.id/api/dbfin` | Form login baru (js/login.js) |
+| claisrox | `https://n6sport.id/api/claisrox` | Form login baru (gate di app.js) |
+
+`USE_API=true` di semua (localStorage nonaktif sebagai sumber data).
+Komentar di tiap config menjelaskan cara ganti host ke `http://localhost:8000`
+untuk coba lokal. 401 global → token dibuang → form login muncul lagi.
+**Belum ada tombol logout** di UI mana pun (token dihapus manual/kedaluwarsa).
+**Sistem tier BELUM dibahas** — ditunda sesuai permintaan user; untuk sekarang
+mengandalkan enforcement server (403).
+
 ## Implikasi untuk kerja berikutnya
 
 - Semua aplikasi **bisa langsung dibuka dan dites tanpa backend** (localStorage) — cukup
