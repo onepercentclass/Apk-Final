@@ -11,9 +11,3 @@ export const USE_API = true;
 /** Kunci localStorage untuk data aplikasi dan token API. */
 export const STORAGE_KEY = 'fintrack-v1';
 export const TOKEN_KEY = 'claisrox-token';
-
-/**
- * Tier pengguna aktif (0 = owner). Dipakai selama USE_API = false;
- * saat API aktif, tier ditentukan server lewat /access/me.
- */
-export const CURRENT_TIER = 0;

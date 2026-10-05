@@ -1,6 +1,7 @@
 /**
  * Registry menu. Urutan di sini = urutan di sidebar.
- * `id` adalah key akses yang dipakai file tier (js/access/tiers/tier*.json).
+ * `id` adalah key akses yang dipakai backend (GET /access/me) — vocabulary
+ * key -> komponen UI. Keputusan "tier X boleh apa" HANYA ada di backend.
  */
 import { renderBeranda } from './beranda.js';
 import { renderTransaksi, bindPencarianTransaksi } from './transaksi.js';

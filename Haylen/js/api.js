@@ -14,6 +14,7 @@
     settings: "/settings",
     dashboard: "/dashboard/summary",
     tier: "/tiers",
+    accessMe: "/access/me",
     login: "/auth/login",
   };
 
@@ -61,6 +62,10 @@
     },
     async tier(n) {
       return cfg.USE_API ? http("GET", ENDPOINTS.tier + "/" + n) : null;
+    },
+    // Hak akses user ini dari backend (satu-satunya sumber konfigurasi tier).
+    async accessMe() {
+      return cfg.USE_API ? http("GET", ENDPOINTS.accessMe) : null;
     },
   };
 })();

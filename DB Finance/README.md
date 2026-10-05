@@ -34,16 +34,20 @@ Data tersimpan di localStorage (`USE_API = false` di `js/config.js`).
 
 ## Akses per tier
 
-`js/access/tiers/tier0.json` ... `tier3.json` masing-masing berisi `access`: daftar id menu.
+Satu-satunya sumber konfigurasi tier = backend: `GET /access/me` mengembalikan
+`{tier, name, access}` yang dihitung server dari tier user di DB
+(`unified-backend/app/apps/dbfin/tiers/tier0.json` ... `tier3.json`,
+masing-masing berisi `access`: daftar id menu).
 **Tier N mendapat key miliknya ditambah semua key tier di atasnya (N+1, N+2, ...)**, jadi tier 0 = semua.
 
 Id menu: `home tx budget accounts report invest bills goals settings`.
 
-Pembagian awal hanyalah contoh; ubah bebas:
+Pembagian awal hanyalah contoh; ubah bebas di file tier backend:
 tier0 = accounts, invest, settings · tier1 = budget, report, bills, goals · tier2 = tx · tier3 = home.
 
-Saat ini pengguna aktif = tier 0 (`CURRENT_TIER` di `config.js`). Menu yang tidak diizinkan
-disembunyikan dari sidebar/navigasi bawah dan ditolak di `go()`.
+Menu yang tidak diizinkan disembunyikan dari sidebar/navigasi bawah dan ditolak di `go()`.
+Frontend tidak menyimpan keputusan "tier X boleh apa" — hanya vocabulary key → komponen
+di `js/menu/index.js`.
 
 ## Mengaktifkan API
 

@@ -55,7 +55,18 @@ def login(body: schemas.LoginIn, db: Session = Depends(get_db)):
 
 @router.get("/me")
 def me(tier_def: dict = Depends(current_tier)):
-    return {"tier": tier_def["tier"], "menus": tier_def["menus"]}
+    # Satu-satunya sumber konfigurasi tier untuk frontend: dihitung server
+    # dari tier user di DB (bukan dari input client). Bentuk lama {tier, menus}
+    # dipertahankan; name/roleLabel/permissions ditambah agar frontend tidak
+    # perlu lagi salinan file tier lokal.
+    return {
+        "tier": tier_def["tier"],
+        "name": tier_def.get("name"),
+        "roleLabel": tier_def.get("roleLabel"),
+        "description": tier_def.get("description"),
+        "menus": tier_def["menus"],
+        "permissions": tier_def.get("permissions", {}),
+    }
 
 
 @router.post("/profile")

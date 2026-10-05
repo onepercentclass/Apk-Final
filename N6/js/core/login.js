@@ -134,7 +134,18 @@ export async function ensureApiLogin(role) {
   }
   if (!me) me = await showLoginForm(role, api);
 
-  setSession({ userId: me.id, displayName: me.full_name || me.username });
+  setSession({
+    userId: me.id,
+    displayName: me.full_name || me.username,
+    // Hak akses milik user ini — SATU-SATUNYA dasar gate di frontend.
+    // Dihitung server dari tier di DB (GET /api/n6/v1/auth/me).
+    backend: {
+      tier: me.tier,
+      role: me.role,
+      menus: me.menus || [],
+      actions: me.actions || {},
+    },
+  });
   try {
     window.localStorage.setItem(CONFIG.API_USER_KEY, JSON.stringify(me));
   } catch {

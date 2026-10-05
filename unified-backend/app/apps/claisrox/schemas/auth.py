@@ -15,4 +15,5 @@ class SessionResponse(CamelModel):
     username: str
     name: str
     tier: int
+    tier_name: str = ""
     menus: list[str]

@@ -1,5 +1,7 @@
 /* Sistem akses berdasarkan tier. Tier 0 = semua fitur; tier lebih besar = lebih terbatas.
-   Isi tier identik dengan backend/tiers/tier{n}.json (salinan bawaan untuk mode localStorage). */
+   SATU-SATUNYA sumber konfigurasi tier = backend (GET /access/me, dihitung dari
+   tier user di DB). TIERS inline di bawah HANYA fallback terakhir bila backend
+   tak terjangkau / mode localStorage — bukan sumber kebenaran. */
 (function () {
   const L = { none: 0, view: 1, limited: 2, manage: 3, full: 4 };
 
@@ -29,10 +31,17 @@
   const Access = {
     tier: null,
     async load() {
-      const n = Haylen.config.CURRENT_TIER;
       let data = null;
-      try { data = await Haylen.api.tier(n); } catch (e) { data = null; }
-      this.tier = data || TIERS[n] || TIERS[3];
+      if (Haylen.config.USE_API) {
+        // 1. Hak akses user ini dari backend (per-user, dari JWT).
+        try { data = await Haylen.api.accessMe(); } catch (e) { data = null; }
+        // 2. Kompatibilitas lama: file tier per nomor (hanya bila /access/me gagal).
+        if (!data) {
+          try { data = await Haylen.api.tier(Haylen.config.CURRENT_TIER); } catch (e) { data = null; }
+        }
+      }
+      // 3. Fallback terakhir: salinan inline (mode localStorage / backend mati).
+      this.tier = data || TIERS[Haylen.config.CURRENT_TIER] || TIERS[3];
       return this.tier;
     },
     menuLevel(menu) { return (this.tier && this.tier.menus[menu]) || "none"; },

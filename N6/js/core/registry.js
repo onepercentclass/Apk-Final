@@ -11,7 +11,6 @@
  */
 
 import { ROLE_ASSETS } from './bundles.js';
-import { TIERS } from './tiers.js';
 import { DEFAULT_ROLE } from './config.js';
 
 /**
@@ -125,17 +124,18 @@ export function resolveRole(value) {
   return byLabel || byTier || DEFAULT_ROLE;
 }
 
-/** Full descriptor for a role, including its tier matrix and asset list. */
+/** Full descriptor for a role: identity, catalogue menus, and asset list.
+ * Hak akses per user TIDAK ada di sini — saat API aktif ia datang dari
+ * backend (GET /api/n6/v1/auth/me) dan disimpan di sesi oleh
+ * js/core/access.js. `menus` di bawah murni vocabulary katalog. */
 export function getRole(roleKey) {
   const key = resolveRole(roleKey);
   const role = ROLES[key];
-  const tier = role.tier === TIER.OWNER ? null : TIERS[role.tier];
   return {
     key,
     ...role,
-    tierDef: tier,
     assets: ROLE_ASSETS[key] || { css: [], scripts: [] },
-    menus: tier ? tier.menus : MENU_KEYS.filter((m) => MENUS[m].roles.includes(key)),
+    menus: MENU_KEYS.filter((m) => MENUS[m].roles.includes(key)),
   };
 }
 
@@ -154,4 +154,4 @@ export function roleHasMenu(roleKey, menuKey) {
   return MENUS[menuKey]?.roles.includes(resolveRole(roleKey)) ?? false;
 }
 
-export { ROLE_ASSETS, TIERS };
+export { ROLE_ASSETS };

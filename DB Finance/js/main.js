@@ -24,12 +24,14 @@ async function start() {
   }
 
   try {
-    await loadAccess();
+    // Mode API: hak akses dari backend. Mode lokal: vocabulary menu penuh
+    // (pemegang perangkat = pemiliknya sendiri).
+    await loadAccess(MENUS.map((m) => m.id));
   } catch (err) {
     console.error(err);
     $('#app').textContent = USE_API
       ? 'Tidak dapat memuat hak akses dari server. Pastikan sudah login dan server dapat dijangkau.'
-      : 'Tidak dapat memuat file tier. Jalankan aplikasi lewat server HTTP, bukan membuka index.html langsung.';
+      : 'Tidak dapat memuat hak akses.';
     return;
   }
   if (USE_API) await syncFromServer();

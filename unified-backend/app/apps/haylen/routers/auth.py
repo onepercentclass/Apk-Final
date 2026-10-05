@@ -38,6 +38,22 @@ def me(user: User = Depends(get_current_user)):
     return {"id": user.id, "name": user.name, "role": user.role, "tier": user.tier}
 
 
+@router.get("/access/me")
+def my_access(user: User = Depends(get_current_user)):
+    """Hak akses user ini: {tier, name, menus, features}.
+
+    Dihitung server dari kolom tier user di DB (bukan dari input client).
+    Frontend memakai ini sebagai satu-satunya sumber konfigurasi tier.
+    """
+    tier_def = load_tier(user.tier)
+    return {
+        "tier": user.tier,
+        "name": tier_def.get("name"),
+        "menus": tier_def.get("menus", {}),
+        "features": tier_def.get("features", {}),
+    }
+
+
 @router.get("/tiers/{n}")
 def get_tier(n: int, user: User = Depends(get_current_user)):
     # Tier yang lebih kecil (lebih tinggi hak aksesnya) boleh melihat tier lain; selain itu hanya tier sendiri.

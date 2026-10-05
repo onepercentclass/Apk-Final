@@ -39,6 +39,7 @@ router = APIRouter(prefix="/v1")
 
 # ------------------------------------------------------------------ identity
 router.include_router(auth.router)
+router.include_router(auth.access_router)
 router.include_router(accounts.router)
 
 # ------------------------------------------------------------------- clients

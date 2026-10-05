@@ -55,12 +55,17 @@ function authError(msg){
 function apiEnabled(){
   return typeof ApiClient !== 'undefined' && ApiClient.enabled();
 }
-function applyApiSession(res){
+async function applyApiSession(res){
   // res: {token, tier, name, email} dari POST /auth/login atau /auth/register
   ApiClient.setToken(res.token);
   S.account = { name: res.name, email: res.email, tier: res.tier };
   try { localStorage.setItem('dbacc_account_v1', JSON.stringify(S.account)); } catch (e) {}
   setSession({ name: res.name, email: res.email, ts: Date.now() });
+  // Segarkan hak akses dari backend (token baru) sebelum aplikasi di-render,
+  // agar menu yang tampil sesuai tier user — bukan tier 0 bawaan.
+  if (typeof TierAccess !== 'undefined' && TierAccess.init) {
+    try { await TierAccess.init(); } catch (e) { /* pakai fallback */ }
+  }
 }
 async function submitRegister(){
   const name=document.getElementById('rg_name').value.trim();
@@ -74,7 +79,7 @@ async function submitRegister(){
   if(apiEnabled()){
     try {
       const res = await ApiClient.post('/auth/register', { name, email, password: pass });
-      applyApiSession(res);
+      await applyApiSession(res);
       toast('Akun berhasil dibuat');
       showApp();
     } catch (e) {
@@ -102,7 +107,7 @@ async function submitLogin(){
   if(apiEnabled()){
     try {
       const res = await ApiClient.post('/auth/login', { email: email.trim(), password: pass });
-      applyApiSession(res);
+      await applyApiSession(res);
       toast('Berhasil masuk');
       showApp();
     } catch (e) {

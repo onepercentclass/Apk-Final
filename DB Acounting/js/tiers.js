@@ -1,11 +1,15 @@
 /* ============================= TIERS =============================
    Sistem akses menu berbasis tier.
    - tier 0 (Owner)      : SEMUA menu.
-   - tier 1/2/3          : subset menu (lihat tiers/tier-{n}.json).
-   Sumber kanonis = file JSON di /tiers (dipakai juga oleh backend).
-   File ini memuat tier aktif saat boot; bila fetch gagal (mis. dibuka
-   via file://) dipakai fallback tier 0 inline sehingga aplikasi tetap
-   berjalan identik seperti semula.
+   - tier 1/2/3          : subset menu (dihitung server).
+
+   SATU-SATUNYA sumber kebenaran = backend: GET /auth/me mengembalikan
+   {tier, name, roleLabel, menus, permissions} yang dihitung server dari
+   tier user di DB (bukan dari input client). File ini TIDAK lagi memuat
+   file tier JSON lokal dan TIDAK menyimpan keputusan "tier X boleh apa".
+
+   FALLBACK_TIER_0 di bawah hanya dipakai bila backend tak terjangkau /
+   mode lokal (USE_API=false) — perangkat sendiri = pemiliknya.
    ================================================================ */
 const TierAccess = (() => {
   const FALLBACK_TIER_0 = {
@@ -19,21 +23,27 @@ const TierAccess = (() => {
 
   let def = FALLBACK_TIER_0;
 
-  function tierPath(t) {
-    return (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.TIER_JSON_PATH : 'tiers/tier-{tier}.json').replace('{tier}', t);
+  // Normalisasi response GET /auth/me agar bentuknya selalu lengkap.
+  function normalize(me) {
+    return {
+      tier: me.tier,
+      name: me.name || ('Tier ' + me.tier),
+      roleLabel: me.roleLabel || me.name || ('Tier ' + me.tier),
+      description: me.description || '',
+      menus: Array.isArray(me.menus) ? me.menus.slice() : [],
+      permissions: (me.permissions && typeof me.permissions === 'object') ? me.permissions : {},
+    };
   }
 
   async function init() {
-    const t = (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.CURRENT_TIER : 0) || 0;
-    if (t === 0) { def = FALLBACK_TIER_0; return def; }
-    try {
-      const res = await fetch(tierPath(t));
-      if (res.ok) { def = await res.json(); return def; }
-    } catch (e) { /* abaikan: pakai fallback */ }
-    try {
-      const res0 = await fetch(tierPath(0));
-      if (res0.ok) { const j0 = await res0.json(); if (t === 0) def = j0; }
-    } catch (e) { /* abaikan */ }
+    // Mode API: hak akses selalu dari backend.
+    if (typeof ApiClient !== 'undefined' && ApiClient.enabled()) {
+      try {
+        const me = await ApiClient.getAccount(); // GET /auth/me
+        if (me && Array.isArray(me.menus)) { def = normalize(me); return def; }
+      } catch (e) { /* backend tak terjangkau / belum login: pakai fallback */ }
+    }
+    def = FALLBACK_TIER_0;
     return def;
   }
 
@@ -53,5 +63,5 @@ const TierAccess = (() => {
   return { init, allowedRoutes, visibleNav, canAccess, can, roleLabel, current };
 })();
 
-// Dipakai core-shell.js saat render sidebar. Tier 0 = NAV penuh (identik aslinya).
+// Dipakai core-shell.js saat render sidebar.
 function visibleNav() { return TierAccess.visibleNav(); }

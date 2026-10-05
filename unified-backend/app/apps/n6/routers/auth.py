@@ -29,6 +29,9 @@ from ..deps import CurrentPrincipal, DbSession, touch_last_login
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+# Router terpisah agar path final = /api/n6/v1/access/me (seragam lintas aplikasi).
+access_router = APIRouter(prefix="/access", tags=["auth"])
+
 
 def _profile(account: Account) -> UserProfile:
     """Build the /auth/me payload, echoing the server's own access matrix."""
@@ -139,6 +142,17 @@ def logout(principal: CurrentPrincipal) -> Ok:
 
 @router.get("/me", response_model=UserProfile, summary="Who am I, and what may I open")
 def me(principal: CurrentPrincipal) -> UserProfile:
+    return _profile(principal.account)
+
+
+@access_router.get("/me", response_model=UserProfile, summary="My access, from the server's tier matrix")
+def access_me(principal: CurrentPrincipal) -> UserProfile:
+    """Alias seragam lintas aplikasi untuk /auth/me.
+
+    Mengembalikan profil + menus/actions user ini, dihitung server dari
+    tier di DB (bukan dari input client). Frontend memakai ini sebagai
+    satu-satunya sumber konfigurasi tier.
+    """
     return _profile(principal.account)
 
 

@@ -4,8 +4,8 @@ Satu proses FastAPI yang melayani endpoint kelima aplikasi:
 
 | Namespace | Aplikasi | Endpoint |
 |---|---|---|
-| `/api/haylen/*` | Haylen (sekolah renang) | 19 path: auth, tiers, dashboard, reports, members, programs, coaches, schedules, transactions, facilities, settings |
-| `/api/n6/v1/*` | N6 (dashboard kepelatihan) | 59 path: auth (+refresh), accounts, clients, schedules, pricing, programs, commissions, finance, tickets, messages, attendance, monitoring, corrections, athletes, reports, portal |
+| `/api/haylen/*` | Haylen (sekolah renang) | 20 path: auth, access/me, tiers, dashboard, reports, members, programs, coaches, schedules, transactions, facilities, settings |
+| `/api/n6/v1/*` | N6 (dashboard kepelatihan) | 60 path: auth (+refresh, access/me), accounts, clients, schedules, pricing, programs, commissions, finance, tickets, messages, attendance, monitoring, corrections, athletes, reports, portal |
 | `/api/dbacc/*` | DB Accounting | 12 path: auth, companies, journal, sales/purchases/cashbank/journal append, reports (labarugi, neraca, pajak) |
 | `/api/dbfin/*` | DB Finance | 10 path: auth, access/me, state, profile, accounts, transactions, budgets, bills, goals, investments |
 | `/api/claisrox/*` | Claisrox (produksi) | 23 path: auth, snapshot, keuangan, CRUD 9 koleksi (produk, bahan-baku, supplier, customer, penjualan, pembelian, resep, produksi, online) |
@@ -22,6 +22,16 @@ Plus `GET /health`.
 - **Satu hashing**: bcrypt (cost 12) untuk semua aplikasi.
 - **Tier**: tiap aplikasi memakai file JSON tier-nya sendiri
   (`app/apps/<nama>/tiers/`), semantik enforcement dipertahankan dari aslinya.
+  File tier adalah SATU-SATUNYA sumber konfigurasi tier — frontend tidak lagi
+  menyimpan salinannya. Tiap aplikasi menyediakan SATU endpoint akses per-user
+  yang dihitung server dari tier di DB (bukan dari input client):
+  Haylen `GET /access/me` → `{tier, name, menus, features}`,
+  N6 `GET /v1/access/me` → profil + `{menus, actions}`,
+  DB Accounting `GET /auth/me` → `{tier, name, roleLabel, menus, permissions}`,
+  DB Finance `GET /access/me` → `{tier, name, access}`,
+  claisrox `GET /auth/me` → `{username, name, tier, tierName, menus}`.
+  Frontend hanya menyimpan vocabulary key→UI dan menyembunyikan menu (UX);
+  server tetap penegak utama (403).
 
 ## Perubahan penting vs backend asli
 

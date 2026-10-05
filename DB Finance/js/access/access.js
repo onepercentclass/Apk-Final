@@ -1,30 +1,29 @@
 /**
  * Hak akses menu berdasarkan tier.
- * Tier 0 = owner. Tier N mendapat key akses miliknya ditambah milik tier N+1 sampai MAX_TIER,
- * sehingga tier 0 otomatis bisa mengakses semua fitur di tier 1, 2, dan seterusnya.
+ *
+ * SATU-SATUNYA sumber kebenaran = backend: GET /access/me mengembalikan
+ * {tier, name, access} yang dihitung server dari tier user di DB
+ * (bukan dari input client). File ini TIDAK menyimpan keputusan
+ * "tier X boleh apa" — hanya vocabulary pemakaian: can()/firstAllowed().
+ *
+ * Mode lokal (USE_API=false): tanpa server, pemegang perangkat adalah
+ * pemiliknya sendiri, jadi semua key vocabulary diizinkan. Daftar key
+ * (fallbackKeys) dipasok pemanggil dari registry menu (js/menu/index.js),
+ * bukan didefinisikan di sini.
  */
-import { USE_API, CURRENT_TIER } from '../config.js';
+import { USE_API } from '../config.js';
 import { api } from '../services/api.js';
 import { ENDPOINTS } from '../services/endpoints.js';
 
-const MAX_TIER = 3;
 let allowed = new Set();
 
-async function readTier(n) {
-  const res = await fetch(new URL(`./tiers/tier${n}.json`, import.meta.url));
-  if (!res.ok) throw new Error(`tier${n}.json tidak ditemukan`);
-  return res.json();
-}
-
-async function localAccess(tier) {
-  const numbers = Array.from({ length: MAX_TIER - tier + 1 }, (_, i) => tier + i);
-  const files = await Promise.all(numbers.map(readTier));
-  return files.flatMap(f => f.access);
-}
-
-export async function loadAccess() {
-  const keys = USE_API ? (await api.get(ENDPOINTS.accessMe)).access : await localAccess(CURRENT_TIER);
-  allowed = new Set(keys);
+export async function loadAccess(fallbackKeys = []) {
+  if (USE_API) {
+    const me = await api.get(ENDPOINTS.accessMe);
+    allowed = new Set(me.access || []);
+  } else {
+    allowed = new Set(fallbackKeys);
+  }
 }
 
 export const can = menuId => allowed.has(menuId);
