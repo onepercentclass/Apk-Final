@@ -11,6 +11,9 @@
  *                           server as well, because the backend enforces the
  *                           same backend/tiers/*.json matrix.
  *
+ * The unified backend serves N6 under the /api/n6 namespace, so the default
+ * base below already includes it: https://n6sport.id/api/n6/v1/...
+ *
  * Flip it here, or override from the shell before the module is evaluated:
  *
  *   <script>window.N6_ENV = { API_ENABLED: true };</script>
@@ -22,13 +25,18 @@ const overrides = (typeof window !== 'undefined' && window.N6_ENV) || {};
 export const ENV = {
   /**
    * Master switch for the server data layer.
-   * Left off on purpose: the dashboard is fully functional against
-   * localStorage, which is what the five original single-file builds used.
+   * On: the dashboard reads/writes through the unified backend and shows a
+   * login gate before anything renders (see js/core/login.js).
    */
-  API_ENABLED: false,
+  API_ENABLED: true,
 
-  /** Base URL of the REST API. Trailing slash is normalised away. */
-  API_BASE_URL: 'https://n6sport.id/api',
+  /**
+   * Base URL of the REST API. Trailing slash is normalised away.
+   * Unified backend namespace for N6 is /api/n6 (endpoints keep /v1/...).
+   * Untuk coba lokal, ganti host menjadi http://localhost:8000
+   * (path /api/n6 tetap dipakai): 'http://localhost:8000/api/n6'
+   */
+  API_BASE_URL: 'https://n6sport.id/api/n6',
 
   /** Version segment appended to API_BASE_URL, i.e. https://n6sport.id/api/v1. */
   API_PREFIX: '/v1',
@@ -38,6 +46,9 @@ export const ENV = {
 
   /** Bearer token injected by the backend on a successful login. */
   API_TOKEN_KEY: 'n6:api:token',
+
+  /** Refresh token from the login token pair, used to mint new access tokens. */
+  API_REFRESH_TOKEN_KEY: 'n6:api:refresh',
 
   /** currentUser profile cached after login. */
   API_USER_KEY: 'n6:api:user',

@@ -24,7 +24,18 @@ async function loadAccount(){
   // Mode lokal: akun tersimpan di localStorage perangkat ini.
   try{ const raw=localStorage.getItem('dbacc_account_v1'); S.account = raw?JSON.parse(raw):null; }catch(e){ S.account=null; }
   if(typeof ApiClient!=='undefined' && ApiClient.enabled()){
-    try{ const acc=await ApiClient.getAccount(); if(acc) S.account=acc; }catch(e){ /* tetap pakai lokal */ }
+    try{
+      const acc=await ApiClient.getAccount();
+      if(acc){
+        // GET /auth/me hanya mengembalikan {tier, menus} — pertahankan
+        // name/email dari akun lokal/sesi agar cek sesi di boot() tetap jalan.
+        const sess=getSession();
+        S.account=Object.assign({}, acc, {
+          email:(S.account&&S.account.email)||(sess&&sess.email)||'',
+          name:(S.account&&S.account.name)||(sess&&sess.name)||''
+        });
+      }
+    }catch(e){ /* tetap pakai lokal */ }
   }
 }
 async function saveAccount(acc){
@@ -49,6 +60,7 @@ async function loginAccount(f){
 }
 function logout(){
   clearSession();
+  if(typeof ApiClient!=='undefined' && ApiClient.enabled()) ApiClient.clearToken();
   S.acctMenuOpen=false;
   showAuth();
   toast('Anda telah keluar');

@@ -7,7 +7,9 @@ async function boot(){
   S.downloads = null; /* unduhan via browser bawaan; integrasi native nonaktif (lihat js/config.js) */
   await loadAccount();
   S.session = getSession();
-  const validSession = S.session && S.account && S.session.email===S.account.email;
+  const apiMode = typeof ApiClient!=='undefined' && ApiClient.enabled();
+  const hasToken = !apiMode || !!ApiClient.getToken();
+  const validSession = hasToken && S.session && S.account && S.session.email===S.account.email;
   if(validSession){ showApp(); }
   else { clearSession(); showAuth(); }
 }

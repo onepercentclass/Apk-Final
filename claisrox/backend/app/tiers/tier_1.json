@@ -1,5 +1,0 @@
-{
-  "tier": 1,
-  "name": "Manager",
-  "menus": ["dashboard", "produk", "bahan-baku", "resep", "produksi", "supplier", "customer", "penjualan", "pembelian", "online", "laporan"]
-}

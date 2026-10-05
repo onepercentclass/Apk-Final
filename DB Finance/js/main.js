@@ -1,5 +1,6 @@
 /** Titik masuk aplikasi. */
 import { USE_API } from './config.js';
+import { ensureLogin } from './login.js';
 import { loadAccess, can, firstAllowed } from './access/access.js';
 import { MENUS, MOBILE_MENUS } from './menu/index.js';
 import { U, syncFromServer } from './core/store.js';
@@ -12,6 +13,16 @@ import { initRestore } from './export/backup.js';
 import './export/dialog.js'; // mendaftarkan aksi Unduh Laporan
 
 async function start() {
+  // 401 global (mis. token kedaluwarsa di tengah sesi): token sudah dibuang
+  // oleh api.js — muat ulang agar login gate menampilkan form login.
+  window.addEventListener('api:unauthorized', () => location.reload());
+
+  // Mode API: wajib login dulu sebelum memuat hak akses / sinkronisasi.
+  if (USE_API) {
+    const loggedIn = await ensureLogin();
+    if (!loggedIn) return;
+  }
+
   try {
     await loadAccess();
   } catch (err) {

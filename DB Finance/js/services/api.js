@@ -11,6 +11,13 @@ async function request(method, path, body) {
     },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
+  if (res.status === 401) {
+    // Token kedaluwarsa/tidak valid: buang token, beri tahu via event,
+    // dan siapkan pesan untuk form login berikutnya.
+    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.setItem('dbfin-login-msg', 'Sesi berakhir, silakan login kembali.');
+    window.dispatchEvent(new CustomEvent('api:unauthorized'));
+  }
   if (!res.ok) throw new Error(`${method} ${path} gagal (${res.status})`);
   return res.status === 204 ? null : res.json();
 }

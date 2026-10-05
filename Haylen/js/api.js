@@ -27,7 +27,11 @@
       ),
       body: body ? JSON.stringify(body) : undefined,
     });
-    if (!res.ok) throw new Error("Request gagal (" + res.status + ")");
+    if (!res.ok) {
+      const err = new Error("Request gagal (" + res.status + ")");
+      err.status = res.status;
+      throw err;
+    }
     return res.status === 204 ? null : res.json();
   }
 
@@ -36,6 +40,9 @@
     async login(username, password) {
       if (!cfg.USE_API) return { access_token: "local", tier: cfg.CURRENT_TIER };
       return http("POST", ENDPOINTS.login, { username, password });
+    },
+    async me() {
+      return http("GET", "/auth/me");
     },
     async list(resource) {
       return cfg.USE_API ? http("GET", ENDPOINTS[resource]) : S.list(resource);

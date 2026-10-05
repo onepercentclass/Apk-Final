@@ -1,15 +1,16 @@
 /**
- * N6 - REST client for https://n6sport.id/api
+ * N6 - REST client for the unified backend (https://n6sport.id/api/n6)
  *
- * INACTIVE BY DEFAULT. js/core/env.js sets API_ENABLED = false, so nothing in
- * the application calls this module: the dashboard runs entirely against
- * localStorage, exactly like the five original single-file builds did.
+ * ACTIVE BY DEFAULT. js/core/env.js sets API_ENABLED = true, so the
+ * dashboard reads/writes through this module and js/core/login.js gates the
+ * bootstrap behind POST /v1/auth/login. Set API_ENABLED = false to go back to
+ * the localStorage-only dashboards.
  *
- * Turning it on is a two-step change:
+ * Turning it off is a two-step change:
  *
- *   1. js/core/env.js      ->  API_ENABLED: true
- *   2. js/core/storage.js  ->  getRepository() already returns the repository
- *                             created at the bottom of this file
+ *   1. js/core/env.js      ->  API_ENABLED: false
+ *   2. js/core/storage.js  ->  getRepository() already falls back to the
+ *                             localStorage repository when the API is off
  *
  * The endpoints below mirror the routers in backend/app/api/v1/endpoints/.
  * Every path is expressed with the same verbs and the same path parameters,
@@ -49,6 +50,27 @@ export function setToken(token) {
     if (token) window.localStorage.setItem(CONFIG.API_TOKEN_KEY, token);
     else window.localStorage.removeItem(CONFIG.API_TOKEN_KEY);
   } catch { /* storage unavailable */ }
+}
+
+export function getRefreshToken() {
+  try {
+    return window.localStorage.getItem(CONFIG.API_REFRESH_TOKEN_KEY) || null;
+  } catch {
+    return null;
+  }
+}
+
+export function setRefreshToken(token) {
+  try {
+    if (token) window.localStorage.setItem(CONFIG.API_REFRESH_TOKEN_KEY, token);
+    else window.localStorage.removeItem(CONFIG.API_REFRESH_TOKEN_KEY);
+  } catch { /* storage unavailable */ }
+}
+
+/** Drop both tokens, e.g. after the server rejects them. */
+export function clearTokens() {
+  setToken(null);
+  setRefreshToken(null);
 }
 
 function authHeaders() {
@@ -102,7 +124,7 @@ export const endpoints = {
   auth: {
     login: (body) => request('auth/login', { method: 'POST', body }),
     me: () => request('auth/me'),
-    refresh: () => request('auth/refresh', { method: 'POST' }),
+    refresh: () => request('auth/refresh', { method: 'POST', body: { refresh_token: getRefreshToken() } }),
     logout: () => request('auth/logout', { method: 'POST' }),
     changePassword: (body) => request('auth/password', { method: 'PUT', body }),
   },
@@ -255,4 +277,4 @@ export function createApiRepository(role) {
   };
 }
 
-export default { request, endpoints, ApiError, getToken, setToken, createApiRepository };
+export default { request, endpoints, ApiError, getToken, setToken, getRefreshToken, setRefreshToken, clearTokens, createApiRepository };

@@ -1,14 +1,20 @@
 /* ============================= API CLIENT =============================
    Klien HTTP untuk backend FastAPI di API_CONFIG.BASE_URL.
-   STATUS: NONAKTIF (API_CONFIG.USE_API=false) -> semua pemanggilan
-   dibatalkan lebih awal dan penyimpanan memakai localStorage
-   (lihat js/core-store.js). Nyalakan flag untuk memakai server.
+   STATUS: AKTIF (API_CONFIG.USE_API=true) -> data dari server
+   (unified-backend, namespace /api/dbacc). Bila USE_API=false,
+   semua pemanggilan dibatalkan dan penyimpanan memakai localStorage
+   (lihat js/core-store.js).
 
-   Kontrak endpoint (mirror backend/app — lihat backend/README.md):
-     GET    /health
-     POST   /auth/register            {name,email,password}
-     POST   /auth/login               {email,password} -> {token,tier}
-     GET    /companies                (header tier) -> meta list
+   Auth: JWT Bearer. Token disimpan di localStorage key "dbacc_token"
+   (getToken/setToken/clearToken). Setiap request otomatis membawa
+   header Authorization bila token ada. Bila server menjawab 401,
+   token dihapus dan layar login ditampilkan.
+
+   Kontrak endpoint (unified-backend/app/apps/dbacc):
+     POST   /auth/register            {name,email,password} -> {token,tier,name,email} (403 bila user sudah ada)
+     POST   /auth/login               {email,password} -> {token,tier,name,email}
+     GET    /auth/me                  -> {tier,menus}
+     GET    /companies                -> meta list
      POST   /companies                {name,industry,...}
      GET    /companies/{id}           -> payload perusahaan penuh
      PUT    /companies/{id}           -> simpan payload perusahaan
@@ -17,6 +23,19 @@
      GET    /companies/{id}/reports/labarugi | /neraca | /pajak
    ==================================================================== */
 const ApiClient = (() => {
+  const TOKEN_KEY = 'dbacc_token';
+
+  function getToken() {
+    try { return localStorage.getItem(TOKEN_KEY); } catch (e) { return null; }
+  }
+  function setToken(t) {
+    try {
+      if (t) localStorage.setItem(TOKEN_KEY, t);
+      else localStorage.removeItem(TOKEN_KEY);
+    } catch (e) { /* abaikan */ }
+  }
+  function clearToken() { setToken(null); }
+
   function enabled() {
     return typeof API_CONFIG !== 'undefined' && API_CONFIG.USE_API === true;
   }
@@ -25,16 +44,40 @@ const ApiClient = (() => {
     if (!enabled()) throw new Error('API nonaktif (USE_API=false) — memakai localStorage.');
   }
 
+  // 401 global: token kedaluwarsa/tidak valid -> hapus token, tampilkan login.
+  // showAuth() hanya dipanggil bila aplikasi sedang tampil (shell terlihat),
+  // agar tidak me-render ulang layar login saat proses login/boot.
+  function handleUnauthorized() {
+    clearToken();
+    try {
+      const sh = document.getElementById('shell');
+      const appVisible = sh && sh.style.display !== 'none';
+      if (appVisible && typeof showAuth === 'function') showAuth();
+    } catch (e) { /* abaikan */ }
+  }
+
   async function request(path, options) {
     guard();
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), API_CONFIG.TIMEOUT_MS || 8000);
     try {
-      const res = await fetch(API_CONFIG.BASE_URL + path, Object.assign(
-        { headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal },
-        options || {}
-      ));
-      if (!res.ok) throw new Error('API ' + res.status + ' ' + path);
+      const opt = Object.assign({}, options || {});
+      const headers = Object.assign({ 'Content-Type': 'application/json' }, opt.headers || {});
+      const tok = getToken();
+      if (tok) headers['Authorization'] = 'Bearer ' + tok;
+      opt.headers = headers;
+      opt.signal = ctrl.signal;
+      const res = await fetch(API_CONFIG.BASE_URL + path, opt);
+      if (res.status === 401) handleUnauthorized();
+      if (!res.ok) {
+        const err = new Error('API ' + res.status + ' ' + path);
+        err.status = res.status;
+        try {
+          const body = await res.json();
+          if (body && body.detail) err.detail = body.detail;
+        } catch (e) { /* abaikan */ }
+        throw err;
+      }
       return await res.json();
     } finally {
       clearTimeout(timer);
@@ -66,5 +109,5 @@ const ApiClient = (() => {
   const getAccount = () => get('/auth/me');
   const saveAccount = (acc) => post('/auth/profile', acc);
 
-  return { enabled, request, get, post, put, endpoints, ping, listCompanies, getCompany, saveCompany, getAccount, saveAccount };
+  return { enabled, getToken, setToken, clearToken, request, get, post, put, endpoints, ping, listCompanies, getCompany, saveCompany, getAccount, saveAccount };
 })();

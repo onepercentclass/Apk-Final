@@ -22,6 +22,7 @@ import { getRole } from './core/registry.js';
 import { initRepository } from './core/storage.js';
 import { CONFIG, apiEnabled } from './core/env.js';
 import { enforce, setSession, getSession } from './core/access.js';
+import { ensureApiLogin } from './core/login.js';
 import * as router from './core/router.js';
 import { whenStylesLoaded, loadScript, $, el } from './core/dom.js';
 import { APP_NAME, APP_SUBTITLE } from './core/config.js';
@@ -64,6 +65,13 @@ async function boot() {
   setSession({ role: role.key });
 
   document.title = `${role.title} — ${APP_NAME} ${APP_SUBTITLE}`;
+
+  // API login gate: with API_ENABLED=true this blocks the bootstrap until a
+  // valid token exists (shows the login form when needed). Resolves
+  // immediately in localStorage-only mode.
+  await ensureApiLogin(role);
+  document.title = `${role.title} — ${APP_NAME} ${APP_SUBTITLE}`;
+
   showBootScreen(role);
 
   // 1. stylesheets, in the order recorded by tools/build.ps1

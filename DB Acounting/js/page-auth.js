@@ -30,7 +30,7 @@ function renderAuthScreen(){
         <div class="field"><label>Konfirmasi Kata Sandi</label><input type="password" id="rg_pass2" placeholder="Ulangi kata sandi"></div>
         <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitRegister()">Buat Akun & Masuk</button>
       </div>
-      <div class="auth-hint">Akun tersimpan secara lokal pada aplikasi ini. Saat backend API sudah aktif sesuai dokumentasi, proses ini dapat diganti dengan autentikasi server (JWT).</div>
+      <div class="auth-hint">${apiEnabled() ? 'Akun tersimpan di server. Pada server baru yang masih kosong, pendaftaran ini membuat akun owner pertama.' : 'Akun tersimpan secara lokal pada aplikasi ini. Saat backend API sudah aktif sesuai dokumentasi, proses ini dapat diganti dengan autentikasi server (JWT).'}</div>
     </div>`;
   } else {
     el.innerHTML=`<div class="auth-box">
@@ -52,6 +52,16 @@ function authError(msg){
   const box=document.getElementById('authErrBox');
   if(box) box.innerHTML=`<div class="auth-error">${esc(msg)}</div>`;
 }
+function apiEnabled(){
+  return typeof ApiClient !== 'undefined' && ApiClient.enabled();
+}
+function applyApiSession(res){
+  // res: {token, tier, name, email} dari POST /auth/login atau /auth/register
+  ApiClient.setToken(res.token);
+  S.account = { name: res.name, email: res.email, tier: res.tier };
+  try { localStorage.setItem('dbacc_account_v1', JSON.stringify(S.account)); } catch (e) {}
+  setSession({ name: res.name, email: res.email, ts: Date.now() });
+}
 async function submitRegister(){
   const name=document.getElementById('rg_name').value.trim();
   const email=document.getElementById('rg_email').value.trim();
@@ -61,6 +71,26 @@ async function submitRegister(){
   if(!/^\S+@\S+\.\S+$/.test(email)){authError('Format email tidak valid.');return;}
   if(pass.length<6){authError('Kata sandi minimal 6 karakter.');return;}
   if(pass!==pass2){authError('Konfirmasi kata sandi tidak cocok.');return;}
+  if(apiEnabled()){
+    try {
+      const res = await ApiClient.post('/auth/register', { name, email, password: pass });
+      applyApiSession(res);
+      toast('Akun berhasil dibuat');
+      showApp();
+    } catch (e) {
+      if (e && e.status === 403) {
+        // Server sudah punya user (register hanya untuk bootstrap) -> alihkan ke login.
+        S.account = { name: '', email: email };
+        renderAuthScreen();
+        authError('Pendaftaran ditutup: akun sudah ada di server. Silakan masuk.');
+      } else if (e && e.status === 409) {
+        authError('Email sudah terdaftar. Silakan masuk.');
+      } else {
+        authError((e && e.detail) || 'Gagal membuat akun. Periksa koneksi ke server.');
+      }
+    }
+    return;
+  }
   await registerAccount({name,email,password:pass});
   toast('Akun berhasil dibuat');
   showApp();
@@ -69,6 +99,18 @@ async function submitLogin(){
   const email=document.getElementById('lg_email').value;
   const pass=document.getElementById('lg_pass').value;
   if(!email||!pass){authError('Isi email dan kata sandi.');return;}
+  if(apiEnabled()){
+    try {
+      const res = await ApiClient.post('/auth/login', { email: email.trim(), password: pass });
+      applyApiSession(res);
+      toast('Berhasil masuk');
+      showApp();
+    } catch (e) {
+      if (e && e.status === 401) authError('Email atau kata sandi salah.');
+      else authError((e && e.detail) || 'Gagal masuk. Periksa koneksi ke server.');
+    }
+    return;
+  }
   const res=await loginAccount({email,password:pass});
   if(!res.ok){authError(res.msg);return;}
   toast('Berhasil masuk');

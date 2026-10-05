@@ -56,7 +56,72 @@
     await Haylen.pages[key].render(view());
   };
 
+  const TOKEN_KEY = config.STORAGE_PREFIX + "token"; // "haylen_token"
+
+  /* Login gate: tampilkan form login sebelum app di-render (hanya mode API).
+     Sukses -> token + profil user tersimpan, boot dilanjutkan. */
+  function showLogin() {
+    return new Promise((resolve) => {
+      document.getElementById("app").style.display = "none";
+      const back = document.createElement("div");
+      back.className = "modal-back";
+      back.innerHTML =
+        '<div class="modal" role="dialog" aria-label="Login">' +
+        '<h3>Masuk ke Haylen</h3>' +
+        '<p style="font-size:12.5px;color:var(--muted);margin:-6px 0 14px">AquaFlow Swimming School</p>' +
+        '<form id="haylenLoginForm" autocomplete="on">' +
+        '<div class="field"><label>Username</label><input name="username" autocomplete="username" required></div>' +
+        '<div class="field"><label>Password</label><input name="password" type="password" autocomplete="current-password" required></div>' +
+        '<div class="field"><span id="haylenLoginError" style="color:#b91c1c;font-size:12px;font-weight:600"></span></div>' +
+        '<button class="btn" type="submit" style="width:100%">Masuk</button>' +
+        "</form></div>";
+      document.body.appendChild(back);
+      const form = back.querySelector("#haylenLoginForm");
+      const errEl = back.querySelector("#haylenLoginError");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errEl.textContent = "";
+        const fd = new FormData(form);
+        try {
+          const res = await Haylen.api.login(
+            String(fd.get("username")).trim(),
+            String(fd.get("password"))
+          );
+          localStorage.setItem(TOKEN_KEY, res.access_token);
+          config.USER = { name: res.user.name, role: res.user.role };
+          config.CURRENT_TIER = res.tier;
+          back.remove();
+          document.getElementById("app").style.display = "";
+          resolve(true);
+        } catch (err) {
+          errEl.textContent = err && err.status === 401
+            ? "Username atau password salah."
+            : "Tidak dapat terhubung ke server. Coba lagi.";
+        }
+      });
+      back.querySelector('input[name="username"]').focus();
+    });
+  }
+
   async function boot() {
+    if (config.USE_API) {
+      const token = localStorage.getItem(TOKEN_KEY);
+      let needLogin = !token;
+      if (token) {
+        try {
+          await Haylen.api.me(); // validasi token; 401 -> token basi
+        } catch (e) {
+          if (e && e.status === 401) {
+            localStorage.removeItem(TOKEN_KEY);
+            needLogin = true;
+          }
+        }
+      }
+      if (needLogin) {
+        const ok = await showLogin();
+        if (!ok) return;
+      }
+    }
     await access.load();
     const u = config.USER;
     document.getElementById("roleName").textContent = u.role;
