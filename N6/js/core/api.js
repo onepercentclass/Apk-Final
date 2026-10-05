@@ -1,5 +1,5 @@
 /**
- * N6 - REST client for the unified backend (https://n6sport.id/api/n6)
+ * N6 - REST client for the unified backend (https://api.denisbergkam.com/api/n6)
  *
  * ACTIVE BY DEFAULT. js/core/env.js sets API_ENABLED = true, so the
  * dashboard reads/writes through this module and js/core/login.js gates the

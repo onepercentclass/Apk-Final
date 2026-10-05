@@ -6,11 +6,11 @@
    diambil dari backend (GET /auth/me) setelah login; server yang
    menghitungnya dari tier user di DB.
    Backend gabungan (unified-backend) namespace DB Accounting:
-     produksi : https://n6sport.id/api/dbacc
+     produksi : https://api.denisbergkam.com/api/dbacc
      lokal    : http://localhost:8000/api/dbacc
    ==================================================================== */
 const API_CONFIG = {
-  BASE_URL: 'https://n6sport.id/api/dbacc',
+  BASE_URL: 'https://api.denisbergkam.com/api/dbacc',
   USE_API: true,
   TIMEOUT_MS: 8000,
 };

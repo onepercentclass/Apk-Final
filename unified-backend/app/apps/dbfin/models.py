@@ -44,9 +44,9 @@ class Account(Base):
 class Transaction(Base):
     __tablename__ = "transactions"
     __table_args__ = (
-        ForeignKeyConstraint(["user_id", "account_id"], [f"{SCHEMA}.accounts.user_id", f"{SCHEMA}.accounts.id"]),
-        ForeignKeyConstraint(["user_id", "from_account_id"], [f"{SCHEMA}.accounts.user_id", f"{SCHEMA}.accounts.id"]),
-        ForeignKeyConstraint(["user_id", "to_account_id"], [f"{SCHEMA}.accounts.user_id", f"{SCHEMA}.accounts.id"]),
+        ForeignKeyConstraint(["user_id", "account_id"], [f"{SCHEMA}.accounts.user_id", f"{SCHEMA}.accounts.id"], name="fk_transactions_account"),
+        ForeignKeyConstraint(["user_id", "from_account_id"], [f"{SCHEMA}.accounts.user_id", f"{SCHEMA}.accounts.id"], name="fk_transactions_from_account"),
+        ForeignKeyConstraint(["user_id", "to_account_id"], [f"{SCHEMA}.accounts.user_id", f"{SCHEMA}.accounts.id"], name="fk_transactions_to_account"),
         Index("ix_transactions_user_date", "user_id", "date"),
         {"schema": SCHEMA},
     )

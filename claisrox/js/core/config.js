@@ -6,7 +6,7 @@ const TOKEN_KEY = 'claisrox_token_v1';
 const APP_CONFIG = {
   api: {
     enabled: true,                        // false = data di localStorage; true = data dari server
-    baseUrl: 'https://n6sport.id/api/claisrox',
+    baseUrl: 'https://api.denisbergkam.com/api/claisrox',
     // Lokal (unified-backend di port 8000): 'http://localhost:8000/api/claisrox'
     timeoutMs: 15000,
     syncDebounceMs: 800,                  // jeda sebelum perubahan dikirim ke server
