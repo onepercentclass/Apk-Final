@@ -1,9 +1,9 @@
-# Claisrox (DB Track)
+# DB Finance (DB Track)
 
 Hasil pemecahan `FinTrack.html` menjadi proyek modular. Tampilan dan fitur tidak diubah.
 
 ```
-claisrox/            frontend (statis)
+DB Finance/         frontend (statis)
   index.html
   css/               UI, satu file per fungsi (tokens, base, layout, components, lists, forms,
                      overlay, charts, home, budget, bills, cards, accounts, settings, utilities)
@@ -26,7 +26,7 @@ backend/             FastAPI + PostgreSQL
 Memakai ES module, jadi **tidak bisa dibuka dengan klik dua kali** (`file://`). Jalankan lewat server statis:
 
 ```
-cd claisrox
+cd "DB Finance"
 python3 -m http.server 8766        # lalu buka http://localhost:8766
 ```
 
