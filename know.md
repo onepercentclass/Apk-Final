@@ -68,6 +68,22 @@ dengan pola arsitektur yang sama:
 - `fc23b53` — "first commit"
 - `d3ff43c` — "new era" (HEAD): restrukturisasi folder Haylen.
 
+## Unified backend (2026-10-05)
+
+Atas permintaan user, dibangun **1 backend gabungan** di `unified-backend/`
+(FastAPI, 124 endpoint, 23/23 uji lolos via TestClient mode SQLite).
+Rancangan: 1 database PostgreSQL dengan 5 schema (`haylen`, `n6`, `dbacc`, `dbfin`, `clx`);
+namespace `/api/haylen`, `/api/n6/v1`, `/api/dbacc`, `/api/dbfin`, `/api/claisrox`;
+1 JWT (klaim `app` mengisolasi token antar aplikasi) + bcrypt untuk semua.
+Perubahan penting: auth DB Accounting ditulis ulang total (dulu SHA-256 +
+token dummy `"dev-token"` + tier dari header `X-Tier` — tidak aman);
+bug DB Finance diperbaiki (`TIERS_DIR` rusak, judul "Claisrox API");
+bug N6 diperbaiki (`TIER_ADMIN` tidak diimpor di schemas/account.py).
+Hash & token lama tidak berlaku — user lama harus dibuat ulang
+(owner auto-seed dari `.env`). Frontend tiap aplikasi cukup ubah 1 baris
+`API_BASE` ke namespace barunya. Push repo ini: `~/workspace/github-push.sh`
+(kredensial `custom.github-apkfinal`; token lama Anonimz7 tidak bisa push ke sini).
+
 ## Implikasi untuk kerja berikutnya
 
 - Semua aplikasi **bisa langsung dibuka dan dites tanpa backend** (localStorage) — cukup
