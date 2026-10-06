@@ -513,9 +513,42 @@
     set('coachMenuAvatar', initials || '--');
   }
 
+  function n6ApiMe() {
+    try {
+      var k = (window.N6_API || {}).userKey || 'n6:api:user';
+      return JSON.parse(window.localStorage.getItem(k) || 'null');
+    } catch (e) { return null; }
+  }
+
+  function n6Initials(name) {
+    return String(name || '').trim().split(/\s+/).map(function (w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+  }
+
+  function populateHeadcoachIdentity() {
+    // Isi nama user asli di view headcoach (ganti "Kevin Wibowo" hardcoded)
+    var me = n6ApiMe();
+    if (!me) return;
+    var name = me.full_name || me.username || 'Head Coach';
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('hcSideFootName', name);
+    set('hcTopbarName', name);
+  }
+
+  function populateAdminIdentity() {
+    // Isi nama user asli di view admin (ganti "Admin CS" statis)
+    var me = n6ApiMe();
+    if (!me) return;
+    var name = me.full_name || me.username || 'Admin CS';
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('adminSideFootName', name);
+    set('n6AccountAvatar', n6Initials(name) || 'CS');
+  }
+
   function init() {
     injectAccountCss();
     populateCoachIdentity();
+    populateHeadcoachIdentity();
+    populateAdminIdentity();
     // panel mungkin belum ada bila view diganti; tunggu sebentar
     if (!document.getElementById('panel-sandi') && !document.getElementById('panel-akun')) {
       // peran client: menu akun di-render oleh bundle

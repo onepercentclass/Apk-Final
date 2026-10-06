@@ -1771,7 +1771,7 @@ const n6AccountUser=document.getElementById('n6AccountUsername');
 const n6AccountPassword=document.getElementById('n6AccountPassword');
 const n6AccountSessionKey='n6csAdmin:preview-account-name';
 function n6ReadAccount(){try{return sessionStorage.getItem(n6AccountSessionKey)||''}catch(e){return ''}}
-function n6RenderAccount(){const name=n6ReadAccount();document.getElementById('n6AccountName').textContent=name||'Admin CS';document.getElementById('n6AccountStatus').textContent=name?'Masuk · sesi pratinjau':'Belum masuk · pratinjau';n6AccountForm.hidden=!!name;n6AccountLogout.hidden=!name;}
+function n6RenderAccount(){var me=null;try{var k=(window.N6_API||{}).userKey||'n6:api:user';me=JSON.parse(window.localStorage.getItem(k)||'null')}catch(e){}var name=me?(me.full_name||me.username):n6ReadAccount();var roleLabel=me?(' · '+(me.role||(me.tier!=null?'Tier '+me.tier:'Admin'))):'';document.getElementById('n6AccountName').textContent=name||'Admin CS';document.getElementById('n6AccountStatus').textContent=name?('Masuk'+roleLabel):'Belum masuk';n6AccountForm.hidden=!!name;n6AccountLogout.hidden=!name;}
 function n6OpenAccount(){n6RenderAccount();document.getElementById('n6MoreMenu').hidden=true;n6AccountModal.classList.add('show')}
 function n6CloseAccount(){n6AccountModal.classList.remove('show')}
 document.getElementById('n6AccountClose').addEventListener('click',n6CloseAccount);
@@ -1780,8 +1780,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')n6CloseAccount()});
 document.getElementById('n6ChooseLight').addEventListener('click',()=>n6SetTheme('light'));
 document.getElementById('n6ChooseDark').addEventListener('click',()=>n6SetTheme('dark'));
 document.getElementById('n6ShowPassword').addEventListener('click',()=>{const shown=n6AccountPassword.type==='password';n6AccountPassword.type=shown?'text':'password';document.getElementById('n6ShowPassword').textContent=shown?'Sembunyikan':'Lihat'});
-n6AccountForm.addEventListener('submit',e=>{e.preventDefault();const name=n6AccountUser.value.trim();if(!name||n6AccountPassword.value.length<6)return;try{sessionStorage.setItem(n6AccountSessionKey,name)}catch(e){showToast('Sesi browser tidak tersedia');return}n6AccountPassword.value='';n6AccountPassword.type='password';document.getElementById('n6ShowPassword').textContent='Lihat';n6RenderAccount();showToast('Sesi pratinjau aktif')});
-n6AccountLogout.addEventListener('click',()=>{try{sessionStorage.removeItem(n6AccountSessionKey)}catch(e){}n6AccountUser.value='';n6AccountPassword.value='';n6RenderAccount();showToast('Keluar dari sesi pratinjau')});
+n6AccountForm.addEventListener('submit',e=>{e.preventDefault();const name=n6AccountUser.value.trim();if(!name||n6AccountPassword.value.length<6)return;try{sessionStorage.setItem(n6AccountSessionKey,name)}catch(e){showToast('Sesi browser tidak tersedia');return}n6AccountPassword.value='';n6AccountPassword.type='password';document.getElementById('n6ShowPassword').textContent='Lihat';n6RenderAccount();showToast('Sesi aktif')});
+n6AccountLogout.addEventListener('click',()=>{const cfg=(window.N6_API||{});if(cfg.enabled===true){try{localStorage.removeItem(cfg.tokenKey||'n6:api:token');localStorage.removeItem(cfg.refreshKey||'n6:api:refresh');localStorage.removeItem(cfg.userKey||'n6:api:user')}catch(e){}window.location.reload();return}try{sessionStorage.removeItem(n6AccountSessionKey)}catch(e){}n6AccountUser.value='';n6AccountPassword.value='';n6RenderAccount();showToast('Keluar dari sesi')});
 n6RenderAccount();
 
   n6StorageStatus();

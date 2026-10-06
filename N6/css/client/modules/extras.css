@@ -128,6 +128,8 @@
   .theme-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .theme-picker button{padding:10px 4px;background:var(--paper);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-weight:800;cursor:pointer}
   .theme-picker button.selected{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red);color:var(--red)}
+  .account-logout-btn{width:100%;text-align:left;margin-top:8px;padding:10px 4px;background:transparent;border:1px solid var(--line);border-radius:8px;color:#B71F1F;font-weight:800;cursor:pointer}
+  .account-logout-btn:hover{background:#FDECEA}
   .account-menu-foot{border-top:1px solid var(--line);padding-top:12px;margin-top:13px;font-size:10px;color:var(--asphalt)}
   .app-content{padding:21px 17px 115px}
   .card{border-radius:15px;padding:20px;margin-bottom:17px;box-shadow:0 4px 14px rgba(18,28,23,.035)}

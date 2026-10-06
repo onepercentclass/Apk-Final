@@ -54,7 +54,7 @@ export const VIEW_HEADCOACH = `
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M18 6L6 18M6 6l12 12"></path></svg>
 </button>
 <div class="side-foot">
-<b>Kevin Wibowo</b>
+<b id="hcSideFootName">Head Coach</b>
       Head Coach — N6 Running Training
     </div>
 </aside>
@@ -78,7 +78,7 @@ export const VIEW_HEADCOACH = `
 <div class="bell">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
 </div>
-<div class="avatar-name"><b>Kevin Wibowo</b><span>Head Coach</span></div>
+<div class="avatar-name"><b id="hcTopbarName">Head Coach</b><span>Head Coach</span></div>
 </div>
 <div class="hc-account-wrap"><button aria-expanded="false" aria-label="Akun Head Coach" class="hc-account-toggle" id="hcAccountToggle" title="Akun Head Coach" type="button"><svg fill="none" height="23" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="23"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"></path></svg></button><div class="hc-account-menu" hidden="" id="hcAccountMenu"><div class="hc-account-menu-title">Head Coach <small>Pengaturan akun</small></div><div class="hc-account-menu-actions"><div class="hc-theme"><button aria-pressed="true" id="hcDark" type="button">☾ Dark</button><button aria-pressed="false" id="hcLight" type="button">☀ Light</button></div></div><p class="hc-muted" id="hcSessionLabel">Belum login</p><form autocomplete="off" class="hc-account-form" id="hcLoginForm" style="margin-top:15px"><label>Username<input id="hcUsername" maxlength="50" placeholder="Nama pengguna" required=""/></label><label>Password<input id="hcPassword" placeholder="Password tidak disimpan" required="" type="password"/></label><button class="btn-primary" type="submit">Login</button><button class="btn-outline" id="hcLogout" type="button">Logout</button></form><button hidden="" id="hcAccountLight" type="button"></button><button hidden="" id="hcAccountDark" type="button"></button></div></div></div>
 </header>

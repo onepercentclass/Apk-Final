@@ -29,6 +29,7 @@
            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c0-4 2.7-6 6.5-6s6.5 2 6.5 6"/></svg></button>' +
            '<div class="account-menu" id="clientAccountMenu" hidden><div class="account-menu-title">PENGATURAN AKUN</div><div class="account-person">' + escapeClientHtml(clientName) + '</div>' +
            '<div class="theme-picker"><button type="button" data-client-theme="light">☀ &nbsp;Light</button><button type="button" data-client-theme="dark">☾ &nbsp;Dark</button></div>' +
+           '<button type="button" class="account-logout-btn" id="clientLogoutBtn">⏻ &nbsp;Keluar</button>' +
            '<div class="account-menu-foot">NUMBER SIX RUNNING · Client</div></div></div>' +
         '</header>' +        '<main class="app-content">' +
 

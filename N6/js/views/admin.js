@@ -61,7 +61,7 @@ export const VIEW_ADMIN = `
       </button>
 </nav>
 <div class="side-foot">
-<b>Admin CS</b>
+<b id="adminSideFootName">Admin CS</b>
       Customer Service — N6 Running Training
     </div>
 </aside>
@@ -543,7 +543,7 @@ export const VIEW_ADMIN = `
 <!-- Admin CS account and appearance, inspired by Owner dashboard; preview-only session -->
 <div aria-labelledby="n6AccountTitle" aria-modal="true" class="modal-overlay n6-account-overlay" id="n6AccountModal" role="dialog">
 <div class="modal-box n6-account-dialog"><div class="modal-head"><h3 id="n6AccountTitle">Akun &amp; Pengaturan</h3><button aria-label="Tutup" class="modal-close" id="n6AccountClose" type="button">✕</button></div>
-<div class="modal-body"><div class="n6-account-identity"><div class="n6-account-avatar">CS</div><div><strong id="n6AccountName">Admin CS</strong><div class="n6-account-caption" id="n6AccountStatus">Belum masuk</div></div></div>
+<div class="modal-body"><div class="n6-account-identity"><div class="n6-account-avatar" id="n6AccountAvatar">CS</div><div><strong id="n6AccountName">Admin CS</strong><div class="n6-account-caption" id="n6AccountStatus">Belum masuk</div></div></div>
 <label class="field-label">Tampilan Dashboard</label><div aria-label="Pilih tema" class="n6-theme-options" role="group"><button id="n6ChooseLight" type="button">☀ Light · Biru</button><button id="n6ChooseDark" type="button">☾ Dark · Hijau</button></div>
 <hr class="n6-account-divider"/><form autocomplete="off" class="n6-account-form" id="n6AccountForm"><label for="n6AccountUsername">Username</label><input autocomplete="username" id="n6AccountUsername" maxlength="50" placeholder="Username Admin CS" required="" type="text"/><label for="n6AccountPassword">Password</label><div class="n6-password-row"><input autocomplete="current-password" id="n6AccountPassword" minlength="6" placeholder="Minimal 6 karakter" required="" type="password"/><button id="n6ShowPassword" type="button">Lihat</button></div><button class="btn-primary" type="submit">Login</button></form><button class="btn-outline n6-account-logout" hidden="" id="n6AccountLogout" type="button">Logout</button><p class="n6-account-info">Login menggunakan akun server. Jaga kerahasiaan password Anda.</p></div></div>
 </div>
