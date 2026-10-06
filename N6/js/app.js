@@ -103,7 +103,8 @@ async function boot() {
   // 3. tier gate, before any role code binds its listeners
   const gate = enforce(document, role.key);
   if (gate.locked.length) {
-    console.info(`[n6] tier ${role.tier} (${role.label}) cannot open: ${gate.locked.join(', ')}`);
+    const ub = (getSession().backend) || {};
+    console.info(`[n6] user tier ${ub.tier} (${ub.role || '?'}) cannot open: ${gate.locked.join(', ')}`);
   }
 
   // 4. data layer (localStorage while the API is off)
