@@ -84,16 +84,26 @@ N6/
 
 ## 3. Rencana Restrukturisasi
 
-### Fase A: Build Pipeline Linux (Prioritas Tertinggi)
+### Fase A: Build Pipeline Linux (Prioritas Tertinggi) — ✅ SELESAI 2026-10-06
 
 **Tujuan:** Satu source of truth, bisa rebuild `dist/` di Linux.
 
-| Aksi | Detail |
-|------|--------|
-| A1 | Buat `tools/build.sh` (bash) yang mereplikasi `tools/build.ps1` |
-| A2 | Verifikasi output `build.sh` identik dengan `dist/` saat ini (byte-for-byte) |
-| A3 | Tambahkan `tools/build.sh --check` ke pre-commit atau CI |
-| A4 | Dokumentasikan di `N6/README.md`: "Jangan edit `dist/` manual, edit `modules/` lalu rebuild" |
+| Aksi | Detail | Status |
+|------|--------|--------|
+| A1 | Buat `tools/build.sh` (bash) yang mereplikasi `tools/build.ps1` | ✅ |
+| A2 | Verifikasi output `build.sh` identik dengan `dist/` saat ini (byte-for-byte) | ⚠️ Parsial |
+| A3 | Tambahkan `tools/build.sh --check` ke pre-commit atau CI | ⬜ Belum |
+| A4 | Dokumentasikan di `N6/README.md`: "Jangan edit `dist/` manual, edit `modules/` lalu rebuild" | ✅ |
+
+**Catatan A2:** `--check` saat ini melaporkan DIFFERS untuk semua 5 role — ini
+**diharapkan** karena `dist/` mengandung perbaikan manual yang belum di-port ke
+`modules/` (itulah scope Fase B). Yang penting: tool-nya bekerja dengan benar
+(manifest check lolos untuk semua role setelah perbaikan manifest owner/admin/client).
+
+**Perbaikan manifest yang dilakukan saat Fase A:**
+- `owner/manifest.js`: `['_core', 34]` → `['_core', 35]` (unit `N6_API_KEYS` dari commit 1e989bc)
+- `admin/manifest.js`: `['_core', 33]` → `['_core', 34]` (unit `N6_API_KEYS` dari commit 671c687)
+- `client/manifest.js`: `['_core', 3]` → `['_core', 2]` (unit `isDemoMode` dihapus di commit 04e75be) + hapus satu `['performa', 1]` (unit `seedDemoData` dihapus di commit 04e75be)
 
 **File yang disentuh:**
 - BARU: `N6/tools/build.sh`

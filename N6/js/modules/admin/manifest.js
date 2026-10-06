@@ -11,7 +11,7 @@
  */
 //__N6_MANIFEST__
 export const MANIFEST_ADMIN = [
-  ['_core', 33],
+  ['_core', 34],
   ['harga', 1],
   ['klien', 1],
   ['_core', 13],

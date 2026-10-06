@@ -13,7 +13,7 @@
 export const MANIFEST_OWNER = [
   ['_core', 1],
   ['komisi', 1],
-  ['_core', 34],
+  ['_core', 35],
   ['klien', 1],
   ['_core', 25],
   ['beranda', 3],

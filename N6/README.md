@@ -26,6 +26,26 @@ n6/
 └── backend/                # FastAPI + PostgreSQL (see backend/README.md)
 ```
 
+## Build
+
+**JANGAN edit `js/dist/*.js` manual.** Source of truth adalah `js/modules/<role>/*.js`.
+Setelah mengubah file di `modules/`, rebuild dengan:
+
+```bash
+# Rebuild semua role
+./tools/build.sh
+
+# Rebuild satu role saja
+./tools/build.sh --role owner
+
+# Cek saja tanpa menulis (untuk CI/pre-commit)
+./tools/build.sh --check
+```
+
+Build script (`tools/build.sh`) adalah port Linux dari `tools/build.ps1`.
+Output harus byte-identical. Jika `--check` gagal, berarti ada fragment yang
+diubah tanpa update `manifest.js` — perbaiki manifest sebelum commit.
+
 ## Quick Start (Frontend Only, API Disabled)
 
 ```bash
