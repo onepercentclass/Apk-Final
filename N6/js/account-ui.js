@@ -22,6 +22,36 @@
 (function () {
   'use strict';
 
+  /* ===== N6 Account UI: memakai komponen bawaan tema (card, badge, btn) ===== */
+  var ACCOUNT_CSS = [
+    '.n6a-wrap{max-width:860px}',
+    '.n6a-stat-note{font-size:12px;color:var(--asphalt);margin-bottom:16px}',
+    '.n6a-pw-meter{height:6px;border-radius:4px;background:var(--line,#eee);margin:8px 0 14px;overflow:hidden}',
+    '.n6a-pw-fill{height:100%;width:0;border-radius:4px;transition:width .25s ease,background .25s ease}',
+    '.n6a-pw-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}',
+    '.n6a-pw-row input{flex:1}',
+    '.n6a-eye{background:none;border:1px solid var(--line);border-radius:6px;cursor:pointer;padding:9px 11px;font-size:14px;line-height:1;color:var(--asphalt)}',
+    '.n6a-eye:hover{border-color:var(--ink);color:var(--ink)}',
+    '.n6a-msg{font-size:12.5px;margin:10px 0;min-height:18px;font-weight:600}',
+    '.n6a-msg.ok{color:var(--green,#16a34a)}.n6a-msg.err{color:var(--red,#dc2626)}',
+    '.n6a-tier-sel{font-size:12px;padding:6px 8px;border-radius:6px;max-width:150px}',
+    '.n6a-row-user{display:flex;align-items:center;gap:12px}',
+    '.n6a-avatar{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none}',
+    '.n6a-uname{font-weight:700;font-size:13.5px}',
+    '.n6a-fname{font-size:12px;color:var(--asphalt);margin-top:2px}',
+    '.n6a-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}',
+    '.n6a-empty{padding:40px 20px;text-align:center;color:var(--asphalt);font-size:13px}',
+    '.n6a-pager{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid #F0EEE7;flex-wrap:wrap;gap:8px}',
+    '@media(max-width:640px){.n6a-wrap{max-width:none}}',
+  ].join('\n');
+  function injectAccountCss() {
+    if (document.getElementById('n6akun-css')) return;
+    var st = document.createElement('style');
+    st.id = 'n6akun-css';
+    st.textContent = ACCOUNT_CSS;
+    document.head.appendChild(st);
+  }
+
   var TIER_LABEL = { 0: 'Owner', 1: 'Admin', 2: 'Head Coach', 3: 'Coach', 4: 'Client' };
   var TIER_CHOICES = [1, 2, 3, 4]; // tier 0 tidak bisa diberikan lewat API (by design)
 
@@ -61,8 +91,7 @@
   }
 
   function noticeHtml(text) {
-    return '<div class="n6-card"><div class="card-body"><p class="account-note">' +
-      esc(text) + '</p></div></div>';
+    return '<div class="note-box">' + esc(text) + '</div>';
   }
 
   function toast(msg, isErr) {
@@ -86,39 +115,79 @@
       return;
     }
     root.innerHTML =
-      '<div class="crumb">Akun</div>' +
-      '<div class="title" style="margin-bottom:16px">Ganti Password</div>' +
-      '<div class="n6-card" style="max-width:520px"><div class="card-body">' +
+      '<div class="n6a-wrap">' +
+      '<div class="note-box">Gunakan kombinasi huruf besar, huruf kecil, angka, dan simbol ' +
+      'dengan panjang minimal 8 karakter agar password sulit ditebak.</div>' +
+      '<div class="card"><div class="card-head"><h3>Ganti Password</h3></div><div class="card-body">' +
       '<form id="n6SandiForm" autocomplete="off">' +
       '<label class="field-label">Password saat ini</label>' +
-      '<input type="password" id="n6SandiLama" class="n6-login__input" style="width:100%;margin-bottom:12px" autocomplete="current-password" required minlength="1"/>' +
+      '<div class="n6a-pw-row"><input type="password" id="n6SandiLama" autocomplete="current-password" required placeholder="Masukkan password lama Anda"/>' +
+      '<button type="button" class="n6a-eye" data-eye="n6SandiLama" title="Tampilkan/sembunyikan">&#128065;</button></div>' +
       '<label class="field-label">Password baru</label>' +
-      '<input type="password" id="n6SandiBaru" class="n6-login__input" style="width:100%;margin-bottom:12px" autocomplete="new-password" required minlength="8"/>' +
+      '<div class="n6a-pw-row" style="margin-bottom:0"><input type="password" id="n6SandiBaru" autocomplete="new-password" required minlength="8" placeholder="Minimal 8 karakter"/>' +
+      '<button type="button" class="n6a-eye" data-eye="n6SandiBaru" title="Tampilkan/sembunyikan">&#128065;</button></div>' +
+      '<div class="n6a-pw-meter"><div class="n6a-pw-fill" id="n6PwFill"></div></div>' +
+      '<div class="n6a-stat-note" id="n6PwHint">Kekuatan password akan muncul di sini.</div>' +
       '<label class="field-label">Ulangi password baru</label>' +
-      '<input type="password" id="n6SandiBaru2" class="n6-login__input" style="width:100%;margin-bottom:16px" autocomplete="new-password" required minlength="8"/>' +
-      '<div id="n6SandiMsg" class="account-note" style="margin-bottom:12px"></div>' +
+      '<div class="n6a-pw-row"><input type="password" id="n6SandiBaru2" autocomplete="new-password" required minlength="8" placeholder="Ketik ulang password baru"/>' +
+      '<button type="button" class="n6a-eye" data-eye="n6SandiBaru2" title="Tampilkan/sembunyikan">&#128065;</button></div>' +
+      '<div id="n6SandiMsg" class="n6a-msg"></div>' +
       '<button type="submit" class="btn-primary">Simpan Password Baru</button>' +
-      '</form></div></div>';
+      '</form></div></div></div>';
 
     var form = document.getElementById('n6SandiForm');
     var msg = document.getElementById('n6SandiMsg');
+    var pwFill = document.getElementById('n6PwFill');
+    var pwHint = document.getElementById('n6PwHint');
+    var baruInput = document.getElementById('n6SandiBaru');
+
+    // toggle tampil/sembunyi
+    root.querySelectorAll('[data-eye]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var inp = document.getElementById(b.getAttribute('data-eye'));
+        if (!inp) return;
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+      });
+    });
+
+    // indikator kekuatan password
+    baruInput.addEventListener('input', function () {
+      var v = baruInput.value, score = 0;
+      if (v.length >= 8) score++;
+      if (v.length >= 12) score++;
+      if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
+      if (/\d/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      var pct = Math.min(100, score * 20);
+      var colors = ['#e5e5e5', '#ef4444', '#f97316', '#eab308', '#22c55e', '#16a34a'];
+      var labels = ['Terlalu pendek', 'Lemah', 'Cukup', 'Kuat', 'Sangat kuat', 'Sangat kuat'];
+      pwFill.style.width = pct + '%';
+      pwFill.style.background = colors[score];
+      pwHint.textContent = v ? ('Kekuatan: ' + labels[score]) : 'Kekuatan password akan muncul di sini.';
+    });
+
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       var lama = document.getElementById('n6SandiLama').value;
-      var baru = document.getElementById('n6SandiBaru').value;
+      var baru = baruInput.value;
       var baru2 = document.getElementById('n6SandiBaru2').value;
+      msg.className = 'n6a-msg';
       msg.textContent = '';
-      if (baru !== baru2) { msg.textContent = 'Ulangi password baru tidak sama.'; return; }
-      if (baru.length < 8) { msg.textContent = 'Password baru minimal 8 karakter.'; return; }
+      if (baru !== baru2) { msg.className = 'n6a-msg err'; msg.textContent = 'Ulangi password baru tidak sama.'; return; }
+      if (baru.length < 8) { msg.className = 'n6a-msg err'; msg.textContent = 'Password baru minimal 8 karakter.'; return; }
       try {
         await api('auth/password', {
           method: 'PUT',
           body: { current_password: lama, new_password: baru },
         });
+        msg.className = 'n6a-msg ok';
         msg.textContent = 'Password berhasil diganti.';
         form.reset();
+        pwFill.style.width = '0';
+        pwHint.textContent = 'Kekuatan password akan muncul di sini.';
         toast('Password berhasil diganti.');
       } catch (err) {
+        msg.className = 'n6a-msg err';
         msg.textContent = 'Gagal: ' + err.message;
       }
     });
@@ -138,37 +207,57 @@
       return '<option value="' + t + '"' + (t === acc.tier ? ' selected' : '') + '>' +
         esc(TIER_LABEL[t]) + '</option>';
     }).join('');
-    return '<select class="n6-tier-select" data-akun-tier="' + acc.id + '">' + opts + '</select>';
+    return '<select class="n6a-tier-sel" data-akun-tier="' + acc.id + '">' + opts + '</select>';
+  }
+
+  function tierBadgeCls(tier) {
+    // pakai badge bawaan tema: owner=red, admin=blue, headcoach=amber, coach=neutral, client=neutral
+    if (tier === 0) return 'red';
+    if (tier === 1) return 'blue';
+    if (tier === 2) return 'amber';
+    return 'neutral';
+  }
+
+  function avatarHtml(name) {
+    var initials = String(name || '?').trim().split(/\s+/).map(function (w) {
+      return w.charAt(0);
+    }).join('').slice(0, 2).toUpperCase() || '?';
+    return '<div class="n6a-avatar">' + esc(initials) + '</div>';
   }
 
   function renderAkunTable() {
     var tbody = document.getElementById('n6AkunBody');
     if (!tbody) return;
     if (!akunState.items.length) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted,#888)">Belum ada anggota.</td></tr>';
-      return;
+      tbody.innerHTML = '<tr><td colspan="4"><div class="n6a-empty">Belum ada anggota.<br>Tambahkan anggota pertama lewat form di atas.</div></td></tr>';
+    } else {
+      tbody.innerHTML = akunState.items.map(function (a) {
+        var status = a.is_active
+          ? '<span class="badge green">Aktif</span>'
+          : '<span class="badge red">Nonaktif</span>';
+        var aksi = a.is_active
+          ? '<button class="btn-danger-sm" data-akun-off="' + a.id + '">Nonaktifkan</button>'
+          : '<button class="btn-sm" data-akun-on="' + a.id + '">Aktifkan</button>';
+        var selfRow = false;
+        try {
+          var me = JSON.parse(window.localStorage.getItem((window.N6_API || {}).userKey || 'n6:api:user') || 'null');
+          selfRow = me && me.id === a.id;
+        } catch (e) {}
+        return '<tr>' +
+          '<td style="padding-left:20px"><div class="n6a-row-user">' + avatarHtml(a.full_name || a.username) +
+          '<div><div class="n6a-uname">' + esc(a.username) + '</div>' +
+          '<div class="n6a-fname">' + esc(a.full_name || '') +
+          (a.email ? ' &middot; ' + esc(a.email) : '') + '</div></div></div></td>' +
+          '<td><span class="badge ' + tierBadgeCls(a.tier) + '">' + esc(TIER_LABEL[a.tier] || a.tier) + '</span>' +
+          (a.tier === 0
+            ? '<div class="n6a-fname" style="margin-top:6px">Tidak bisa diubah</div>'
+            : '<div style="margin-top:6px">' + tierSelectHtml(a) + '</div>') + '</td>' +
+          '<td>' + status + '</td>' +
+          '<td class="right" style="padding-right:20px"><div class="n6a-actions">' +
+          (selfRow ? '<span class="n6a-fname">akun ini</span>' : aksi) + '</div></td>' +
+          '</tr>';
+      }).join('');
     }
-    tbody.innerHTML = akunState.items.map(function (a) {
-      var status = a.is_active
-        ? '<span style="color:#3ed3a0">Aktif</span>'
-        : '<span style="color:#e5484d">Nonaktif</span>';
-      var aksi = a.is_active
-        ? '<button class="btn-outline btn-sm" data-akun-off="' + a.id + '">Nonaktifkan</button>'
-        : '<button class="btn-outline btn-sm" data-akun-on="' + a.id + '">Aktifkan</button>';
-      // akun owner sendiri tidak bisa dinonaktifkan dari sini
-      var selfRow = false;
-      try {
-        var me = JSON.parse(window.localStorage.getItem((window.N6_API || {}).userKey || 'n6:api:user') || 'null');
-        selfRow = me && me.id === a.id;
-      } catch (e) {}
-      return '<tr>' +
-        '<td><b>' + esc(a.username) + '</b><br><span class="account-note">' + esc(a.full_name) + '</span></td>' +
-        '<td>' + esc(a.email || '-') + '</td>' +
-        '<td>' + tierSelectHtml(a) + '</td>' +
-        '<td>' + status + '</td>' +
-        '<td style="text-align:right">' + (selfRow ? '<span class="account-note">akun ini</span>' : aksi) + '</td>' +
-        '</tr>';
-    }).join('');
 
     tbody.querySelectorAll('[data-akun-tier]').forEach(function (sel) {
       sel.addEventListener('change', async function () {
@@ -210,10 +299,30 @@
       var sampai = Math.min(akunState.offset + akunState.items.length, akunState.total);
       info.textContent = 'Menampilkan ' + mulai + '-' + sampai + ' dari ' + akunState.total + ' akun';
     }
+    var page = document.getElementById('n6AkunPage');
+    if (page) {
+      var totalPage = Math.max(1, Math.ceil(akunState.total / akunState.limit));
+      var curPage = Math.floor(akunState.offset / akunState.limit) + 1;
+      page.textContent = 'Halaman ' + curPage + ' dari ' + totalPage;
+    }
     var prev = document.getElementById('n6AkunPrev');
     var next = document.getElementById('n6AkunNext');
     if (prev) prev.disabled = akunState.offset <= 0;
     if (next) next.disabled = (akunState.offset + akunState.items.length) >= akunState.total;
+  }
+
+  async function updateAkunStats() {
+    try {
+      var data = await api('accounts?limit=1000&offset=0');
+      var items = data.items || [];
+      var aktif = items.filter(function (a) { return a.is_active; }).length;
+      var tim = items.filter(function (a) { return a.is_active && a.tier >= 1 && a.tier <= 3; }).length;
+      var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+      set('n6StatTotal', items.length);
+      set('n6StatAktif', aktif);
+      set('n6StatNonaktif', items.length - aktif);
+      set('n6StatTim', tim);
+    } catch (e) {}
   }
 
   async function loadAkun() {
@@ -230,6 +339,7 @@
     }
     akunState.loading = false;
     renderAkunTable();
+    updateAkunStats();
   }
 
   function initKelolaAnggota() {
@@ -243,38 +353,41 @@
       return;
     }
     root.innerHTML =
-      '<div class="crumb">Owner</div>' +
-      '<div class="title" style="margin-bottom:16px">Kelola Anggota</div>' +
-      '<div class="n6-card" style="margin-bottom:16px"><div class="card-body">' +
-      '<div class="title" style="font-size:15px;margin-bottom:12px">Tambah Anggota Baru</div>' +
+      '<div class="stat-grid" id="n6AkunStats">' +
+      '<div class="stat-card"><div class="label">Total Anggota</div><div class="value" id="n6StatTotal">-</div></div>' +
+      '<div class="stat-card"><div class="label">Aktif</div><div class="value green" id="n6StatAktif">-</div></div>' +
+      '<div class="stat-card"><div class="label">Nonaktif</div><div class="value red" id="n6StatNonaktif">-</div></div>' +
+      '<div class="stat-card"><div class="label">Admin & Coach</div><div class="value" id="n6StatTim">-</div></div>' +
+      '</div>' +
+      '<div class="card"><div class="card-head"><div><h3>Tambah Anggota Baru</h3>' +
+      '<div class="sub-h">Akun baru otomatis mendapat tier Client (paling bawah). Tier bisa diubah setelah dibuat.</div></div></div>' +
+      '<div class="card-body">' +
       '<form id="n6AkunAddForm" autocomplete="off"><div class="form-grid">' +
-      '<div><label class="field-label">Username *</label><input id="n6AkunUsername" required minlength="3" maxlength="64" placeholder="cth: coach.budi"/></div>' +
-      '<div><label class="field-label">Nama lengkap *</label><input id="n6AkunNama" required maxlength="160" placeholder="cth: Budi Santoso"/></div>' +
-      '<div><label class="field-label">Password awal *</label><input id="n6AkunPass" type="password" required minlength="8" autocomplete="new-password"/></div>' +
-      '<div><label class="field-label">Tier</label><select id="n6AkunTier">' +
+      '<div><label class="field-label">Username *</label><input id="n6AkunUsername" type="text" required minlength="3" maxlength="64" placeholder="cth: coach.budi"/></div>' +
+      '<div><label class="field-label">Nama lengkap *</label><input id="n6AkunNama" type="text" required maxlength="160" placeholder="cth: Budi Santoso"/></div>' +
+      '<div><label class="field-label">Password awal *</label><input id="n6AkunPass" type="password" required minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter"/></div>' +
+      '<div><label class="field-label">Tier awal</label><select id="n6AkunTier">' +
       TIER_CHOICES.map(function (t) {
         return '<option value="' + t + '"' + (t === 4 ? ' selected' : '') + '>' + esc(TIER_LABEL[t]) + '</option>';
       }).join('') +
       '</select></div>' +
       '<div class="full"><label class="field-label">Email (opsional)</label><input id="n6AkunEmail" type="email" maxlength="255" placeholder="nama@contoh.id"/></div>' +
       '</div>' +
-      '<div id="n6AkunAddMsg" class="account-note" style="margin:8px 0"></div>' +
-      '<button type="submit" class="btn-primary">Tambah Anggota</button> ' +
-      '<span class="account-note">Tier default: Client (paling bawah).</span>' +
+      '<div id="n6AkunAddMsg" class="n6a-msg"></div>' +
+      '<button type="submit" class="btn-primary">Tambah Anggota</button>' +
       '</form></div></div>' +
-      '<div class="n6-card"><div class="card-body">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-      '<div class="title" style="font-size:15px">Daftar Akun</div>' +
-      '<button class="btn-outline btn-sm" id="n6AkunReload">Muat ulang</button>' +
-      '</div>' +
-      '<div style="overflow-x:auto"><table style="min-width:720px"><thead><tr>' +
-      '<th>Akun</th><th>Email</th><th>Tier</th><th>Status</th>' +
-      '<th style="text-align:right">Aksi</th>' +
+      '<div class="card"><div class="card-head"><div><h3>Daftar Anggota</h3>' +
+      '<div class="sub-h" id="n6AkunInfo">Memuat...</div></div>' +
+      '<button class="btn-outline btn-sm" id="n6AkunReload">Muat ulang</button></div>' +
+      '<div class="card-body" style="padding:0"><div style="overflow-x:auto">' +
+      '<table><thead><tr>' +
+      '<th style="padding-left:20px">Anggota</th><th>Tier</th><th>Status</th>' +
+      '<th class="right" style="padding-right:20px">Aksi</th>' +
       '</tr></thead><tbody id="n6AkunBody"></tbody></table></div>' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">' +
-      '<span class="account-note" id="n6AkunInfo"></span>' +
-      '<span><button class="btn-outline btn-sm" id="n6AkunPrev">&larr; Sebelumnya</button> ' +
-      '<button class="btn-outline btn-sm" id="n6AkunNext">Berikutnya &rarr;</button></span>' +
+      '<div class="n6a-pager">' +
+      '<span class="n6a-stat-note" style="margin:0" id="n6AkunPage"></span>' +
+      '<span><button class="btn-sm" id="n6AkunPrev">&larr; Sebelumnya</button> ' +
+      '<button class="btn-sm" id="n6AkunNext">Berikutnya &rarr;</button></span>' +
       '</div></div></div>';
 
     document.getElementById('n6AkunReload').addEventListener('click', loadAkun);
@@ -282,12 +395,13 @@
       if (akunState.offset > 0) { akunState.offset -= akunState.limit; loadAkun(); }
     });
     document.getElementById('n6AkunNext').addEventListener('click', function () {
-      akunState.offset += akunState.limit; loadAkun();
+      if (akunState.offset + akunState.limit < akunState.total) { akunState.offset += akunState.limit; loadAkun(); }
     });
 
     document.getElementById('n6AkunAddForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       var msg = document.getElementById('n6AkunAddMsg');
+      msg.className = 'n6a-msg';
       msg.textContent = '';
       var body = {
         username: document.getElementById('n6AkunUsername').value.trim(),
@@ -299,13 +413,15 @@
       if (email) body.email = email;
       try {
         var created = await api('accounts', { method: 'POST', body: body });
-        msg.textContent = 'Anggota "' + created.username + '" ditambahkan dengan tier ' +
+        msg.className = 'n6a-msg ok';
+        msg.textContent = 'Anggota "' + created.username + '" ditambahkan sebagai ' +
           (TIER_LABEL[created.tier] || created.tier) + '.';
         e.target.reset();
         document.getElementById('n6AkunTier').value = '4';
         akunState.offset = 0;
         loadAkun();
       } catch (err) {
+        msg.className = 'n6a-msg err';
         msg.textContent = 'Gagal: ' + err.message;
       }
     });
@@ -377,6 +493,7 @@
   }
 
   function init() {
+    injectAccountCss();
     // panel mungkin belum ada bila view diganti; tunggu sebentar
     if (!document.getElementById('panel-sandi') && !document.getElementById('panel-akun')) {
       // peran client: menu akun di-render oleh bundle
