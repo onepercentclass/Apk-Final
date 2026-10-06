@@ -117,7 +117,7 @@
 
   async function loadClients(){
     const [clientPage, flags] = await Promise.all([
-      n6Api('clients?limit=500'),
+      n6Api('clients?limit=200'),
       n6Api('monitoring/flags').catch(() => []),
     ]);
     const items = (clientPage && clientPage.items) || [];
