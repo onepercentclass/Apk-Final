@@ -59,11 +59,21 @@
   // Makanya dipindah ke localStorage asli milik browser, yang benar-benar tersimpan permanen
   // di perangkat/browser tempat dashboard ini dibuka.
   const STORE_PREFIX = 'n6csAdmin:';
+  const N6_API_KEYS = new Set(['clients','tickets','messages']);
   async function storeGet(key){
+    if (N6_API_KEYS.has(key) && typeof window !== 'undefined' && window.storage) {
+      try {
+        const r = await window.storage.get(key, true);
+        if (r && r.value != null) return r.value;
+      } catch (e) {}
+    }
     try{ return localStorage.getItem(STORE_PREFIX + key); }
     catch(e){ return null; }
   }
   async function storeSet(key, value){
+    if (N6_API_KEYS.has(key) && typeof window !== 'undefined' && window.storage) {
+      try { await window.storage.set(key, value, true); } catch (e) {}
+    }
     try{ localStorage.setItem(STORE_PREFIX + key, value); if(localStorage.getItem(STORE_PREFIX + key)!==value) throw Error('Verifikasi gagal'); return true; }
     catch(e){ showToast('GAGAL menyimpan! Periksa izin penyimpanan browser.'); throw e; }
   }
