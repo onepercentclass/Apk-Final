@@ -8,21 +8,72 @@
 
 
 (function(){
-  /* ================= MOCK DATA ================= */
-  let schedule = [
-    { time:"06:00", client:"Budi Hartono", loc:"GBK Senayan", status:"Selesai", attendance:"hadir" },
-    { time:"07:00", client:"Andi Prasetyo", loc:"GBK Senayan", status:"Berlangsung", attendance:null },
-    { time:"16:00", client:"Rina Marlina", loc:"Online", status:"Terjadwal", attendance:null },
-    { time:"18:00", client:"Yoga Pratama", loc:"Online", status:"Terjadwal", attendance:null },
-  ];
+  /* ================= API CLIENT ================= */
+  function n6ApiCfg(){ return window.N6_API || {}; }
+  function n6ApiBase(){ return String(n6ApiCfg().base || 'https://api.denisbergkam.com/api/n6').replace(/\/+$/, ''); }
+  function n6ApiToken(){
+    try { return window.localStorage.getItem(n6ApiCfg().tokenKey || 'n6:api:token'); }
+    catch(e){ return null; }
+  }
+  function n6ApiUser(){
+    try { return JSON.parse(window.localStorage.getItem(n6ApiCfg().userKey || 'n6:api:user') || 'null'); }
+    catch(e){ return null; }
+  }
+  function n6ApiReady(){ return n6ApiCfg().enabled === true && !!n6ApiToken(); }
+  async function n6Api(path){
+    const res = await fetch(n6ApiBase() + '/' + String(path).replace(/^\/+/, ''), {
+      headers: { 'Authorization': 'Bearer ' + n6ApiToken() }
+    });
+    if (!res.ok) throw new Error('API ' + res.status + ' ' + path);
+    return res.json();
+  }
+  function fmtTanggalID(iso){
+    if (!iso) return '-';
+    try {
+      const d = new Date(String(iso).length <= 10 ? iso + 'T00:00:00' : iso);
+      const MON = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+      return d.getDate() + ' ' + MON[d.getMonth()] + ' ' + d.getFullYear();
+    } catch(e){ return String(iso); }
+  }
 
-  const clients = [
-    { name:"Budi Hartono", goal:"10K", last:"Kemarin", type:"Offline", produk:"Privat", status:"Aktif", mulai:"1 Agu 2026", selesai:"30 Sep 2026" },
-    { name:"Andi Prasetyo", goal:"Turun BB", last:"Hari ini", type:"Offline", produk:"Semi Privat", status:"Aktif", mulai:"15 Agu 2026", selesai:"15 Okt 2026" },
-    { name:"Rina Marlina", goal:"Half Marathon", last:"2 hari lalu", type:"Online", produk:"Kelas Running", status:"Aktif", mulai:"1 Sep 2026", selesai:"31 Okt 2026" },
-    { name:"Yoga Pratama", goal:"5K", last:"3 hari lalu", type:"Online", produk:"Pacer / Persiapan Race", status:"Aktif", mulai:"20 Agu 2026", selesai:"20 Sep 2026" },
-    { name:"Citra Ayu", goal:"Full Marathon", last:"Kemarin", type:"Online", produk:"Korporat (5-20 Orang)", status:"Pending", mulai:"5 Sep 2026", selesai:"5 Jan 2027" },
-  ];
+  /* ================= DATA (dari API, bukan dummy) ================= */
+  // Jadwal hari ini — dari GET /schedules/coach (template mingguan, difilter ke hari ini)
+  let schedule = [];
+  // Urutan hari API: 1=Senin..7=Minggu ; JS getDay(): 0=Minggu..6=Sabtu
+  function apiWeekday(jsDay){ return ((jsDay + 6) % 7) + 1; }
+  async function loadSchedule(){
+    const data = await n6Api('schedules/coach');
+    const slots = (data && data.slots) || [];
+    const todayWd = apiWeekday(new Date().getDay());
+    schedule = slots
+      .filter(s => s.weekday === todayWd && s.active !== false)
+      .sort((a,b) => String(a.start_time || '').localeCompare(String(b.start_time || '')))
+      .map(s => ({
+        time: s.start_time || '--:--',
+        client: s.note || s.training_category || '—',
+        loc: s.location || '—',
+        status: 'Terjadwal',
+        attendance: null
+      }));
+  }
+
+  // Klien binaan — dari GET /clients (backend otomatis memfilter milik coach yang login)
+  let clients = [];
+  async function loadClients(){
+    const page = await n6Api('clients?limit=200');
+    const items = (page && page.items) || [];
+    clients = items.map(c => ({
+      id: c.id,
+      name: c.name,
+      goal: c.notes || '—',
+      last: '—',
+      type: '—',
+      produk: '—',
+      status: c.status === 'aktif' ? 'Aktif' : (c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : '—'),
+      mulai: c.joined_on ? fmtTanggalID(c.joined_on) : '—',
+      selesai: '—'
+    }));
+  }
 
   const clientProgress = [
     { name:"Budi Hartono", goal:"10K", progress:72, note:"Pace membaik dari 6:40 → 6:10/km dalam 6 minggu." },
@@ -53,14 +104,22 @@
     ratingTren: [4.5, 4.6, 4.7, 4.6, 4.8, 4.8]
   };
 
-  let coachAttendanceList = [
-    { tanggal:"10 Sep 2026", sesi:"06:00 — Budi Hartono", status:"Tepat Waktu", ket:"-", feedback:{ score:95, komentar:"Konsisten datang lebih awal, pertahankan!" } },
-    { tanggal:"09 Sep 2026", sesi:"07:00 — Andi Prasetyo", status:"Terlambat", ket:"Macet di jalan", feedback:{ score:70, komentar:"Mohon berangkat lebih awal untuk sesi pagi." } },
-    { tanggal:"08 Sep 2026", sesi:"16:00 — Rina Marlina", status:"Latihan Sedang Berjalan", ket:"Check-in saat sesi berjalan karena kendala aplikasi", feedback:null },
-    { tanggal:"05 Sep 2026", sesi:"06:00 — Budi Hartono", status:"Tepat Waktu", ket:"-", feedback:{ score:95, komentar:"Baik, sesuai jadwal." } },
-    { tanggal:"04 Sep 2026", sesi:"07:00 — Andi Prasetyo", status:"Tepat Waktu", ket:"-", feedback:{ score:92, komentar:"Baik." } },
-    { tanggal:"02 Sep 2026", sesi:"18:00 — Yoga Pratama", status:"Terlambat", ket:"Ban bocor", feedback:{ score:65, komentar:"Sudah 2x terlambat bulan ini, mohon diperhatikan." } },
-  ];
+  // Riwayat absensi sesi klien — dari GET /attendance (difilter milik coach oleh backend)
+  let coachAttendanceList = [];
+  const ATT_LABEL = { hadir:'Hadir', izin:'Izin', sakit:'Sakit', alpha:'Alpha' };
+  async function loadCoachAttendance(){
+    const page = await n6Api('attendance?limit=200');
+    const items = (page && page.items) || [];
+    const nameById = {};
+    clients.forEach(c => { if (c.id != null) nameById[c.id] = c.name; });
+    coachAttendanceList = items.map(a => ({
+      tanggal: fmtTanggalID(a.session_on),
+      sesi: nameById[a.client_id] || ('Klien #' + a.client_id),
+      status: ATT_LABEL[a.status] || a.status,
+      ket: a.note || '-',
+      feedback: null
+    }));
+  }
   const coachPeriode = { mulai:"1 Januari 2026", selesai:"31 Desember 2026" };
 
   const historyList = [
@@ -71,26 +130,30 @@
     { date:"28 Agu 2026", activity:"Sesi latihan bersama Yoga Pratama", type:"Sesi" },
   ];
 
-  const gajiSesiList = [
-    // September 2026
-    { tanggal:"10 Sep 2026", bulan:9, tahun:2026, paket:"Privat", klien:"Budi Hartono", gajiSesi:150000, potongan:0, ket:"" },
-    { tanggal:"09 Sep 2026", bulan:9, tahun:2026, paket:"Semi Privat", klien:"Andi Prasetyo", gajiSesi:150000, potongan:15000, ket:"Telat 15 menit" },
-    { tanggal:"08 Sep 2026", bulan:9, tahun:2026, paket:"Kelas Running", klien:"Rina Marlina", gajiSesi:120000, potongan:0, ket:"" },
-    { tanggal:"06 Sep 2026", bulan:9, tahun:2026, paket:"Pacer / Persiapan Race", klien:"Yoga Pratama", gajiSesi:120000, potongan:0, ket:"" },
-    { tanggal:"05 Sep 2026", bulan:9, tahun:2026, paket:"Privat", klien:"Budi Hartono", gajiSesi:150000, potongan:0, ket:"" },
-    { tanggal:"04 Sep 2026", bulan:9, tahun:2026, paket:"Semi Privat", klien:"Andi Prasetyo", gajiSesi:150000, potongan:0, ket:"" },
-    { tanggal:"02 Sep 2026", bulan:9, tahun:2026, paket:"Korporat (5-20 Orang)", klien:"Citra Ayu", gajiSesi:120000, potongan:30000, ket:"Sesi dibatalkan mendadak oleh klien" },
-    { tanggal:"01 Sep 2026", bulan:9, tahun:2026, paket:"Kelas Running", klien:"Rina Marlina", gajiSesi:120000, potongan:0, ket:"" },
-    // Agustus 2026
-    { tanggal:"28 Agu 2026", bulan:8, tahun:2026, paket:"Privat", klien:"Budi Hartono", gajiSesi:150000, potongan:0, ket:"" },
-    { tanggal:"21 Agu 2026", bulan:8, tahun:2026, paket:"Pacer / Persiapan Race", klien:"Yoga Pratama", gajiSesi:120000, potongan:0, ket:"" },
-    { tanggal:"14 Agu 2026", bulan:8, tahun:2026, paket:"Semi Privat", klien:"Andi Prasetyo", gajiSesi:150000, potongan:0, ket:"" },
-    { tanggal:"07 Agu 2026", bulan:8, tahun:2026, paket:"Kelas Running", klien:"Rina Marlina", gajiSesi:120000, potongan:20000, ket:"Sesi dipersingkat" },
-    // Juli 2026
-    { tanggal:"24 Jul 2026", bulan:7, tahun:2026, paket:"Privat", klien:"Budi Hartono", gajiSesi:150000, potongan:0, ket:"" },
-    { tanggal:"17 Jul 2026", bulan:7, tahun:2026, paket:"Semi Privat", klien:"Andi Prasetyo", gajiSesi:150000, potongan:0, ket:"" },
-    { tanggal:"10 Jul 2026", bulan:7, tahun:2026, paket:"Korporat (5-20 Orang)", klien:"Citra Ayu", gajiSesi:120000, potongan:0, ket:"" },
-  ];
+  // Komisi coach — dari GET /commissions/summary?period=YYYY-MM (satu baris per coach per bulan)
+  let gajiSummary = null;
+  let gajiCoachName = '';
+  function currentPeriodKey(){
+    return gajiFilterState.tahun + '-' + String(gajiFilterState.bulan).padStart(2,'0');
+  }
+  async function loadGaji(){
+    const data = await n6Api('commissions/summary?period=' + currentPeriodKey());
+    const rows = (data && data.rows) || [];
+    const me = n6ApiUser();
+    const myCoachId = me && me.coach_id != null ? me.coach_id : null;
+    gajiSummary = myCoachId != null ? (rows.find(r => String(r.coach_id) === String(myCoachId)) || null) : null;
+    gajiCoachName = (me && (me.full_name || me.username)) || 'Coach';
+  }
+  async function refreshGaji(){
+    renderGajiLoading();
+    try { await loadGaji(); }
+    catch(e){ console.warn('[coach] gaji', e); gajiSummary = null; }
+    renderGaji();
+  }
+  function renderGajiLoading(){
+    const el = document.getElementById('gajiSesiBody');
+    if (el) el.innerHTML = '<tr><td colspan="3" class="muted" style="text-align:center; padding:24px 0;">Memuat data...</td></tr>';
+  }
 
   const bonusList = [
     { bulan:9, tahun:2026, jumlah:200000, ket:"Bonus kehadiran 100%" },
@@ -176,7 +239,13 @@
       </div>`;
   }
   function renderSchedule(){
-    const rowsHtml = schedule.map((s, i) => `
+    const homeEl = document.getElementById('scheduleBodyHome');
+    const absEl = document.getElementById('scheduleBodyAbsensi');
+    let rowsHtml;
+    if (!schedule.length){
+      rowsHtml = '<tr><td colspan="5" class="muted" style="text-align:center; padding:24px 0;">Belum ada data</td></tr>';
+    } else {
+      rowsHtml = schedule.map((s, i) => `
       <tr>
         <td class="muted">${s.time}</td>
         <td class="strong">${s.client}</td>
@@ -185,10 +254,28 @@
         <td class="right">${attendanceButtons(i, s.attendance)}</td>
       </tr>
     `).join('');
-    document.getElementById('scheduleBodyHome').innerHTML = rowsHtml;
-    document.getElementById('scheduleBodyAbsensi').innerHTML = rowsHtml;
+    }
+    if (homeEl) homeEl.innerHTML = rowsHtml;
+    if (absEl) absEl.innerHTML = rowsHtml;
+    // Isi opsi sesi pada form absensi dari jadwal hari ini (bukan dummy)
+    const sel = document.getElementById('acSesi');
+    if (sel){
+      sel.innerHTML = '<option value="">Pilih sesi hari ini</option>' +
+        schedule.map(s => {
+          const label = s.time + ' — ' + s.client;
+          return `<option value="${label}">${label}</option>`;
+        }).join('');
+    }
+  }
+  function renderScheduleLoading(){
+    const html = '<tr><td colspan="5" class="muted" style="text-align:center; padding:24px 0;">Memuat data...</td></tr>';
+    const homeEl = document.getElementById('scheduleBodyHome');
+    const absEl = document.getElementById('scheduleBodyAbsensi');
+    if (homeEl) homeEl.innerHTML = html;
+    if (absEl) absEl.innerHTML = html;
   }
   window.markAttendance = function(idx, value){
+    if (!schedule[idx]) return;
     schedule[idx].attendance = schedule[idx].attendance === value ? null : value;
     if (schedule[idx].attendance === 'hadir') schedule[idx].status = 'Selesai';
     renderSchedule();
@@ -335,7 +422,14 @@
   function typeBadge(type){ return `<span class="badge neutral">${type}</span>`; }
   function clientStatusBadge(status){ return `<span class="badge ${status==='Aktif'?'green':'amber'}">${status}</span>`; }
   function renderClients(){
-    document.getElementById('clientList').innerHTML = clients.map(c => `
+    const el = document.getElementById('clientList');
+    const head = document.querySelector('#klien-daftar .card-head h3');
+    if (head) head.textContent = 'Klien (' + clients.length + ')';
+    if (!clients.length){
+      el.innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      return;
+    }
+    el.innerHTML = clients.map(c => `
       <div class="client-row">
         <div>
           <div class="name">${c.name}</div>
@@ -390,12 +484,24 @@
   /* ================= RENDER: RAPOR KLIEN ================= */
   function renderRaporSelect(){
     const sel = document.getElementById('raporClientSelect');
+    if (!clients.length){
+      sel.innerHTML = '<option value="">Belum ada klien</option>';
+      document.getElementById('raporStats').innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      document.getElementById('raporNote').innerHTML = '';
+      return;
+    }
     sel.innerHTML = clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
     sel.addEventListener('change', () => renderRaporDetail(sel.value));
     renderRaporDetail(clients[0].name);
   }
   function renderRaporDetail(name){
     const r = raporData[name];
+    if (!r){
+      // Fase 3: rapor per klien belum ada endpoint — tampilkan empty state, bukan dummy.
+      document.getElementById('raporStats').innerHTML = '<div class="cal-empty">Belum ada data rapor untuk klien ini.</div>';
+      document.getElementById('raporNote').innerHTML = '';
+      return;
+    }
     document.getElementById('raporStats').innerHTML = `
       <div class="rapor-stat"><div class="l">Total Sesi</div><div class="v">${r.sesi}</div></div>
       <div class="rapor-stat"><div class="l">Total Jarak</div><div class="v">${r.totalJarak}</div></div>
@@ -423,71 +529,59 @@
   let gajiFilterState = { bulan: 9, tahun: 2026 };
 
   function populateGajiFilters(){
-    const bulanSet = [...new Set(gajiSesiList.map(g => g.bulan))].sort((a,b)=>a-b);
-    const tahunSet = [...new Set(gajiSesiList.map(g => g.tahun))].sort((a,b)=>a-b);
+    const now = new Date();
+    const years = [now.getFullYear(), now.getFullYear() - 1];
     const selBulan = document.getElementById('gajiFilterBulan');
     const selTahun = document.getElementById('gajiFilterTahun');
-    selBulan.innerHTML = bulanSet.map(b => `<option value="${b}">${MONTH_NAMES[b-1]}</option>`).join('');
-    selTahun.innerHTML = tahunSet.map(t => `<option value="${t}">${t}</option>`).join('');
+    selBulan.innerHTML = MONTH_NAMES.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+    selTahun.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+    gajiFilterState = { bulan: now.getMonth() + 1, tahun: now.getFullYear() };
     selBulan.value = gajiFilterState.bulan;
     selTahun.value = gajiFilterState.tahun;
-    selBulan.addEventListener('change', () => { gajiFilterState.bulan = Number(selBulan.value); renderGaji(); });
-    selTahun.addEventListener('change', () => { gajiFilterState.tahun = Number(selTahun.value); renderGaji(); });
+    selBulan.onchange = () => { gajiFilterState.bulan = Number(selBulan.value); refreshGaji(); };
+    selTahun.onchange = () => { gajiFilterState.tahun = Number(selTahun.value); refreshGaji(); };
   }
-
-  function getGajiFiltered(){
-    return gajiSesiList.filter(g => g.bulan === gajiFilterState.bulan && g.tahun === gajiFilterState.tahun);
-  }
-  function getBonusForPeriod(){
-    return bonusList.find(b => b.bulan === gajiFilterState.bulan && b.tahun === gajiFilterState.tahun) || { jumlah:0, ket:'-' };
-  }
-
-  let lastFilteredGaji = [];
 
   function renderGaji(){
-    const filtered = getGajiFiltered();
-    lastFilteredGaji = filtered;
-    const bonus = getBonusForPeriod();
-    const totalGaji = filtered.reduce((a,g) => a + g.gajiSesi, 0);
-    const totalPotongan = filtered.reduce((a,g) => a + g.potongan, 0);
-    const totalDiterima = totalGaji - totalPotongan + bonus.jumlah;
-
-    document.getElementById('gajiPeriodeLabel').textContent =
-      'Rincian Gaji per Sesi — ' + MONTH_NAMES[gajiFilterState.bulan-1] + ' ' + gajiFilterState.tahun;
-    document.getElementById('gajiTotalBulan').textContent = fmtIDR(totalDiterima);
-    document.getElementById('gajiBonusBulan').textContent = bonus.jumlah > 0 ? '+' + fmtIDR(bonus.jumlah) : fmtIDR(0);
-    document.getElementById('gajiBonusKet').textContent = bonus.ket || '';
-    document.getElementById('gajiPotonganBulan').textContent = fmtIDR(totalPotongan);
-    document.getElementById('gajiJumlahSesi').textContent = filtered.length + ' sesi';
-
-    if (!filtered.length){
-      document.getElementById('gajiSesiBody').innerHTML = `<tr><td colspan="3" class="muted" style="text-align:center; padding:24px 0;">Tidak ada data gaji pada periode ini.</td></tr>`;
+    const label = MONTH_NAMES[gajiFilterState.bulan-1] + ' ' + gajiFilterState.tahun;
+    document.getElementById('gajiPeriodeLabel').textContent = 'Rincian Komisi — ' + label;
+    const row = gajiSummary;
+    if (!row){
+      document.getElementById('gajiTotalBulan').textContent = '-';
+      document.getElementById('gajiBonusBulan').textContent = '-';
+      document.getElementById('gajiBonusKet').textContent = 'Belum ada data';
+      document.getElementById('gajiPotonganBulan').textContent = '-';
+      document.getElementById('gajiJumlahSesi').textContent = '-';
+      document.getElementById('gajiSesiBody').innerHTML = '<tr><td colspan="3" class="muted" style="text-align:center; padding:24px 0;">Belum ada data</td></tr>';
       return;
     }
-
-    document.getElementById('gajiSesiBody').innerHTML = filtered.map((g, i) => {
-      const diterima = g.gajiSesi - g.potongan;
-      return `
-      <tr style="cursor:pointer;" onclick="openGajiDetail(${i})">
-        <td class="strong">${g.tanggal}</td>
-        <td class="muted">${g.klien}</td>
-        <td class="right strong">${fmtIDR(diterima)}</td>
+    const amount = Number(row.amount || 0);
+    document.getElementById('gajiTotalBulan').textContent = fmtIDR(amount);
+    document.getElementById('gajiBonusBulan').textContent = '-';
+    document.getElementById('gajiBonusKet').textContent = 'Belum ada data bonus';
+    document.getElementById('gajiPotonganBulan').textContent = '-';
+    document.getElementById('gajiJumlahSesi').textContent = '-';
+    document.getElementById('gajiSesiBody').innerHTML = `
+      <tr style="cursor:pointer;" onclick="openGajiDetail()">
+        <td class="strong">${label}</td>
+        <td class="muted">${row.paid ? 'Lunas' + (row.paid_on ? ' · ' + fmtTanggalID(row.paid_on) : '') : 'Belum dibayar'}</td>
+        <td class="right strong">${fmtIDR(amount)}</td>
       </tr>`;
-    }).join('');
   }
 
-  window.openGajiDetail = function(i){
-    const g = lastFilteredGaji[i];
-    if (!g) return;
-    const diterima = g.gajiSesi - g.potongan;
+  window.openGajiDetail = function(){
+    const row = gajiSummary;
+    if (!row) return;
+    const label = MONTH_NAMES[gajiFilterState.bulan-1] + ' ' + gajiFilterState.tahun;
+    const gross = Number(row.gross || 0);
+    const amount = Number(row.amount || 0);
+    const ratePct = row.rate != null ? (Number(row.rate) * 100).toFixed(1).replace('.', ',') + '%' : '-';
     document.getElementById('gajiDetailBody').innerHTML = `
-      <div class="progress-row"><div class="progress-row-top"><span class="pname">Tanggal Melatih</span><span class="pgoal">${g.tanggal}</span></div></div>
-      <div class="progress-row"><div class="progress-row-top"><span class="pname">Paket</span><span class="pgoal">${g.paket}</span></div></div>
-      <div class="progress-row"><div class="progress-row-top"><span class="pname">Klien Hadir</span><span class="pgoal">${g.klien}</span></div></div>
-      <div class="progress-row"><div class="progress-row-top"><span class="pname">Gaji Sesi</span><span class="pgoal">${fmtIDR(g.gajiSesi)}</span></div></div>
-      <div class="progress-row"><div class="progress-row-top"><span class="pname">Potongan</span><span class="pgoal" style="${g.potongan>0?'color:var(--red);':''}">${g.potongan>0 ? '-'+fmtIDR(g.potongan) : '-'}</span></div></div>
-      <div class="progress-row"><div class="progress-row-top"><span class="pname">Diterima</span><span class="pgoal" style="font-weight:800; color:var(--ink);">${fmtIDR(diterima)}</span></div></div>
-      ${g.ket ? `<div class="rapor-note" style="margin-top:12px;"><b>Catatan:</b> ${g.ket}</div>` : ''}
+      <div class="progress-row"><div class="progress-row-top"><span class="pname">Periode</span><span class="pgoal">${label}</span></div></div>
+      <div class="progress-row"><div class="progress-row-top"><span class="pname">Total Nilai Sesi (Gross)</span><span class="pgoal">${fmtIDR(gross)}</span></div></div>
+      <div class="progress-row"><div class="progress-row-top"><span class="pname">Tarif Komisi</span><span class="pgoal">${ratePct}</span></div></div>
+      <div class="progress-row"><div class="progress-row-top"><span class="pname">Komisi Diterima</span><span class="pgoal" style="font-weight:800; color:var(--ink);">${fmtIDR(amount)}</span></div></div>
+      <div class="progress-row"><div class="progress-row-top"><span class="pname">Status Pembayaran</span><span class="pgoal">${row.paid ? 'Lunas' + (row.paid_on ? ' (' + fmtTanggalID(row.paid_on) + ')' : '') : 'Belum dibayar'}</span></div></div>
     `;
     document.getElementById('gajiDetailModal').classList.add('show');
   };
@@ -531,37 +625,38 @@
   }
 
   function downloadSlipGaji(){
+    const row = gajiSummary;
+    if (!row){ showToast('Belum ada data komisi pada periode ini'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:'pt', format:'a4' });
     const pageW = doc.internal.pageSize.getWidth();
     const marginX = 40;
 
-    const headerSubtitle = 'Gaji Coach';
+    const headerSubtitle = 'Komisi Coach';
     let y = pdfHeader(doc, headerSubtitle);
     y += 26;
 
+    const label = MONTH_NAMES[gajiFilterState.bulan-1] + ' ' + gajiFilterState.tahun;
+    const gross = Number(row.gross || 0);
+    const amount = Number(row.amount || 0);
+    const ratePct = row.rate != null ? (Number(row.rate) * 100).toFixed(1).replace('.', ',') + '%' : '-';
+
     doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(17,17,16);
-    doc.text('Rangga Saputra', marginX, y);
+    doc.text(gajiCoachName, marginX, y);
     y += 15;
     doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(110,108,100);
     doc.text('Coach — N6 Running Training', marginX, y);
     y += 13;
-    doc.text('Periode: ' + MONTH_NAMES[gajiFilterState.bulan-1] + ' ' + gajiFilterState.tahun, marginX, y);
+    doc.text('Periode: ' + label, marginX, y);
     y += 20;
 
-    const filtered = getGajiFiltered();
-    const bonus = getBonusForPeriod();
-
-    const body = filtered.map(g => {
-      const diterima = g.gajiSesi - g.potongan;
-      return [
-        g.tanggal,
-        g.paket + ' — ' + g.klien,
-        fmtIDR(g.gajiSesi),
-        g.potongan > 0 ? '-' + fmtIDR(g.potongan) : '-',
-        fmtIDR(diterima)
-      ];
-    });
+    const body = [[
+      label,
+      'Komisi periode ' + label + ' (tarif ' + ratePct + ')',
+      fmtIDR(gross),
+      '-',
+      fmtIDR(amount)
+    ]];
 
     doc.autoTable({
       startY: y,
@@ -584,10 +679,6 @@
 
     y = doc.lastAutoTable.finalY + 24;
 
-    const totalGaji = filtered.reduce((a,g) => a + g.gajiSesi, 0);
-    const totalPotongan = filtered.reduce((a,g) => a + g.potongan, 0);
-    const totalDiterima = totalGaji - totalPotongan + bonus.jumlah;
-
     // Kotak ringkasan total, dengan warna berbeda agar mudah dibaca
     const boxW = 232;
     const boxX = pageW - marginX - boxW;
@@ -598,18 +689,18 @@
     doc.roundedRect(boxX, y, boxW, 98, 4, 4, 'FD');
     let sy = y + 20;
     doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(60,58,54);
-    doc.text('Total Gaji Sesi', boxX+14, sy); doc.text(fmtIDR(totalGaji), boxX+boxW-14, sy, { align:'right' });
+    doc.text('Total Nilai Sesi (Gross)', boxX+14, sy); doc.text(fmtIDR(gross), boxX+boxW-14, sy, { align:'right' });
     sy += 16;
     doc.setTextColor(37,99,174);
-    doc.text('Bonus (' + (bonus.ket || '-') + ')', boxX+14, sy); doc.text('+' + fmtIDR(bonus.jumlah), boxX+boxW-14, sy, { align:'right' });
+    doc.text('Tarif Komisi', boxX+14, sy); doc.text(ratePct, boxX+boxW-14, sy, { align:'right' });
     sy += 16;
     doc.setTextColor(214,40,40);
-    doc.text('Total Potongan', boxX+14, sy); doc.text('-' + fmtIDR(totalPotongan), boxX+boxW-14, sy, { align:'right' });
+    doc.text('Status', boxX+14, sy); doc.text(row.paid ? 'Lunas' : 'Belum dibayar', boxX+boxW-14, sy, { align:'right' });
     sy += 8;
     doc.setDrawColor(214,40,40); doc.line(boxX+14, sy+6, boxX+boxW-14, sy+6);
     sy += 24;
     doc.setFont('helvetica','bold'); doc.setFontSize(12.5); doc.setTextColor(17,17,16);
-    doc.text('Total Diterima', boxX+14, sy); doc.text(fmtIDR(totalDiterima), boxX+boxW-14, sy, { align:'right' });
+    doc.text('Komisi Diterima', boxX+14, sy); doc.text(fmtIDR(amount), boxX+boxW-14, sy, { align:'right' });
 
     y += 98 + 22;
     doc.setFont('helvetica','italic'); doc.setFontSize(8.5); doc.setTextColor(150,40,40);
@@ -617,8 +708,8 @@
 
     pdfFooter(doc);
 
-    doc.save('slip-gaji-rangga-saputra-' + gajiFilterState.bulan + '-' + gajiFilterState.tahun + '.pdf');
-    showToast('Slip gaji berhasil diunduh');
+    doc.save('slip-komisi-' + currentPeriodKey() + '.pdf');
+    showToast('Slip komisi berhasil diunduh');
   }
 
   /* ================= RENDER: COACH RAPOR ================= */
@@ -664,7 +755,11 @@
 
   /* ================= RENDER: ABSENSI COACH ================= */
   function coachAttendanceBadge(status){
-    const tone = status === 'Tepat Waktu' ? 'green' : status === 'Terlambat' ? 'amber' : 'blue';
+    const s = String(status || '');
+    let tone = 'blue';
+    if (s === 'Hadir' || s === 'Tepat Waktu') tone = 'green';
+    else if (s === 'Alpha') tone = 'red';
+    else if (s === 'Terlambat' || s === 'Izin' || s === 'Sakit') tone = 'amber';
     return `<span class="badge ${tone}">${status}</span>`;
   }
   function feedbackScoreBadge(feedback){
@@ -672,26 +767,42 @@
     const tone = feedback.score >= 85 ? 'green' : feedback.score >= 70 ? 'amber' : 'red';
     return `<span class="badge ${tone}">Score ${feedback.score}</span>`;
   }
+  function setStatLabel(valueId, text){
+    const v = document.getElementById(valueId);
+    const card = v && v.closest('.stat-card');
+    const lab = card && card.querySelector('.label');
+    if (lab) lab.textContent = text;
+  }
   function renderCoachAttendance(){
     document.getElementById('periodeMulai').textContent = coachPeriode.mulai;
     document.getElementById('periodeSelesai').textContent = coachPeriode.selesai;
 
-    const tepat = coachAttendanceList.filter(a => a.status === 'Tepat Waktu').length;
-    const terlambat = coachAttendanceList.filter(a => a.status === 'Terlambat').length;
-    const berjalan = coachAttendanceList.filter(a => a.status === 'Latihan Sedang Berjalan').length;
-    document.getElementById('absensiCountHadir').textContent = tepat + 'x';
-    document.getElementById('absensiCountTerlambat').textContent = terlambat + 'x';
-    document.getElementById('absensiCountIzin').textContent = berjalan + 'x';
+    // Label disesuaikan dengan status API (hadir/izin/sakit/alpha)
+    setStatLabel('absensiCountHadir', 'Hadir');
+    setStatLabel('absensiCountTerlambat', 'Alpha (Mangkir)');
+    setStatLabel('absensiCountIzin', 'Izin / Sakit');
 
+    const hadir = coachAttendanceList.filter(a => a.status === 'Hadir').length;
+    const alpha = coachAttendanceList.filter(a => a.status === 'Alpha').length;
+    const izin = coachAttendanceList.filter(a => a.status === 'Izin' || a.status === 'Sakit').length;
+    document.getElementById('absensiCountHadir').textContent = hadir + 'x';
+    document.getElementById('absensiCountTerlambat').textContent = alpha + 'x';
+    document.getElementById('absensiCountIzin').textContent = izin + 'x';
+
+    if (!coachAttendanceList.length){
+      document.getElementById('coachAttendanceBody').innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      return;
+    }
     document.getElementById('coachAttendanceBody').innerHTML = coachAttendanceList.map(a => `
       <div class="attendance-item">
         <div class="attendance-item-top">
-          <div class="attendance-date">${a.tanggal}</div>
+          <div class="attendance-date">${a.tanggal} · ${a.sesi || ''}</div>
           <div class="attendance-badges">
             ${coachAttendanceBadge(a.status)}
             ${feedbackScoreBadge(a.feedback)}
           </div>
         </div>
+        ${a.ket && a.ket !== '-' ? `<div class="attendance-comment">${a.ket}</div>` : ''}
         ${a.feedback && a.feedback.komentar ? `<div class="attendance-comment">${a.feedback.komentar}</div>` : ''}
       </div>
     `).join('');
@@ -977,6 +1088,7 @@
   document.getElementById('downloadRaporBtn').addEventListener('click', function(){
     const name = document.getElementById('raporClientSelect').value;
     const r = raporData[name];
+    if (!r){ showToast('Belum ada data rapor untuk klien ini'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:'pt', format:'a4' });
     const pageW = doc.internal.pageSize.getWidth();
@@ -990,7 +1102,7 @@
     doc.text(name, marginX, y);
     y += 18;
     doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(110,108,100);
-    doc.text('Coach: Rangga Saputra   ·   Periode: September 2026', marginX, y);
+    doc.text('Coach: ' + ((n6ApiUser() && (n6ApiUser().full_name || n6ApiUser().username)) || 'Coach') + '   ·   Periode: ' + MONTH_NAMES[new Date().getMonth()] + ' ' + new Date().getFullYear(), marginX, y);
     y += 22;
 
     doc.autoTable({
@@ -1048,20 +1160,47 @@
   document.getElementById('downloadSlipBtn').addEventListener('click', downloadSlipGaji);
 
   /* ================= INIT ================= */
-  renderSchedule();
-  renderUpcoming();
-  renderCharts();
-  renderClients();
-  renderProgress();
-  renderRaporSelect();
-  renderHistory();
-  populateGajiFilters();
-  renderGaji();
-  renderCoachRapor();
-  renderReschedule();
-  renderCuti();
-  renderCoachAttendance();
-  renderUnavailableList();
-  renderCalendar();
-  renderLogs();
+  async function loadAllData(){
+    // Skeleton saat memuat
+    renderScheduleLoading();
+    renderGajiLoading();
+    const clientEl = document.getElementById('clientList');
+    if (clientEl) clientEl.innerHTML = '<div class="cal-empty">Memuat data...</div>';
+    const attEl = document.getElementById('coachAttendanceBody');
+    if (attEl) attEl.innerHTML = '<div class="cal-empty">Memuat data...</div>';
+
+    if (n6ApiReady()){
+      try { await loadSchedule(); }
+      catch(e){ console.warn('[coach] jadwal', e); schedule = []; }
+      renderSchedule();
+      try { await loadClients(); }
+      catch(e){ console.warn('[coach] klien', e); clients = []; }
+      renderClients();
+      renderRaporSelect();
+      try { await loadCoachAttendance(); }
+      catch(e){ console.warn('[coach] absensi', e); coachAttendanceList = []; }
+      renderCoachAttendance();
+    } else {
+      // Tanpa token API: tampilkan empty state, tanpa fallback dummy.
+      schedule = []; clients = []; coachAttendanceList = [];
+      renderSchedule(); renderClients(); renderRaporSelect(); renderCoachAttendance();
+    }
+
+    populateGajiFilters();
+    if (n6ApiReady()){ await refreshGaji(); }
+    else { gajiSummary = null; renderGaji(); }
+
+    // Fase 3 (masih dummy, menunggu endpoint agregat): progress, grafik, histori, rapor coach, dsb.
+    renderUpcoming();
+    renderCharts();
+    renderProgress();
+    renderHistory();
+    renderCoachRapor();
+    renderReschedule();
+    renderCuti();
+    renderUnavailableList();
+    renderCalendar();
+    renderLogs();
+  }
+  loadAllData();
 })();

@@ -62,6 +62,9 @@
     async dashboard() {
       return cfg.USE_API ? http("GET", ENDPOINTS.dashboard) : S.get("dashboard");
     },
+    async reports() {
+      return cfg.USE_API ? http("GET", "/reports/summary") : null;
+    },
     async tier(n) {
       return cfg.USE_API ? http("GET", ENDPOINTS.tier + "/" + n) : null;
     },

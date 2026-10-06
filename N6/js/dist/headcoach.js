@@ -8,28 +8,43 @@
 
 
 (function(){
-  /* ================= MOCK DATA ================= */
-  const coaches = [
-    { id:'c1', name:"Rangga Saputra", clients:5, kehadiran:96, score:92, rating:4.8 },
-    { id:'c2', name:"Dinda Ayu", clients:2, kehadiran:91, score:85, rating:4.6 },
-    { id:'c3', name:"Fajar Nugroho", clients:1, kehadiran:78, score:68, rating:4.1 },
-  ];
+  /* ================= API CLIENT ================= */
+  function n6ApiCfg(){ return window.N6_API || {}; }
+  function n6ApiBase(){ return String(n6ApiCfg().base || 'https://api.denisbergkam.com/api/n6').replace(/\/+$/, ''); }
+  function n6ApiToken(){
+    try { return window.localStorage.getItem(n6ApiCfg().tokenKey || 'n6:api:token'); }
+    catch(e){ return null; }
+  }
+  function n6ApiReady(){ return n6ApiCfg().enabled === true && !!n6ApiToken(); }
+
+  async function n6Api(path){
+    const res = await fetch(n6ApiBase() + '/' + String(path).replace(/^\/+/, ''), {
+      headers: { 'Authorization': 'Bearer ' + n6ApiToken() }
+    });
+    if (!res.ok) throw new Error('API ' + res.status + ' ' + path);
+    return res.json();
+  }
+
+  function fmtTanggal(iso){
+    if (!iso) return '-';
+    try {
+      const d = new Date(iso.length <= 10 ? iso + 'T00:00:00' : iso);
+      return d.getDate() + ' ' + MONTH_LABEL[d.getMonth()] + ' ' + d.getFullYear();
+    } catch(e){ return iso; }
+  }
+
+  /* ================= DATA (dari API, bukan dummy) ================= */
+  let coaches = [];
+  let clients = [];
+  let rescheduleRequests = [];
+  let teamAttendance = [];
+  let cutiRequests = [];   // Fase 3: belum ada endpoint cuti
+  let evalHistory = [];    // Fase 3: belum ada endpoint evaluasi
 
   function slugify(name){ return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
   function clientPortalUrl(name, staff){
     return 'dashboard-client.html?client=' + encodeURIComponent(slugify(name)) + (staff ? '&staff=1' : '');
   }
-
-  const clients = [
-    { name:"Budi Hartono", coach:"Rangga Saputra", goal:"10K", status:"Normal" },
-    { name:"Andi Prasetyo", coach:"Rangga Saputra", goal:"Turun Berat Badan", status:"Cedera", note:"Keluhan lutut sejak 5 Sep 2026, sudah dirujuk istirahat sementara." },
-    { name:"Rina Marlina", coach:"Rangga Saputra", goal:"Half Marathon", status:"Normal" },
-    { name:"Yoga Pratama", coach:"Rangga Saputra", goal:"5K", status:"Normal" },
-    { name:"Citra Ayu", coach:"Rangga Saputra", goal:"Full Marathon", status:"Bermasalah", note:"2x absen tanpa keterangan bulan ini." },
-    { name:"Sari Wijaya", coach:"Dinda Ayu", goal:"Half Marathon", status:"Normal" },
-    { name:"Reza Firmansyah", coach:"Dinda Ayu", goal:"Full Marathon", status:"Normal" },
-    { name:"Maya Putri", coach:"Fajar Nugroho", goal:"5K", status:"Bermasalah", note:"Belum aktif sejak mendaftar 2 minggu lalu." },
-  ];
 
   const chartData = {
     coachLabels: coaches.map(c => c.name.split(' ')[0]),
@@ -48,32 +63,7 @@
     { date:"02 Sep 2026", text:"Andi Prasetyo (klien Rangga Saputra) dilaporkan mengalami cedera lutut." },
   ];
 
-  let rescheduleRequests = [
-    { coach:"Rangga Saputra", sesi:"Rina Marlina — 16:00, 12 Sep 2026", baru:"13 Sep 2026, 17:00", alasan:"Klien ada acara mendadak", status:"Menunggu" },
-    { coach:"Dinda Ayu", sesi:"Sari Wijaya — 16:00, 11 Sep 2026", baru:"12 Sep 2026, 16:00", alasan:"Hujan deras", status:"Menunggu" },
-    { coach:"Rangga Saputra", sesi:"Yoga Pratama — 18:00, 10 Sep 2026", baru:"11 Sep 2026, 18:00", alasan:"Hujan deras", status:"Disetujui" },
-  ];
-
-  let cutiRequests = [
-    { coach:"Dinda Ayu", mulai:"20 Sep 2026", selesai:"21 Sep 2026", alasan:"Acara keluarga", status:"Menunggu" },
-    { coach:"Rangga Saputra", mulai:"5 Agu 2026", selesai:"5 Agu 2026", alasan:"Sakit", status:"Disetujui" },
-  ];
-
-  let evalHistory = [
-    { coach:"Rangga Saputra", tanggal:"1 Sep 2026", score:92, komentar:"Konsisten dan komunikatif dengan klien." },
-    { coach:"Dinda Ayu", tanggal:"1 Sep 2026", score:85, komentar:"Baik, perlu tingkatkan variasi program latihan." },
-    { coach:"Fajar Nugroho", tanggal:"1 Sep 2026", score:68, komentar:"Kehadiran menurun bulan ini, perlu pembinaan lebih lanjut." },
-  ];
-
-  let teamAttendance = [
-    { coach:"Rangga Saputra", tanggal:"10 Sep 2026", status:"Tepat Waktu" },
-    { coach:"Dinda Ayu", tanggal:"10 Sep 2026", status:"Tepat Waktu" },
-    { coach:"Fajar Nugroho", tanggal:"10 Sep 2026", status:"Terlambat" },
-    { coach:"Rangga Saputra", tanggal:"09 Sep 2026", status:"Tepat Waktu" },
-    { coach:"Dinda Ayu", tanggal:"09 Sep 2026", status:"Tepat Waktu" },
-    { coach:"Fajar Nugroho", tanggal:"08 Sep 2026", status:"Terlambat" },
-    { coach:"Rangga Saputra", tanggal:"08 Sep 2026", status:"Tepat Waktu" },
-  ];
+  /* rescheduleRequests, cutiRequests, evalHistory, teamAttendance dideklarasikan di atas (diisi dari API) */
 
   /* ---------- TEMPLATE KATA KOREKSI (kolom keterangan cepat) ---------- */
   let koreksiTemplates = [
@@ -103,6 +93,146 @@
     owner: []
   };
 
+  /* ================= LOADERS (API) ================= */
+  const REQ_STATUS_LABEL = { menunggu:'Menunggu', disetujui:'Disetujui', ditolak:'Ditolak' };
+  const ATT_STATUS_LABEL = { hadir:'Tepat Waktu', izin:'Izin', sakit:'Sakit', alpha:'Alpha' };
+
+  function coachNameById(id){
+    const c = coaches.find(x => String(x.id) === String(id));
+    return c ? c.name : '-';
+  }
+  function clientNameById(id){
+    const c = clients.find(x => String(x.id) === String(id));
+    return c ? c.name : '-';
+  }
+
+  async function loadCoaches(){
+    const page = await n6Api('accounts?tier=3&limit=200');
+    const items = (page && page.items) || [];
+    coaches = items
+      .filter(a => a.is_active !== false)
+      .map(a => ({
+        id: a.id,
+        name: a.full_name || a.username || ('Coach #' + a.id),
+        clients: 0,          // dihitung setelah clients dimuat
+        kehadiran: null,     // Fase 3: butuh endpoint agregat
+        score: null,         // Fase 3: butuh endpoint agregat
+        rating: null,        // Fase 3: butuh endpoint agregat
+      }));
+  }
+
+  async function loadClients(){
+    const [clientPage, flags] = await Promise.all([
+      n6Api('clients?limit=500'),
+      n6Api('monitoring/flags').catch(() => []),
+    ]);
+    const items = (clientPage && clientPage.items) || [];
+    const flaggedById = {};
+    (Array.isArray(flags) ? flags : []).forEach(f => {
+      flaggedById[f.client_id] = f.note || f.flag_kehadiran || f.flag_komisi || 'Perlu perhatian';
+    });
+    const coachCount = {};
+    clients = items.map(c => {
+      const isFlagged = !!flaggedById[c.id];
+      if (c.coach_id != null) coachCount[c.coach_id] = (coachCount[c.coach_id] || 0) + 1;
+      return {
+        id: c.id,
+        name: c.name,
+        coach: c.coach_id != null ? null : '-',  // diisi setelah lookup nama
+        coach_id: c.coach_id,
+        goal: '-',
+        status: isFlagged ? 'Bermasalah' : 'Normal',
+        note: flaggedById[c.id] || c.notes || '',
+      };
+    });
+    // Isi nama coach & hitung klien per coach
+    clients.forEach(c => {
+      if (c.coach_id != null) c.coach = coachNameById(c.coach_id);
+    });
+    coaches.forEach(ch => { ch.clients = coachCount[ch.id] || 0; });
+  }
+
+  async function loadRescheduleRequests(){
+    const page = await n6Api('schedules/coach/requests?limit=200');
+    const items = (page && page.items) || [];
+    rescheduleRequests = items.map(r => ({
+      id: r.id,
+      coach: r.coach_id != null ? coachNameById(r.coach_id) : '-',
+      sesi: clientNameById(r.client_id) + (r.current_start ? ' — ' + r.current_start : ''),
+      baru: fmtTanggal(r.requested_on),
+      alasan: r.reason || '-',
+      status: REQ_STATUS_LABEL[r.status] || r.status,
+    }));
+  }
+
+  async function loadTeamAttendance(){
+    const page = await n6Api('attendance?limit=200');
+    const items = (page && page.items) || [];
+    teamAttendance = items.map(a => ({
+      coach: a.coach_id != null ? coachNameById(a.coach_id) : '-',
+      client: a.client_id != null ? clientNameById(a.client_id) : '-',
+      tanggal: fmtTanggal(a.session_on),
+      status: ATT_STATUS_LABEL[a.status] || a.status,
+    }));
+  }
+
+  function setLoading(sel){
+    const el = document.getElementById(sel);
+    if (el) el.innerHTML = '<div class="cal-empty">Memuat data...</div>';
+  }
+
+  async function loadAllData(){
+    if (!n6ApiReady()){
+      ['coachAttentionList','clientAttentionList','teamActivityList','coachListBody',
+       'teamAttendanceBody','rescheduleApprovalList','cutiApprovalList','evalHistoryList',
+       'allClientsList','flaggedClientsList'].forEach(setLoading);
+      return;
+    }
+    try {
+      await loadCoaches();
+      await loadClients();           // butuh coaches untuk lookup nama
+      await Promise.all([
+        loadRescheduleRequests().catch(e => { console.warn('[hc] reschedule', e); rescheduleRequests = []; }),
+        loadTeamAttendance().catch(e => { console.warn('[hc] attendance', e); teamAttendance = []; }),
+      ]);
+    } catch(e) {
+      console.warn('[hc] gagal memuat data API', e);
+      // Biarkan array kosong -> empty state "Belum ada data", tanpa fallback dummy.
+    }
+    renderAll();
+  }
+
+  function renderAll(){
+    renderCoachAttention();
+    renderClientAttention();
+    renderCharts();
+    renderTeamActivity();
+    renderCoachList();
+    renderTeamAttendance();
+    renderTeamCalendarLegend();
+    populateCalCoachFilter();
+    renderTeamCalendar();
+    populateEvalSelect();
+    renderEvalHistory();
+    populateKlienFilter();
+    renderAllClients();
+    renderFlaggedClients();
+    populateAthleteCoachSelect();
+    populateAthleteSelectsForAchv();
+    renderAthleteList();
+    renderPodiumSummary();
+    renderAchievementList();
+    renderDayTabs();
+    populateCoachFilterKoreksi();
+    renderSubmissionList();
+    renderRescheduleApproval();
+    renderCutiApproval();
+    renderKoreksiTemplateList();
+    populateProgramClientSelect();
+    renderProgramTplPickList();
+    renderProgramTemplateList();
+  }
+
   /* ================= HELPERS ================= */
   function scoreTone(score){ return score >= 85 ? 'green' : score >= 70 ? 'amber' : 'red'; }
   function statusTone(status){
@@ -129,22 +259,30 @@
   }
 
   /* ================= RENDER: HOME ================= */
+  function fmtStat(v, suffix){ return (v === null || v === undefined) ? '-' : (v + (suffix || '')); }
+
   function renderCoachAttention(){
-    const flagged = coaches.filter(c => c.score < 75 || c.kehadiran < 85);
-    document.getElementById('coachAttentionList').innerHTML = flagged.length ? flagged.map(c => `
+    const el = document.getElementById('coachAttentionList');
+    if (!coaches.length){ el.innerHTML = '<div class="cal-empty">Belum ada data coach.</div>'; return; }
+    const withScore = coaches.filter(c => c.score !== null && c.score !== undefined);
+    if (!withScore.length){ el.innerHTML = '<div class="cal-empty">Belum ada data performa coach.</div>'; return; }
+    const flagged = withScore.filter(c => c.score < 75 || (c.kehadiran !== null && c.kehadiran < 85));
+    el.innerHTML = flagged.length ? flagged.map(c => `
       <div class="attention-item">
         <div class="attention-dot ${c.score < 70 ? 'red' : 'amber'}"></div>
         <div class="attention-body">
           <div class="name">${c.name}</div>
-          <div class="desc">Score ${c.score} · Kehadiran ${c.kehadiran}% — perlu pembinaan lebih lanjut.</div>
+          <div class="desc">Score ${c.score} · Kehadiran ${fmtStat(c.kehadiran, '%')} — perlu pembinaan lebih lanjut.</div>
         </div>
       </div>
     `).join('') : `<div class="cal-empty">Semua coach dalam performa baik.</div>`;
   }
 
   function renderClientAttention(){
+    const el = document.getElementById('clientAttentionList');
+    if (!clients.length){ el.innerHTML = '<div class="cal-empty">Belum ada data klien.</div>'; return; }
     const flagged = clients.filter(c => c.status !== 'Normal');
-    document.getElementById('clientAttentionList').innerHTML = flagged.length ? flagged.map(c => `
+    el.innerHTML = flagged.length ? flagged.map(c => `
       <div class="attention-item">
         <div class="attention-dot ${c.status === 'Cedera' ? 'red' : 'amber'}"></div>
         <div class="attention-body">
@@ -216,44 +354,46 @@
 
   /* ================= RENDER: COACH LIST + DETAIL ================= */
   function renderCoachList(){
-    document.getElementById('coachListBody').innerHTML = coaches.map(c => `
+    const el = document.getElementById('coachListBody');
+    if (!coaches.length){ el.innerHTML = '<div class="cal-empty">Belum ada data coach.</div>'; return; }
+    el.innerHTML = coaches.map(c => `
       <div class="coach-card" onclick="openCoachDetail('${c.id}')">
         <div class="coach-card-top">
           <div>
             <div class="coach-card-name">${c.name}</div>
             <div class="coach-card-meta">${c.clients} klien binaan</div>
           </div>
-          <span class="badge ${scoreTone(c.score)}">Score ${c.score}</span>
+          <span class="badge ${c.score === null ? 'neutral' : scoreTone(c.score)}">Score ${fmtStat(c.score)}</span>
         </div>
         <div class="coach-card-stats">
-          <div class="coach-card-stat">Kehadiran<b>${c.kehadiran}%</b></div>
-          <div class="coach-card-stat">Rating Klien<b>${c.rating}</b></div>
+          <div class="coach-card-stat">Kehadiran<b>${fmtStat(c.kehadiran, '%')}</b></div>
+          <div class="coach-card-stat">Rating Klien<b>${fmtStat(c.rating)}</b></div>
           <div class="coach-card-stat">Klien Binaan<b>${c.clients}</b></div>
         </div>
       </div>
     `).join('');
   }
   window.openCoachDetail = function(id){
-    const c = coaches.find(x => x.id === id);
+    const c = coaches.find(x => String(x.id) === String(id));
     if (!c) return;
     const myClients = clients.filter(cl => cl.coach === c.name);
     document.getElementById('coachDetailTitle').textContent = c.name;
     document.getElementById('coachDetailBody').innerHTML = `
       <div class="rapor-grid">
-        <div class="rapor-stat"><div class="l">Score</div><div class="v">${c.score}</div></div>
-        <div class="rapor-stat"><div class="l">Kehadiran</div><div class="v">${c.kehadiran}%</div></div>
-        <div class="rapor-stat"><div class="l">Rating Klien</div><div class="v">${c.rating}</div></div>
+        <div class="rapor-stat"><div class="l">Score</div><div class="v">${fmtStat(c.score)}</div></div>
+        <div class="rapor-stat"><div class="l">Kehadiran</div><div class="v">${fmtStat(c.kehadiran, '%')}</div></div>
+        <div class="rapor-stat"><div class="l">Rating Klien</div><div class="v">${fmtStat(c.rating)}</div></div>
         <div class="rapor-stat"><div class="l">Klien Binaan</div><div class="v">${c.clients}</div></div>
       </div>
       <h4 style="font-size:13px; font-weight:700; margin-bottom:8px;">Klien Binaan</h4>
-      ${myClients.map(cl => `
+      ${myClients.length ? myClients.map(cl => `
         <div class="progress-row">
           <div class="progress-row-top"><span class="pname">${cl.name}</span><span class="pgoal">${cl.goal}</span></div>
           <div class="progress-note">Status: <span class="badge ${statusTone(cl.status)}" style="margin-left:4px;">${cl.status}</span>
             · <a href="${clientPortalUrl(cl.name, true)}" target="_blank" rel="noopener" style="font-weight:700; color:var(--ink);">Lihat Dashboard ↗</a>
           </div>
         </div>
-      `).join('')}
+      `).join('') : '<div class="cal-empty">Belum ada klien binaan.</div>'}
       <div class="cal-empty" style="margin-top:12px;">Gunakan tab "Evaluasi" untuk memberi skor & feedback ke coach ini.</div>
     `;
     document.getElementById('coachDetailModal').classList.add('show');
@@ -264,10 +404,12 @@
 
   /* ================= RENDER: ABSENSI TIM ================= */
   function renderTeamAttendance(){
-    document.getElementById('teamAttendanceBody').innerHTML = teamAttendance.map(a => `
+    const el = document.getElementById('teamAttendanceBody');
+    if (!teamAttendance.length){ el.innerHTML = '<div class="cal-empty">Belum ada data.</div>'; return; }
+    el.innerHTML = teamAttendance.map(a => `
       <div class="attendance-item">
         <div class="attendance-item-top">
-          <div class="attendance-date">${a.tanggal} <span style="font-weight:400; color:var(--asphalt);">— ${a.coach}</span></div>
+          <div class="attendance-date">${a.tanggal} <span style="font-weight:400; color:var(--asphalt);">— ${a.coach}${a.client && a.client !== '-' ? ' · ' + a.client : ''}</span></div>
           <div class="attendance-badges"><span class="badge ${statusTone(a.status)}">${a.status}</span></div>
         </div>
       </div>
@@ -275,7 +417,11 @@
   }
 
   /* ================= RENDER: KALENDER TIM (READ-ONLY) ================= */
-  const COACH_COLORS = { "Rangga Saputra": "#D62828", "Dinda Ayu": "#2563AE", "Fajar Nugroho": "#B7791F" };
+  const COACH_COLOR_PALETTE = ["#D62828", "#2563AE", "#B7791F", "#1E8E3E", "#7B2D8E", "#0E7C7B"];
+  function coachColor(name){
+    const i = coaches.findIndex(c => c.name === name);
+    return COACH_COLOR_PALETTE[(i < 0 ? 0 : i) % COACH_COLOR_PALETTE.length];
+  }
 
   function getCoachSessionsForDate(coachName, date){
     const dow = date.getDay(); // 0=Minggu ... 6=Sabtu
@@ -332,7 +478,7 @@
 
   function renderTeamCalendarLegend(){
     document.getElementById('calLegendTeam').innerHTML = coaches.map(c => `
-      <span><span class="dot" style="background:${COACH_COLORS[c.name]};"></span>${c.name.split(' ')[0]}</span>
+      <span><span class="dot" style="background:${coachColor(c.name)};"></span>${c.name.split(' ')[0]}</span>
     `).join('');
   }
 
@@ -360,7 +506,7 @@
       if (sessions.length && inWindow) classes.push('has-session');
       const uniqueCoaches = [...new Set(sessions.map(s => s.coach))];
       const dotsHtml = (uniqueCoaches.length && inWindow)
-        ? `<div class="dots">${uniqueCoaches.map(c => `<span style="background:${COACH_COLORS[c]};"></span>`).join('')}</div>`
+        ? `<div class="dots">${uniqueCoaches.map(c => `<span style="background:${coachColor(c)};"></span>`).join('')}</div>`
         : '';
       cellsHtml += `<div class="${classes.join(' ')}" onclick="selectTeamCalDay('${d.toISOString()}')">
           <div class="num">${d.getDate()}</div>
@@ -389,7 +535,7 @@
               <td class="muted" style="width:56px;">${s.time}</td>
               <td class="strong">${s.client}</td>
               <td class="muted">${s.loc}</td>
-              <td class="right"><span class="badge neutral" style="border-left:3px solid ${COACH_COLORS[s.coach]}; padding-left:8px;">${s.coach}</span></td>
+              <td class="right"><span class="badge neutral" style="border-left:3px solid ${coachColor(s.coach)}; padding-left:8px;">${s.coach}</span></td>
             </tr>
           `).join('')}
         </tbody>
@@ -407,7 +553,10 @@
       '<option value="">Pilih coach</option>' + coaches.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
   }
   function renderEvalHistory(){
-    document.getElementById('evalHistoryList').innerHTML = evalHistory.map(e => `
+    const el = document.getElementById('evalHistoryList');
+    // Fase 3: belum ada endpoint evaluasi — tampilkan data yang diinput user sesi ini, atau empty state.
+    if (!evalHistory.length){ el.innerHTML = '<div class="cal-empty">Belum ada data.</div>'; return; }
+    el.innerHTML = evalHistory.map(e => `
       <div class="review-item">
         <div class="review-item-top"><span class="who">${e.coach}</span><span class="when">${e.tanggal}</span></div>
         <div class="stats"><span class="badge ${scoreTone(e.score)}">Score ${e.score}</span></div>
@@ -433,10 +582,14 @@
       '<option value="">Semua Coach</option>' + coaches.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
   }
   function renderAllClients(){
-    const filterVal = document.getElementById('klienFilterCoach').value;
+    const filterEl = document.getElementById('klienFilterCoach');
+    const filterVal = filterEl ? filterEl.value : '';
+    const listEl = document.getElementById('allClientsList');
+    if (!clients.length){ listEl.innerHTML = '<div class="cal-empty">Belum ada data.</div>'; return; }
     const list = filterVal ? clients.filter(c => c.coach === filterVal) : clients;
-    document.getElementById('allClientsList').innerHTML = list.map(c => `
-      <div class="client-row" style="cursor:pointer;" onclick="openClientDetail('${c.name.replace(/'/g,"")}')">
+    if (!list.length){ listEl.innerHTML = '<div class="cal-empty">Belum ada data.</div>'; return; }
+    listEl.innerHTML = list.map(c => `
+      <div class="client-row" style="cursor:pointer;" onclick="openClientDetail(${c.id})">
         <div>
           <div class="name">${c.name}</div>
           <div class="meta">Coach: ${c.coach} · Target: ${c.goal}</div>
@@ -445,12 +598,15 @@
       </div>
     `).join('');
   }
-  document.getElementById('klienFilterCoach').addEventListener('change', renderAllClients);
+  const klienFilterEl = document.getElementById('klienFilterCoach');
+  if (klienFilterEl) klienFilterEl.addEventListener('change', renderAllClients);
 
   function renderFlaggedClients(){
+    const el = document.getElementById('flaggedClientsList');
+    if (!clients.length){ el.innerHTML = '<div class="cal-empty">Belum ada data.</div>'; return; }
     const flagged = clients.filter(c => c.status !== 'Normal');
-    document.getElementById('flaggedClientsList').innerHTML = flagged.length ? flagged.map(c => `
-      <div class="client-row" style="cursor:pointer;" onclick="openClientDetail('${c.name.replace(/'/g,"")}')">
+    el.innerHTML = flagged.length ? flagged.map(c => `
+      <div class="client-row" style="cursor:pointer;" onclick="openClientDetail(${c.id})">
         <div>
           <div class="name">${c.name}</div>
           <div class="meta">Coach: ${c.coach} · ${c.note || ''}</div>
@@ -692,27 +848,8 @@
   const LOCATIONS = ["GBK Senayan","Online","Lapangan A. Yani","Taman Menteng","Online","Stadion Madya","Online"];
 
   function generateSubmissions(){
-    const list = [];
-    let id = 0;
-    FIRST_NAMES.forEach((fn, i) => {
-      const name = fn + ' ' + LAST_NAMES[i % LAST_NAMES.length];
-      const coach = coaches[i % coaches.length].name;
-      const loc = LOCATIONS[i % LOCATIONS.length];
-      const dayIndex = i % 7;
-      const reviewed = (i % 3 === 0);
-      list.push({
-        id: id++,
-        client: name,
-        clientId: slugify(name),
-        coach: coach,
-        loc: loc,
-        dayIndex: dayIndex,
-        link: 'https://strava.com/activities/' + (800000 + i * 137),
-        reviewed: reviewed,
-        koreksi: reviewed ? 'Bagus, pertahankan konsistensi pace-nya!' : ''
-      });
-    });
-    return list;
+    // Data dummy dinonaktifkan — menunggu endpoint API hasil latihan klien (Fase 3).
+    return [];
   }
   let submissions = generateSubmissions();
 
@@ -1088,8 +1225,8 @@
     showToast('Pesan terkirim ke ' + (role === 'admin' ? 'Admin' : 'Owner') + '.');
   };
 
-  window.openClientDetail = function(name){
-    const c = clients.find(x => x.name === name);
+  window.openClientDetail = function(id){
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     document.getElementById('clientDetailTitle').textContent = c.name;
     document.getElementById('clientDetailBody').innerHTML = `
@@ -1113,7 +1250,9 @@
 
   /* ================= RENDER: PERSETUJUAN ================= */
   function renderRescheduleApproval(){
-    document.getElementById('rescheduleApprovalList').innerHTML = rescheduleRequests.map((r, i) => `
+    const el = document.getElementById('rescheduleApprovalList');
+    if (!rescheduleRequests.length){ el.innerHTML = '<div class="cal-empty">Belum ada data.</div>'; return; }
+    el.innerHTML = rescheduleRequests.map((r, i) => `
       <div class="review-item">
         <div class="review-item-top"><span class="who">${r.coach}</span><span class="when">${statusTag(r.status)}</span></div>
         <div class="stats">${r.sesi} → <b>${r.baru}</b></div>
@@ -1134,23 +1273,13 @@
   };
 
   function renderCutiApproval(){
-    document.getElementById('cutiApprovalList').innerHTML = cutiRequests.map((c, i) => `
-      <div class="review-item">
-        <div class="review-item-top"><span class="who">${c.coach}</span><span class="when">${statusTag(c.status)}</span></div>
-        <div class="stats">${c.mulai} — ${c.selesai}</div>
-        <div class="note">${c.alasan || '-'}</div>
-        ${c.status === 'Menunggu' ? `
-          <div class="action-btns">
-            <button class="btn-approve" onclick="setCutiStatus(${i},'Disetujui')">Setujui</button>
-            <button class="btn-reject" onclick="setCutiStatus(${i},'Ditolak')">Tolak</button>
-          </div>` : ''}
-      </div>
-    `).join('');
+    // Fase 3: belum ada endpoint cuti — tampilkan empty state, bukan data dummy.
+    document.getElementById('cutiApprovalList').innerHTML =
+      '<div class="cal-empty">Belum ada data.</div>';
   }
   window.setCutiStatus = function(i, status){
-    cutiRequests[i].status = status;
+    if (cutiRequests[i]) cutiRequests[i].status = status;
     renderCutiApproval();
-    showToast('Cuti ' + cutiRequests[i].coach + ' ditandai: ' + status);
   };
 
   /* ================= NAV: MAIN TABS ================= */
@@ -1207,34 +1336,9 @@
   sidebarOverlay.addEventListener('click', closeSidebar);
 
   /* ================= INIT ================= */
-  renderCoachAttention();
-  renderClientAttention();
-  renderCharts();
-  renderTeamActivity();
-  renderCoachList();
-  renderTeamAttendance();
-  renderTeamCalendarLegend();
-  populateCalCoachFilter();
-  renderTeamCalendar();
-  populateEvalSelect();
-  renderEvalHistory();
-  populateKlienFilter();
-  renderAllClients();
-  renderFlaggedClients();
-  populateAthleteCoachSelect();
-  populateAthleteSelectsForAchv();
-  renderAthleteList();
-  renderPodiumSummary();
-  renderAchievementList();
-  renderDayTabs();
-  populateCoachFilterKoreksi();
-  renderSubmissionList();
-  renderRescheduleApproval();
-  renderCutiApproval();
-  renderKoreksiTemplateList();
-  populateProgramClientSelect();
-  renderProgramTplPickList();
-  renderProgramTemplateList();
+  // Muat data dari API terlebih dahulu, lalu render. Bila API kosong/error,
+  // setiap panel menampilkan empty state "Belum ada data" (tanpa fallback dummy).
+  loadAllData();
   loadProgramsFromStorage();
   loadInternalChat('admin');
   loadInternalChat('owner');
