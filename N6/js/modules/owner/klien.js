@@ -16,19 +16,8 @@
     try{ programCatalog = catalogRaw ? JSON.parse(catalogRaw) : []; }catch(e){ programCatalog = []; }
     if (!programCatalog.length){ programCatalog = DEFAULT_PROGRAM_CATALOG; await storeSet('programCatalog', JSON.stringify(programCatalog)); }
 
-    // coachRoster diambil dari Kelola Anggota (API /accounts?tier=3), bukan localStorage.
-    try {
-      const accPage = await n6Api('accounts?tier=3&limit=200');
-      const accItems = (accPage && accPage.items) || [];
-      coachRoster = accItems.map(a => ({
-        id: a.coach_id || a.id,
-        accountId: a.id,
-        name: a.full_name || a.username,
-        username: a.username,
-        phone: a.phone || '',
-        email: a.email || '',
-      }));
-    } catch (e) { coachRoster = []; }
+    // coachRoster diambil dari Kelola Anggota via fetchCoachesFromApi(), bukan localStorage.
+    coachRoster = await fetchCoachesFromApi();
 
     const schedRaw = await storeGet('coachSchedule');
     try{ coachSchedule = schedRaw ? JSON.parse(schedRaw) : {}; }catch(e){ coachSchedule = {}; }

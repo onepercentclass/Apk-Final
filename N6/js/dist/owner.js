@@ -112,17 +112,17 @@
     return false;
   }
 
-  /* ================= LOAD DATA ================= */
-  async function loadAllData(){
-    const catalogRaw = await storeGet('programCatalog');
-    try{ programCatalog = catalogRaw ? JSON.parse(catalogRaw) : []; }catch(e){ programCatalog = []; }
-    if (!programCatalog.length){ programCatalog = DEFAULT_PROGRAM_CATALOG; await storeSet('programCatalog', JSON.stringify(programCatalog)); }
-
-    // coachRoster diambil dari Kelola Anggota (API /accounts?tier=3), bukan localStorage.
+  async function fetchCoachesFromApi(){
     try {
-      const accPage = await n6Api('accounts?tier=3&limit=200');
-      const accItems = (accPage && accPage.items) || [];
-      coachRoster = accItems.map(a => ({
+      const token = window.localStorage.getItem('n6:api:token');
+      if (!token) return [];
+      const res = await fetch('https://api.denisbergkam.com/api/n6/v1/accounts?tier=3&limit=200', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!res.ok) return [];
+      const page = await res.json();
+      const items = (page && page.items) || [];
+      return items.map(a => ({
         id: a.coach_id || a.id,
         accountId: a.id,
         name: a.full_name || a.username,
@@ -130,7 +130,17 @@
         phone: a.phone || '',
         email: a.email || '',
       }));
-    } catch (e) { coachRoster = []; }
+    } catch (e) { return []; }
+  }
+
+  /* ================= LOAD DATA ================= */
+  async function loadAllData(){
+    const catalogRaw = await storeGet('programCatalog');
+    try{ programCatalog = catalogRaw ? JSON.parse(catalogRaw) : []; }catch(e){ programCatalog = []; }
+    if (!programCatalog.length){ programCatalog = DEFAULT_PROGRAM_CATALOG; await storeSet('programCatalog', JSON.stringify(programCatalog)); }
+
+    // coachRoster diambil dari Kelola Anggota (API /accounts?tier=3), bukan localStorage.
+    coachRoster = await fetchCoachesFromApi();
 
     const schedRaw = await storeGet('coachSchedule');
     try{ coachSchedule = schedRaw ? JSON.parse(schedRaw) : {}; }catch(e){ coachSchedule = {}; }

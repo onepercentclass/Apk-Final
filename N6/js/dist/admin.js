@@ -105,6 +105,27 @@
   function coachById(id){ return coachRoster.find(c => String(c.id) === String(id)); }
 
   /* ================= LOAD DATA ================= */
+  async function fetchCoachesFromApi(){
+    try {
+      const token = window.localStorage.getItem('n6:api:token');
+      if (!token) return [];
+      const res = await fetch('https://api.denisbergkam.com/api/n6/v1/accounts?tier=3&limit=200', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!res.ok) return [];
+      const page = await res.json();
+      const items = (page && page.items) || [];
+      return items.map(a => ({
+        id: a.coach_id || a.id,
+        accountId: a.id,
+        name: a.full_name || a.username,
+        username: a.username,
+        phone: a.phone || '',
+        email: a.email || '',
+      }));
+    } catch (e) { return []; }
+  }
+
   async function loadAllData(){
     // Preserve the exact existing browser records. No demo data and no automatic archiving.
     const read = async (key, fallback) => {
@@ -115,18 +136,7 @@
     };
     programCatalog=await read('programCatalog',DEFAULT_PROGRAM_CATALOG);
     // coachRoster diambil dari Kelola Anggota (API /accounts?tier=3), bukan localStorage.
-    try {
-      const accPage = await n6Api('accounts?tier=3&limit=200');
-      const accItems = (accPage && accPage.items) || [];
-      coachRoster = accItems.map(a => ({
-        id: a.coach_id || a.id,
-        accountId: a.id,
-        name: a.full_name || a.username,
-        username: a.username,
-        phone: a.phone || '',
-        email: a.email || '',
-      }));
-    } catch (e) { coachRoster = []; }
+    coachRoster = await fetchCoachesFromApi();
     coachSchedule=await read('coachSchedule',{});
     coachDayOff=await read('coachDayOff',{});
     clients=await read('clients',[]);
