@@ -148,6 +148,27 @@ async function boot() {
     }
   } catch (e) { /* abaikan */ }
 
+  // DEBUG: lacak kenapa konten tidak tampil (hapus setelah masalah ketemu)
+  try {
+    const dbg = (msg, val) => console.info('[n6-debug]', msg, val);
+    dbg('mount children', document.getElementById(MOUNT_ID)?.children.length);
+    dbg('panels total', document.querySelectorAll('.panel').length);
+    dbg('panels active', document.querySelectorAll('.panel.active').length);
+    const active = document.querySelector('.panel.active');
+    dbg('active panel id', active?.id);
+    dbg('active panel display', active ? getComputedStyle(active).display : 'n/a');
+    dbg('active panel offsetHeight', active?.offsetHeight);
+    dbg('active panel innerHTML length', active?.innerHTML.length);
+    const main = document.querySelector('.main');
+    dbg('.main exists', !!main);
+    dbg('.main display', main ? getComputedStyle(main).display : 'n/a');
+    dbg('.main offsetHeight', main?.offsetHeight);
+    const topbar = document.querySelector('.main .topbar');
+    dbg('topbar exists', !!topbar);
+    dbg('topbar display', topbar ? getComputedStyle(topbar).display : 'n/a');
+    dbg('body data-role', document.body.getAttribute('data-role'));
+  } catch (e) { console.warn('[n6-debug] gagal', e); }
+
   bus.emit(EVENTS.READY, {
     role: role.key,
     tier: role.tier,
