@@ -9,18 +9,42 @@
     "home",
     "klien",
     "info",
-    "jadwal"
+    "jadwal",
+    "sandi"
   ],
   "actions": {
-    "clients": ["view", "update"],
-    "client_schedule": ["view", "manage"],
-    "attendance": ["view", "manage"],
-    "programs": ["view"],
-    "monitoring": ["view"],
-    "messages": ["view", "send"],
-    "reports": ["view", "export"],
-    "coach_schedule": ["view"],
-    "corrections": ["view"],
+    "clients": [
+      "view",
+      "update"
+    ],
+    "client_schedule": [
+      "view",
+      "manage"
+    ],
+    "attendance": [
+      "view",
+      "manage"
+    ],
+    "programs": [
+      "view"
+    ],
+    "monitoring": [
+      "view"
+    ],
+    "messages": [
+      "view",
+      "send"
+    ],
+    "reports": [
+      "view",
+      "export"
+    ],
+    "coach_schedule": [
+      "view"
+    ],
+    "corrections": [
+      "view"
+    ],
     "pricing": [],
     "tickets": [],
     "commissions": [],

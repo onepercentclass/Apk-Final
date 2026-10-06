@@ -8,12 +8,22 @@
   "menus": [
     "laporan",
     "performa",
-    "chat"
+    "chat",
+    "sandi"
   ],
   "actions": {
-    "own_profile": ["view", "update"],
-    "reports": ["view", "export"],
-    "messages": ["view", "send"],
+    "own_profile": [
+      "view",
+      "update"
+    ],
+    "reports": [
+      "view",
+      "export"
+    ],
+    "messages": [
+      "view",
+      "send"
+    ],
     "clients": [],
     "client_schedule": [],
     "coach_schedule": [],

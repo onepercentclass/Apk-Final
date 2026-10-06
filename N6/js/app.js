@@ -30,6 +30,18 @@ import { EVENTS, bus } from './core/events.js';
 
 const MOUNT_ID = 'n6-app';
 
+/**
+ * Konfigurasi API untuk classic script (mis. js/account-ui.js) yang tidak
+ * bisa mengimpor ES module. Dipasang sebelum role bundle dimuat.
+ */
+window.N6_API = {
+  enabled: apiEnabled(),
+  base: String(CONFIG.API_BASE_URL).replace(/\/+$/, '') +
+        String(CONFIG.API_PREFIX || '').replace(/\/+$/, ''),
+  tokenKey: CONFIG.API_TOKEN_KEY,
+  userKey: CONFIG.API_USER_KEY,
+};
+
 /** Render the splash shown while stylesheets and scripts arrive. */
 function showBootScreen(role) {
   const mount = document.getElementById(MOUNT_ID);

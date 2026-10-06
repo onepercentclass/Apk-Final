@@ -87,6 +87,7 @@ export const ROLE_KEYS = Object.freeze(Object.keys(ROLES));
 export const MENUS = Object.freeze({
   komisi:      { label: 'Performa & Komisi',  tier: TIER.OWNER,     roles: ['owner'], group: 'owner' },
   keuangan:    { label: 'Keuangan',           tier: TIER.OWNER,     roles: ['owner'], group: 'owner' },
+  akun:        { label: 'Kelola Anggota',     tier: TIER.OWNER,     roles: ['owner'], group: 'owner' },
   beranda:     { label: 'Beranda',            tier: TIER.OWNER,     roles: ['owner'], group: 'owner' },
   klien:       { label: 'Klien',              tier: TIER.ADMIN,     roles: ['owner', 'admin', 'headcoach', 'coach'], group: 'admin' },
   jadwalklien: { label: 'Jadwal Klien',       tier: TIER.ADMIN,     roles: ['owner', 'admin'], group: 'admin' },
@@ -107,6 +108,7 @@ export const MENUS = Object.freeze({
   laporan:     { label: 'Laporan',            tier: TIER.CLIENT,    roles: ['client'], group: 'client' },
   performa:    { label: 'Performa',           tier: TIER.CLIENT,    roles: ['client'], group: 'client' },
   chat:        { label: 'Chat',               tier: TIER.CLIENT,    roles: ['client'], group: 'client' },
+  sandi:       { label: 'Ganti Password',     tier: TIER.CLIENT,    roles: ['owner', 'admin', 'headcoach', 'coach', 'client'], group: 'akun' },
 });
 
 export const MENU_KEYS = Object.freeze(Object.keys(MENUS));

@@ -54,6 +54,10 @@ export const VIEW_ADMIN = `
         Pesan
         <span class="nav-dot" id="navDotPesan" style="display:none;">0</span>
 </button>
+<button data-panel="sandi">
+<svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Ganti Password
+      </button>
 </nav>
 <div class="side-foot">
 <b>Admin CS</b>
@@ -311,6 +315,9 @@ export const VIEW_ADMIN = `
 </div>
 <div class="card-body" id="messageListBody"></div>
 </div>
+</section>
+<section class="panel" id="panel-sandi">
+<div id="n6SandiRoot"></div>
 </section>
 </div>
 </main>
