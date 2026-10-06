@@ -136,6 +136,32 @@ async function boot() {
   // 4. data layer (localStorage while the API is off)
   const repository = await initRepository(role.key);
 
+  // Bridge untuk bundle legacy (mis. client) yang membaca via window.storage.
+  // Adapter ini meneruskan ke repository aktif (API atau localStorage).
+  try {
+    if (typeof window !== 'undefined' && !window.storage) {
+      window.storage = {
+        async get(key, parseJson) {
+          let val = null;
+          try {
+            const raw = await repository.get(key);
+            // API mengembalikan {items, total} untuk list; bundle legacy butuh array.
+            const data = (raw && Array.isArray(raw.items)) ? raw.items : raw;
+            val = (parseJson && data != null) ? JSON.stringify(data) : data;
+          } catch (e) { val = null; }
+          return val != null ? { value: val } : null;
+        },
+        async set(key, value, parseJson) {
+          try {
+            const data = (parseJson && typeof value === 'string') ? JSON.parse(value) : value;
+            await repository.set(key, data);
+            return true;
+          } catch (e) { return false; }
+        },
+      };
+    }
+  } catch (e) { /* abaikan */ }
+
   // 5. role bundle, then its trailing scripts, in order
   for (const src of role.assets.scripts) {
     await loadScript(src);

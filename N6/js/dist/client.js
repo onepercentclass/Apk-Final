@@ -485,7 +485,7 @@
         const clientsRaw = await storeGet('clients');
         let clients = [];
         try{ clients = clientsRaw ? JSON.parse(clientsRaw) : []; }catch(e){ clients = []; }
-        const found = clients.find(c => c.id === clientId);
+        const found = clients.find(c => String(c.id) === String(clientId));
         if (found){
           clientName = found.name;
           const rRaw = await storeGet('reports:' + clientId);
