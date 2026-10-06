@@ -348,6 +348,14 @@
     updateAkunStats();
   }
 
+  function getUserTier() {
+    try {
+      var k = (window.N6_API || {}).userKey || 'n6:api:user';
+      var me = JSON.parse(window.localStorage.getItem(k) || 'null');
+      return me && typeof me.tier === 'number' ? me.tier : null;
+    } catch (e) { return null; }
+  }
+
   function initKelolaAnggota() {
     var panel = document.getElementById('panel-akun');
     if (!panel) return; // bukan peran owner
@@ -356,6 +364,12 @@
       root.innerHTML = noticeHtml(
         'Kelola Anggota membutuhkan koneksi ke server (mode API). ' +
         'Aktifkan API dan masuk sebagai Owner terlebih dahulu.');
+      return;
+    }
+    // Defense in depth: hanya tier 0 (owner) yang boleh, walau tombol lolos gate
+    if (getUserTier() !== 0) {
+      root.innerHTML = noticeHtml(
+        'Akses ditolak: Kelola Anggota hanya untuk Owner.');
       return;
     }
     root.innerHTML =
