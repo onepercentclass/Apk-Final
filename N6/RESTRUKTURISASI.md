@@ -344,18 +344,18 @@ saat rename + split dilakukan.
 
 ---
 
-### Fase E: Audit `vendor/` dan `assets/`
+### Fase E: Audit `vendor/` dan `assets/` ✅ SELESAI (2026-10-06)
 
-| Aksi | Detail |
-|------|--------|
-| E1 | Audit isi `N6/vendor/` — apa saja, dari mana, apakah masih dipakai |
-| E2 | Rename logo di `assets/img/` dengan pola konsisten: `logo-{varian}-{ukuran}.png` |
-| E3 | Hapus logo yang tidak dipakai (jika ada) |
+| Aksi | Detail | Status |
+|------|--------|--------|
+| E1 | Audit `N6/vendor/` — hanya berisi `jspdf-2.5.2.umd.min.js` (365KB), tidak direferensikan di mana pun (jsPDF dimuat dari CDN cdnjs) | ✅ Dihapus |
+| E2 | Rename logo — **DILEWATI**. 10 file logo sudah bernama deskriptif (`logo-black.png`, `logo-client-header.png`, dll) dan semua terpakai. Rename hanya kosmetik dengan risiko merusak referensi. | ⏭️ Dilewati |
+| E3 | Hapus logo tidak dipakai — semua 10 logo ter-referensi di HTML/JS/CSS | ✅ Tidak ada yang dihapus |
 
-**Verifikasi (definition of done):**
-- [ ] `grep -r "vendor/" --include="*.html" --include="*.js" N6/` — semua file vendor yang tersisa masih direferensikan
-- [ ] `grep -r "assets/img/" --include="*.html" --include="*.js" --include="*.css" N6/` — semua logo yang tersisa masih dipakai
-- Risiko rendah — tidak perlu browser test (kecuali ada logo yang diganti, cek visual sekali)
+**Verifikasi:**
+- ✅ `grep -r "vendor/"` — tidak ada referensi tersisa
+- ✅ `grep -r "assets/img/"` — 10/10 logo terpakai
+- Risiko rendah — tidak perlu browser test
 
 ---
 
