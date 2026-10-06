@@ -148,6 +148,14 @@ async function boot() {
     }
   } catch (e) { /* abaikan */ }
 
+  // DEBUG sementara
+  try {
+    const appEl = document.querySelector('#n6-app > .app');
+    console.info('[n6-debug] app children:', appEl?.children.length);
+    if (appEl) [...appEl.children].forEach((c,i) =>
+      console.info(`[n6-debug] app[${i}]`, c.tagName+'.'+c.className, 'w='+c.offsetWidth, 'h='+c.offsetHeight));
+  } catch(e){}
+
   bus.emit(EVENTS.READY, {
     role: role.key,
     tier: role.tier,
