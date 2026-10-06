@@ -147,7 +147,7 @@
               found = { id: me.client_id, name: me.full_name || me.username || 'Client' };
             }
           }
-        } catch (e) {}
+        } catch(e){ if(window.logger) window.logger.caught('client/profil', 'operasi', e); }
         if (!found) {
           const clientsRaw = await storeGet('clients');
           let clients = [];
@@ -166,7 +166,7 @@
           try{ reports = rRaw ? JSON.parse(rRaw) : {}; }catch(e){ reports = {}; }
           try{ scores = sRaw ? JSON.parse(sRaw) : {}; }catch(e){ scores = {}; }
           try{ chatMessages = cRaw ? JSON.parse(cRaw) : []; }catch(e){ chatMessages = []; }
-          try{ programInfo = pRaw ? JSON.parse(pRaw) : programInfo; }catch(e){}
+          try{ programInfo = pRaw ? JSON.parse(pRaw) : programInfo; }catch(e){ if(window.logger) window.logger.caught('client/profil', 'operasi', e); }
         } else {
           renderInvalid();
           return;

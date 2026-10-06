@@ -62,14 +62,14 @@
       try {
         const r = await window.storage.get(key, true);
         if (r && r.value != null) return r.value;
-      } catch (e) {}
+      } catch(e){ if(window.logger) window.logger.caught('admin/_core', 'operasi', e); }
     }
     try{ return localStorage.getItem(STORE_PREFIX + key); }
     catch(e){ return null; }
   }
 /*__N6_UNIT__*/  async function storeSet(key, value){
     if (N6_API_KEYS.has(key) && typeof window !== 'undefined' && window.storage) {
-      try { await window.storage.set(key, value, true); } catch (e) {}
+      try { await window.storage.set(key, value, true); } catch(e){ if(window.logger) window.logger.caught('admin/_core', 'operasi', e); }
     }
     try{ localStorage.setItem(STORE_PREFIX + key, value); if(localStorage.getItem(STORE_PREFIX + key)!==value) throw Error('Verifikasi gagal'); return true; }
     catch(e){ showToast('GAGAL menyimpan! Periksa izin penyimpanan browser.'); throw e; }

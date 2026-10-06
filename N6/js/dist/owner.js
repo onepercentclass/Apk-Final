@@ -62,7 +62,7 @@
       } catch (e) { /* fallback ke localStorage */ }
     }
     if (N6_SHARED_COACH_KEYS.has(key)) {
-      try { const v=localStorage.getItem(N6_ADMIN_PREFIX+key); if(v!==null)return v; } catch(e){}
+      try { const v=localStorage.getItem(N6_ADMIN_PREFIX+key); if(v!==null)return v; } catch(e){ if(window.logger) window.logger.caught('owner/_core', 'operasi', e); }
     }
     try { return localStorage.getItem(N6_OWNER_PREFIX+key); } catch(e){ return null; }
   }

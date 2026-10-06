@@ -149,7 +149,7 @@
       if (typeof window !== 'undefined') {
         window.n6ApiClients = clients;
       }
-    } catch (e) {}
+    } catch(e){ if(window.logger) window.logger.caught('headcoach/_core', 'operasi', e); }
   }
 
   async function loadRescheduleRequests(){

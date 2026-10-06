@@ -18,7 +18,7 @@
         localStorage.removeItem(cfg.tokenKey || 'n6:api:token');
         localStorage.removeItem(cfg.refreshKey || 'n6:api:refresh');
         localStorage.removeItem(cfg.userKey || 'n6:api:user');
-      } catch (e) {}
+      } catch(e){ if(window.logger) window.logger.caught('client/laporan', 'operasi', e); }
       window.location.replace(window.location.pathname);
     });
   }

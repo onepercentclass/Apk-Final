@@ -61,7 +61,7 @@
     // Logo N6 putih (transparan), rasio asli dijaga agar tidak gepeng, mengikuti ukuran teks
     const logoW = 66, logoH = 34.1;
     const logoX = 30, logoY = (headerH - logoH) / 2;
-    try { doc.addImage(LOGO_DATA, 'PNG', logoX, logoY, logoW, logoH); } catch(e){}
+    try { doc.addImage(LOGO_DATA, 'PNG', logoX, logoY, logoW, logoH); } catch(e){ if(window.logger) window.logger.caught('coach/keuangan', 'operasi', e); }
     const textX = logoX + logoW + 16;
     doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(255,255,255);
     doc.text('NUMBER SIX RUNNING', textX, 34);

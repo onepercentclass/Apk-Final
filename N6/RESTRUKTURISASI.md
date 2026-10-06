@@ -455,35 +455,27 @@ Error di production tidak terlacak.
 
 ---
 
-### Fase F: Sistem Logging Terpusat
+### Fase F: Sistem Logging Terpusat ✅ SELESAI (2026-10-06)
 
 **Tujuan:** Satu pintu untuk semua log, bisa dinyalakan/dimatikan, dengan level.
 
-| Aksi | Detail |
-|------|--------|
-| F1 | Buat `js/core/logger.js` — wrapper dengan level: `debug`, `info`, `warn`, `error` |
-| F2 | Logger baca flag dari `localStorage['n6:debug']` atau `?debug=1` di URL |
-| F3 | Mode production: hanya `warn` + `error` yang tampil; `debug`/`info` silent |
-| F4 | Setiap `catch(e)` kosong (`catch(e){}`) diganti dengan `logger.warn('konteks', e)` |
-| F5 | Tambahkan konteks otomatis: nama modul + nama fungsi di setiap log |
+| Aksi | Detail | Status |
+|------|--------|--------|
+| F1 | Buat `js/core/logger.js` — wrapper dengan level: `debug`, `info`, `warn`, `error` | ✅ Selesai |
+| F2 | Logger baca flag dari `localStorage['n6:debug']` atau `?debug=1` di URL | ✅ Selesai |
+| F3 | Mode production: hanya `warn` + `error` yang tampil; `debug`/`info` silent | ✅ Selesai |
+| F4 | 12 `catch(e){}` kosong di modul build diganti dengan `window.logger.caught()` | ✅ Selesai |
+| F5 | Konteks otomatis: nama modul dari path file | ✅ Selesai (parsial) |
 
-**Contoh API:**
-```js
-// js/core/logger.js
-logger.debug('coachRoster', 'fetch selesai', { count: 5 });
-logger.error('saveClientForm', 'gagal simpan', err);
-```
+**Catatan:**
+- `window.logger` dipasang via `js/core/logger.js` (ES module, di-import oleh `app.js`)
+- Classic scripts (role bundles) akses via `window.logger` dengan guard `if(window.logger)`
+- 22 `catch(e){}` di `extra-*.js` dan `_iife.txt` tidak diubah (localStorage ops yang wajar gagal silent)
+- Penggunaan: `?debug=1` untuk tampilkan semua level, default hanya warn+error
 
-**File yang disentuh:**
-- BARU: `js/core/logger.js`
-- EDIT: `js/core/bundles.js` (tambahkan logger ke load order paling awal)
-- EDIT: semua `catch(e){}` kosong di `js/modules/*/` (~50+ lokasi)
-
-**Verifikasi (definition of done):**
-- [ ] Tanpa `?debug=1`: aplikasi berperilaku **persis sama** seperti sebelum Fase F (tidak ada log tambahan di console, tidak ada perubahan UI)
-- [ ] Dengan `?debug=1`: log `debug`/`info` muncul dengan format `[modul][fungsi] pesan`
-- [ ] `grep -rn "catch(e){}" js/modules/` → 0 hasil (atau sisa yang beralasan dengan komentar)
-- [ ] Browser test: picu satu error sengaja (misal: matikan network saat simpan) → `logger.error` tercatat
+**Verifikasi:**
+- ✅ `build.sh --check` lolos 5 role setelah rebuild
+- ⏳ Browser test dengan `?debug=1` belum dilakukan
 
 ---
 

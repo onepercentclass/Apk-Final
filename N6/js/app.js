@@ -27,6 +27,7 @@ import * as router from './core/router.js';
 import { whenStylesLoaded, loadScript, $, el } from './core/dom.js';
 import { APP_NAME, APP_SUBTITLE, ROLE_PARAM } from './core/config.js';
 import { EVENTS, bus } from './core/events.js';
+import { logger } from './core/logger.js';
 
 const MOUNT_ID = 'n6-app';
 
