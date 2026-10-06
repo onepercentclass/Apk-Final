@@ -1892,16 +1892,13 @@
 
   window.openCoachForm = function(){
     // Daftar coach dihapus, kelola via Kelola Anggota.
-    // Arahkan user ke menu Kelola Anggota.
     if (typeof showToast === 'function') showToast('Kelola coach via menu Kelola Anggota');
-    const anggotaBtn = document.querySelector('[data-menu="anggota"], [data-panel="anggota"]');
-    if (anggotaBtn) anggotaBtn.click();
+    if (typeof switchPanel === 'function') switchPanel('akun');
   };
   window.editCoach = function(id){
     // Daftar coach dihapus, kelola via Kelola Anggota.
     if (typeof showToast === 'function') showToast('Kelola coach via menu Kelola Anggota');
-    const anggotaBtn = document.querySelector('[data-menu="anggota"], [data-panel="anggota"]');
-    if (anggotaBtn) anggotaBtn.click();
+    if (typeof switchPanel === 'function') switchPanel('akun');
   };
   window.closeCoachForm = function(){ document.getElementById('coachFormModal').classList.remove('show'); };
   async function saveCoachForm(){
