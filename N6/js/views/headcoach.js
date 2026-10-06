@@ -411,8 +411,6 @@ Rabu: Recovery / istirahat
 <span>Atlet Binaan</span>
 </button>
 </div>
-<div class="modal-body" id="coachDetailBody"></div>
-</div>
 </div>
 <div class="modal-overlay" id="clientDetailModal" onclick="if(event.target===this) closeClientDetail()">
 <div class="modal-box">
