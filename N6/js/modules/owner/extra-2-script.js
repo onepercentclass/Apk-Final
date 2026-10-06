@@ -121,7 +121,7 @@
         window.localStorage.removeItem(cfg.refreshKey || 'n6:api:refresh');
         window.localStorage.removeItem(cfg.userKey || 'n6:api:user');
       } catch (err) {}
-      window.location.reload();
+      window.location.replace(window.location.pathname);
       return;
     }
     try { window.sessionStorage.removeItem(previewKey); } catch (err) {}

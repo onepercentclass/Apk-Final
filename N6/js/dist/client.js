@@ -25,7 +25,7 @@
     menu.addEventListener('click',e=>e.stopPropagation());
     menu.querySelectorAll('[data-client-theme]').forEach(b=>b.addEventListener('click',()=>setClientTheme(b.dataset.clientTheme)));
     const logoutBtn=document.getElementById('clientLogoutBtn');
-    if(logoutBtn)logoutBtn.addEventListener('click',()=>{try{const cfg=window.N6_API||{};localStorage.removeItem(cfg.tokenKey||'n6:api:token');localStorage.removeItem(cfg.refreshKey||'n6:api:refresh');localStorage.removeItem(cfg.userKey||'n6:api:user');}catch(e){}window.location.reload();});
+    if(logoutBtn)logoutBtn.addEventListener('click',()=>{try{const cfg=window.N6_API||{};localStorage.removeItem(cfg.tokenKey||'n6:api:token');localStorage.removeItem(cfg.refreshKey||'n6:api:refresh');localStorage.removeItem(cfg.userKey||'n6:api:user');}catch(e){}window.location.replace(window.location.pathname);});
     document.addEventListener('click',()=>{menu.hidden=true;btn.setAttribute('aria-expanded','false');});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;btn.setAttribute('aria-expanded','false');}});
     setClientTheme(document.documentElement.getAttribute('data-client-theme')||'light');
