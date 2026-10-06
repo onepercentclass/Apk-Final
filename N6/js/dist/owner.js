@@ -105,7 +105,7 @@
   let pendingArchiveNotice = 0;
 
   function catalogById(id){ return programCatalog.find(p => p.id === id); }
-  function coachById(id){ return coachRoster.find(c => c.id === id); }
+  function coachById(id){ return coachRoster.find(c => String(c.id) === String(id)); }
 
   function seedDemoIfEmpty(){
     // Data dummy dinonaktifkan — dashboard selalu mulai kosong, tanpa klien contoh.
@@ -450,7 +450,7 @@
     });
   };
   window.deleteArchivedClient = function(id){
-    const c = archivedClients.find(x => x.id === id);
+    const c = archivedClients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus permanen data "' + c.name + '"? Laporan latihan, riwayat chat, dan data program klien ini akan hilang selamanya dan tidak bisa dikembalikan.')) return;
     archivedClients = archivedClients.filter(x => x.id !== id);
@@ -668,7 +668,7 @@
   }
 
   window.deleteClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus klien "' + c.name + '"? Data laporan dan chat klien ini tidak akan tampil lagi di dashboard.')) return;
     clients = clients.filter(x => x.id !== id);
@@ -708,7 +708,7 @@
   }
 
   window.downloadInvoice = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c){ showToast('Klien tidak ditemukan'); return; }
     const p = programCache[c.id] || {};
     const invoiceNo = ensureInvoiceNumber(c);
@@ -841,7 +841,7 @@
 
   /* ================= DETAIL KLIEN ================= */
   window.openClientDetail = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const reports = reportsCache[id] || {};
@@ -947,7 +947,7 @@
       mode:'fixed', unit:document.getElementById('pfUnit').value.trim(),
       price:Math.round(price), komisiPerSesi:Math.round(komisi) };
     if (isNew) programCatalog.push(data);
-    else { const idx = programCatalog.findIndex(x => x.id === id); programCatalog[idx] = data; }
+    else { const idx = programCatalog.findIndex(x => String(x.id) === String(id)); programCatalog[idx] = data; }
     await persistCatalog();
     closeProgramForm();
     showToast(isNew ? 'Program baru ditambahkan' : 'Harga program diperbarui');
@@ -1338,7 +1338,7 @@
     renderAll();showToast('Tiket dihapus');
   };
   window.updateTicketStatus = function(id, status){
-    const t = tickets.find(x => x.id === id);
+    const t = tickets.find(x => String(x.id) === String(id));
     if (!t) return;
     t.status = status;
     persistTickets().then(() => { showToast('Status tiket diperbarui'); renderAll(); });

@@ -82,7 +82,7 @@
     renderAll();showToast('Tiket dihapus');
   };
 /*__N6_UNIT__*/  window.updateTicketStatus = function(id, status){
-    const t = tickets.find(x => x.id === id);
+    const t = tickets.find(x => String(x.id) === String(id));
     if (!t) return;
     t.status = status;
     persistTickets().then(() => { showToast('Status tiket diperbarui'); renderAll(); });

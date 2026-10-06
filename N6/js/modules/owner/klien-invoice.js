@@ -36,7 +36,7 @@
   }
 
 /*__N6_UNIT__*/  window.downloadInvoice = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c){ showToast('Klien tidak ditemukan'); return; }
     const p = programCache[c.id] || {};
     const invoiceNo = ensureInvoiceNumber(c);

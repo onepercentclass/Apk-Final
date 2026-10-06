@@ -98,7 +98,7 @@
 /*__N6_UNIT__*/  let activeSlot = null; // { coachId, day, blockKey }
 /*__N6_UNIT__*/  let pendingArchiveNotice = 0;
 
-/*__N6_UNIT__*/  function catalogById(id){ return programCatalog.find(p => p.id === id); }
+/*__N6_UNIT__*/  function catalogById(id){ return programCatalog.find(p => String(p.id) === String(id)); }
 /*__N6_UNIT__*/  function coachById(id){ return coachRoster.find(c => String(c.id) === String(id)); }
 
   /* ================= LOAD DATA ================= */

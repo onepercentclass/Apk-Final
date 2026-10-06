@@ -73,7 +73,7 @@
     });
   };
 /*__N6_UNIT__*/  window.deleteArchivedClient = function(id){
-    const c = archivedClients.find(x => x.id === id);
+    const c = archivedClients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus permanen data "' + c.name + '"? Laporan latihan, riwayat chat, dan data program klien ini akan hilang selamanya dan tidak bisa dikembalikan.')) return;
     archivedClients = archivedClients.filter(x => x.id !== id);
@@ -291,7 +291,7 @@
   }
 
 /*__N6_UNIT__*/  window.deleteClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus klien "' + c.name + '"? Data laporan dan chat klien ini tidak akan tampil lagi di dashboard.')) return;
     clients = clients.filter(x => x.id !== id);
@@ -300,7 +300,7 @@
 
   /* ================= INVOICE (JPG) ================= */
 /*__N6_UNIT__*/  window.openClientDetail = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const reports = reportsCache[id] || {};

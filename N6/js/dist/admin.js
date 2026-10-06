@@ -101,7 +101,7 @@
   let activeSlot = null; // { coachId, day, blockKey }
   let pendingArchiveNotice = 0;
 
-  function catalogById(id){ return programCatalog.find(p => p.id === id); }
+  function catalogById(id){ return programCatalog.find(p => String(p.id) === String(id)); }
   function coachById(id){ return coachRoster.find(c => String(c.id) === String(id)); }
 
   /* ================= LOAD DATA ================= */

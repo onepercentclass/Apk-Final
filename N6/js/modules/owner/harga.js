@@ -58,7 +58,7 @@
       mode:'fixed', unit:document.getElementById('pfUnit').value.trim(),
       price:Math.round(price), komisiPerSesi:Math.round(komisi) };
     if (isNew) programCatalog.push(data);
-    else { const idx = programCatalog.findIndex(x => x.id === id); programCatalog[idx] = data; }
+    else { const idx = programCatalog.findIndex(x => String(x.id) === String(id)); programCatalog[idx] = data; }
     await persistCatalog();
     closeProgramForm();
     showToast(isNew ? 'Program baru ditambahkan' : 'Harga program diperbarui');
