@@ -151,7 +151,15 @@ async function boot() {
   // DEBUG: lacak kenapa konten tidak tampil (hapus setelah masalah ketemu)
   try {
     const dbg = (msg, val) => console.info('[n6-debug]', msg, val);
-    dbg('mount children', document.getElementById(MOUNT_ID)?.children.length);
+    const mountEl = document.getElementById(MOUNT_ID);
+    dbg('mount children', mountEl?.children.length);
+    if (mountEl) {
+      [...mountEl.children].forEach((c, i) => {
+        dbg(`child[${i}]`, c.tagName + '.' + c.className + '#' + c.id);
+        dbg(`child[${i}] display`, getComputedStyle(c).display);
+        dbg(`child[${i}] offsetHeight`, c.offsetHeight);
+      });
+    }
     dbg('panels total', document.querySelectorAll('.panel').length);
     dbg('panels active', document.querySelectorAll('.panel.active').length);
     const active = document.querySelector('.panel.active');
