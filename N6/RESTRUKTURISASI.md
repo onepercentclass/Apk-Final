@@ -152,13 +152,15 @@ N6/
 | 5 | `extra-3-script.js` | `business-health.js` | `renderBusinessHealth` widget (41 baris) |
 | 6 | `harga.js` | `harga.js` | ✅ Tetap |
 | 7 | `jadwalcoach.js` | `jadwal-coach.js` | Konsisten: pakai strip |
-| 8 | `jadwalklien.js` | `jadwal-klien.js` | Konsisten: pakai strip |
-| 9 | `keuangan.js` | `keuangan.js` | ✅ Tetap |
-| 10 | `klien.js` | `klien.js` | ✅ Tetap |
-| 11 | `komisi.js` | `komisi.js` | ✅ Tetap |
-| 12 | `manifest.js` | `manifest.js` | ✅ Tetap (konvensi build) |
-| 13 | `pesan.js` | `pesan.js` | ✅ Tetap |
-| 14 | `tiket.js` | `tiket.js` | ✅ Tetap |
+| 8 | *(baru, split dari no.7)* | `jadwal-coach-export.js` | ✂️ Split: `downloadCoachScheduleImage` (~180 baris). Alasan: export gambar beda tanggung jawab dari manajemen jadwal |
+| 9 | `jadwalklien.js` | `jadwal-klien.js` | Konsisten: pakai strip |
+| 10 | `keuangan.js` | `keuangan.js` | ✅ Tetap |
+| 11 | `klien.js` | `klien.js` | ✅ Tetap |
+| 12 | *(baru, split dari no.11)* | `klien-invoice.js` | ✂️ Split: `downloadInvoice` (~130 baris). Alasan: logika PDF/invoice beda alasan berubah dari CRUD klien |
+| 13 | `komisi.js` | `komisi.js` | ✅ Tetap |
+| 14 | `manifest.js` | `manifest.js` | ✅ Tetap (konvensi build) |
+| 15 | `pesan.js` | `pesan.js` | ✅ Tetap |
+| 16 | `tiket.js` | `tiket.js` | ✅ Tetap |
 
 #### C.2 — Admin (`js/modules/admin/`)
 
@@ -169,7 +171,8 @@ N6/
 | 3 | `extra-1-n6-owner-schedule-refresh.js` | `schedule-refresh.js` | Refresh jadwal dari Owner |
 | 4 | `harga.js` | `harga.js` | ✅ Tetap |
 | 5 | `jadwalcoach.js` | `jadwal-coach.js` | Konsisten: pakai strip |
-| 6 | `jadwalklien.js` | `jadwal-klien.js` | Konsisten: pakai strip |
+| 6 | *(baru, split dari no.5)* | `jadwal-coach-export.js` | ✂️ Split: `downloadCoachScheduleImage` (~180 baris). Alasan: sama seperti Owner |
+| 7 | `jadwalklien.js` | `jadwal-klien.js` | Konsisten: pakai strip |
 | 7 | `klien.js` | `klien.js` | ✅ Tetap |
 | 8 | `manifest.js` | `manifest.js` | ✅ Tetap |
 | 9 | `pesan.js` | `pesan.js` | ✅ Tetap |
@@ -256,12 +259,16 @@ N6/
 ---
 
 **File yang harus diupdate setelah rename:**
-1. `js/modules/*/manifest.js` — daftar file per role (5 file)
+1. `js/modules/*/manifest.js` — daftar file per role (5 file, tambah entry untuk file hasil split)
 2. `js/core/bundles.js` — daftar script yang di-load (path `extra-*` → nama baru)
 3. `tools/build.sh` (baru) — pastikan baca manifest yang sudah update
 
 **Total file di-rename:** 15 file
+**Total file baru dari split:** 3 file (`klien-invoice.js`, `jadwal-coach-export.js` × 2 role)
 **Total file diupdate (path reference):** 6 file
+
+**Prinsip split:** hanya jika beda "alasan berubah" (single responsibility).
+`_core.js`, file < 300 baris, dan `dist/` tidak di-split.
 
 ---
 
@@ -341,7 +348,10 @@ Fase A (Build Linux)
 - [ ] Rename 2 file `jadwalcoach.js` → `jadwal-coach.js` (owner, admin)
 - [ ] Rename 2 file `jadwalklien.js` → `jadwal-klien.js` (owner, admin)
 - [ ] Rename 1 file di `shared/` (n6-monthly-pdf-reports → monthly-pdf-reports)
-- [ ] Update 5 file `manifest.js`
+- [ ] ✂️ Split `owner/klien.js` → `klien-invoice.js` (fungsi `downloadInvoice`)
+- [ ] ✂️ Split `owner/jadwalcoach.js` → `jadwal-coach-export.js` (fungsi `downloadCoachScheduleImage`)
+- [ ] ✂️ Split `admin/jadwalcoach.js` → `jadwal-coach-export.js` (fungsi `downloadCoachScheduleImage`)
+- [ ] Update 5 file `manifest.js` (tambah entry file hasil split)
 - [ ] Update `js/core/bundles.js`
 - [ ] Verifikasi dengan `build.sh --check`
 
