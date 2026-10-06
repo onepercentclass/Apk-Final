@@ -497,8 +497,25 @@
     if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
   }
 
+  function populateCoachIdentity() {
+    // Isi nama user asli di view coach (ganti placeholder)
+    var me = null;
+    try {
+      var k = (window.N6_API || {}).userKey || 'n6:api:user';
+      me = JSON.parse(window.localStorage.getItem(k) || 'null');
+    } catch (e) {}
+    if (!me) return;
+    var name = me.full_name || me.username || 'Coach';
+    var initials = String(name).trim().split(/\s+/).map(function (w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('coachSideFootName', name);
+    set('coachMenuName', name);
+    set('coachMenuAvatar', initials || '--');
+  }
+
   function init() {
     injectAccountCss();
+    populateCoachIdentity();
     // panel mungkin belum ada bila view diganti; tunggu sebentar
     if (!document.getElementById('panel-sandi') && !document.getElementById('panel-akun')) {
       // peran client: menu akun di-render oleh bundle

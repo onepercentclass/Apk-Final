@@ -47,8 +47,8 @@ export const VIEW_COACH = `
 </button>
 </nav>
 <div class="side-foot">
-<b>Rangga Saputra</b>
-      Coach — N6 Running Training
+<b id="coachSideFootName">Coach</b>
+      <span id="coachSideFootRole">N6 Running Training</span>
     </div>
 </aside>
 <!-- MAIN -->
@@ -71,7 +71,7 @@ export const VIEW_COACH = `
 <div class="bell">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
 </div>
-<div class="coach-account-wrap" id="coachAccountWrap"><button aria-controls="coachAccountMenu" aria-expanded="false" aria-label="Buka menu akun" class="coach-account-trigger" id="coachAccountBtn" type="button"><svg aria-hidden="true" fill="none" height="21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="21"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-2a8 8 0 0 1 16 0v2"></path></svg></button><div class="coach-account-menu" hidden="" id="coachAccountMenu"><div class="coach-account-profile"><div class="coach-account-avatar">RS</div><div><strong>Rangga Saputra</strong><small>Coach · NUMBER SIX RUNNING</small></div></div><div class="coach-account-divider"></div><div class="coach-account-label">Tampilan dashboard</div><div class="coach-account-theme"><button id="coachThemeDark" type="button">☾ Dark</button><button id="coachThemeLight" type="button">☀ Light</button></div><div class="coach-account-divider"></div><div class="coach-account-info"><strong>Informasi akun</strong><span>Nama, email, dan informasi profil pada dashboard ini masih data contoh.</span></div></div></div></div>
+<div class="coach-account-wrap" id="coachAccountWrap"><button aria-controls="coachAccountMenu" aria-expanded="false" aria-label="Buka menu akun" class="coach-account-trigger" id="coachAccountBtn" type="button"><svg aria-hidden="true" fill="none" height="21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="21"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-2a8 8 0 0 1 16 0v2"></path></svg></button><div class="coach-account-menu" hidden="" id="coachAccountMenu"><div class="coach-account-profile"><div class="coach-account-avatar" id="coachMenuAvatar">--</div><div><strong id="coachMenuName">Coach</strong><small id="coachMenuRole">N6 Running Training</small></div></div><div class="coach-account-divider"></div><div class="coach-account-label">Tampilan dashboard</div><div class="coach-account-theme"><button id="coachThemeDark" type="button">☾ Dark</button><button id="coachThemeLight" type="button">☀ Light</button></div><div class="coach-account-divider"></div></div></div></div>
 </header>
 <main class="content">
 <div class="content-inner">
