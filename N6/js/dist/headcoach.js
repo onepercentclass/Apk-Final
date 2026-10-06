@@ -102,18 +102,17 @@
   }
 
   async function loadCoaches(){
-    const page = await n6Api('accounts?tier=3&limit=200');
-    const items = (page && page.items) || [];
-    coaches = items
-      .filter(a => a.is_active !== false)
-      .map(a => ({
-        id: a.id,
-        name: a.full_name || a.username || ('Coach #' + a.id),
-        clients: 0,          // dihitung setelah clients dimuat
-        kehadiran: null,     // Fase 3: diisi dari dashboards/headcoach/team
-        score: null,         // Fase 3: diisi dari dashboards/headcoach/team
-        rating: null,        // Fase 3: diisi dari dashboards/headcoach/team
-      }));
+    // Pakai endpoint dashboard (tier 2 boleh akses), bukan /accounts (khusus owner -> 403).
+    const d = await n6Api('dashboards/headcoach/team');
+    const items = (d && d.coaches) || [];
+    coaches = items.map(c => ({
+      id: c.coach_id,
+      name: c.name || ('Coach #' + c.coach_id),
+      clients: c.client_count || 0,
+      kehadiran: c.attendance_pct,
+      score: c.attendance_pct,
+      rating: c.rating,
+    }));
   }
 
   async function loadClients(){
