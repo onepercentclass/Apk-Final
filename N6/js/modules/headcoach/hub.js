@@ -12,8 +12,10 @@
  */
 //__N6_BODY__
   function renderCoachAttention(){
+    const el = document.getElementById('coachAttentionList');
+    if (!el) return;
     const flagged = coaches.filter(c => c.score < 75 || c.kehadiran < 85);
-    document.getElementById('coachAttentionList').innerHTML = flagged.length ? flagged.map(c => `
+    el.innerHTML = flagged.length ? flagged.map(c => `
       <div class="attention-item">
         <div class="attention-dot ${c.score < 70 ? 'red' : 'amber'}"></div>
         <div class="attention-body">
@@ -25,8 +27,10 @@
   }
 
 /*__N6_UNIT__*/  function renderClientAttention(){
+    const el = document.getElementById('clientAttentionList');
+    if (!el) return;
     const flagged = clients.filter(c => c.status !== 'Normal');
-    document.getElementById('clientAttentionList').innerHTML = flagged.length ? flagged.map(c => `
+    el.innerHTML = flagged.length ? flagged.map(c => `
       <div class="attention-item">
         <div class="attention-dot ${c.status === 'Cedera' ? 'red' : 'amber'}"></div>
         <div class="attention-body">
@@ -38,7 +42,9 @@
   }
 
 /*__N6_UNIT__*/  function renderTeamActivity(){
-    document.getElementById('teamActivityList').innerHTML = teamActivityList.map(a => `
+    const el = document.getElementById('teamActivityList');
+    if (!el) return;
+    el.innerHTML = teamActivityList.map(a => `
       <div class="timeline-item">
         <div class="timeline-dot"></div>
         <div class="timeline-body">
@@ -51,8 +57,9 @@
 
   /* ================= CHARTS ================= */
 /*__N6_UNIT__*/  function renderCharts(){
-    new Chart(document.getElementById('chartScoreCoach'), buildChartConfig('scoreCoach'));
-    new Chart(document.getElementById('chartKehadiranTren'), buildChartConfig('kehadiranTren'));
-    new Chart(document.getElementById('chartStatusKlienTim'), buildChartConfig('statusKlienTim'));
-    new Chart(document.getElementById('chartRatingCoach'), buildChartConfig('ratingCoach'));
+    [['chartScoreCoach','scoreCoach'],['chartKehadiranTren','kehadiranTren'],
+     ['chartStatusKlienTim','statusKlienTim'],['chartRatingCoach','ratingCoach']].forEach(([id, key]) => {
+      const cv = document.getElementById(id);
+      if (cv) new Chart(cv, buildChartConfig(key));
+    });
   }

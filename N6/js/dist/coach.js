@@ -39,14 +39,16 @@
   /* ================= DATA (dari API, bukan dummy) ================= */
   // Jadwal hari ini — dari GET /schedules/coach (template mingguan, difilter ke hari ini)
   let schedule = [];
+  let scheduleSlots = []; // template mingguan penuh (untuk jadwal terdekat & kalender)
   // Urutan hari API: 1=Senin..7=Minggu ; JS getDay(): 0=Minggu..6=Sabtu
   function apiWeekday(jsDay){ return ((jsDay + 6) % 7) + 1; }
   async function loadSchedule(){
     const data = await n6Api('schedules/coach');
     const slots = (data && data.slots) || [];
+    scheduleSlots = slots.filter(s => s.active !== false);
     const todayWd = apiWeekday(new Date().getDay());
-    schedule = slots
-      .filter(s => s.weekday === todayWd && s.active !== false)
+    schedule = scheduleSlots
+      .filter(s => s.weekday === todayWd)
       .sort((a,b) => String(a.start_time || '').localeCompare(String(b.start_time || '')))
       .map(s => ({
         time: s.start_time || '--:--',
@@ -59,9 +61,11 @@
 
   // Klien binaan — dari GET /clients (backend otomatis memfilter milik coach yang login)
   let clients = [];
+  let clientsRaw = [];
   async function loadClients(){
     const page = await n6Api('clients?limit=200');
     const items = (page && page.items) || [];
+    clientsRaw = items;
     clients = items.map(c => ({
       id: c.id,
       name: c.name,
@@ -93,6 +97,66 @@
       note: p.note || '—'
     }));
     chartData = buildChartDataFromDashboard(coachDashboard);
+  }
+
+  // Statistik home — dari data API (bukan angka hardcoded di HTML).
+  // Gagal/kosong → "—", tanpa fallback dummy.
+  function renderHomeStats(){
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const hasData = (coachDashboard && Object.keys(coachDashboard).length) || clients.length || schedule.length;
+
+    // Klien Aktif
+    let aktif = null;
+    if (coachDashboard && coachDashboard.clients && coachDashboard.clients.aktif != null) {
+      aktif = Number(coachDashboard.clients.aktif);
+    } else if (clients.length) {
+      aktif = clients.filter(c => c.status === 'Aktif').length;
+    }
+    set('statKlienAktif', aktif != null ? String(aktif) : '—');
+    // Klien baru bulan ini (dari joined_on mentah)
+    let baruBulanIni = null;
+    if (clientsRaw.length) {
+      const now = new Date(), ym = now.getFullYear() + '-' + now.getMonth();
+      baruBulanIni = clientsRaw.filter(c => {
+        if (!c.joined_on) return false;
+        const d = new Date(c.joined_on.length <= 10 ? c.joined_on + 'T00:00:00' : c.joined_on);
+        return !isNaN(d) && (d.getFullYear() + '-' + d.getMonth()) === ym;
+      }).length;
+    }
+    set('statKlienAktifSub', baruBulanIni != null ? (baruBulanIni + ' baru bulan ini') : '—');
+
+    // Sesi Hari Ini
+    set('statSesiHariIni', hasData ? String(schedule.length) : '—');
+    set('statSesiHariIniSub', hasData ? (schedule.length ? 'Terjadwal hari ini' : 'Tidak ada sesi hari ini') : '—');
+
+    // Kehadiran — rata-rata progres klien dari dashboard agregat
+    let hadirPct = null;
+    const progs = (coachDashboard && coachDashboard.progress) || [];
+    if (progs.length) {
+      const vals = progs.map(p => Number(p.pct)).filter(v => !isNaN(v));
+      if (vals.length) hadirPct = Math.round(vals.reduce((a,b) => a + b, 0) / vals.length);
+    }
+    set('statKehadiran', hadirPct != null ? hadirPct + '%' : '—');
+  }
+
+  // Dropdown klien (form log) — dari GET /clients
+  function populateLogClient(){
+    const sel = document.getElementById('logClient');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Pilih klien</option>' +
+      clients.map(c => `<option value="${String(c.name || '').replace(/"/g,'&quot;')}">${String(c.name || '—').replace(/</g,'&lt;')}</option>`).join('');
+  }
+
+  // Dropdown sesi (form reschedule) — dari GET /schedules/coach (slot hari ini)
+  function populateRsSesi(){
+    const sel = document.getElementById('rsSesi');
+    if (!sel) return;
+    const opts = schedule.map(s => {
+      const label = (s.client || '—') + ' — ' + (s.time || '--:--');
+      const esc = String(label).replace(/</g,'&lt;').replace(/"/g,'&quot;');
+      return `<option value="${esc}">${esc}</option>`;
+    }).join('');
+    sel.innerHTML = '<option value="">Pilih sesi terjadwal</option>' + opts;
   }
 
   // Rapor per klien — dari GET /dashboards/clients/{id}/progress → { client, sessions, report, history }
@@ -164,15 +228,10 @@
       feedback: null
     }));
   }
-  const coachPeriode = { mulai:"1 Januari 2026", selesai:"31 Desember 2026" };
+  const coachPeriode = (() => { const y = new Date().getFullYear(); return { mulai:"1 Januari " + y, selesai:"31 Desember " + y }; })();
 
-  const historyList = [
-    { date:"10 Sep 2026", activity:"Sesi latihan bersama Budi Hartono", type:"Sesi" },
-    { date:"09 Sep 2026", activity:"Mengajukan reschedule sesi Rina Marlina", type:"Reschedule" },
-    { date:"05 Sep 2026", activity:"Cuti 1 hari disetujui Head Coach", type:"Cuti" },
-    { date:"01 Sep 2026", activity:"Menerima gaji periode Agustus 2026", type:"Gaji" },
-    { date:"28 Agu 2026", activity:"Sesi latihan bersama Yoga Pratama", type:"Sesi" },
-  ];
+  // Riwayat aktivitas — TIDAK ADA endpoint khusus → kosong + empty state, bukan dummy.
+  const historyList = [];
 
   // Komisi coach — dari GET /commissions/summary?period=YYYY-MM (satu baris per coach per bulan)
   let gajiSummary = null;
@@ -199,59 +258,82 @@
     if (el) el.innerHTML = '<tr><td colspan="3" class="muted" style="text-align:center; padding:24px 0;">Memuat data...</td></tr>';
   }
 
-  const coachRaporList = [
-    { periode:"Agustus 2026", kehadiran:"96%", kepuasan:"4.8 / 5", catatan:"Konsisten dan komunikatif dengan klien. Pertahankan kualitas ini." },
-    { periode:"Juli 2026", kehadiran:"93%", kepuasan:"4.6 / 5", catatan:"Perlu lebih tepat waktu untuk sesi pagi." },
-  ];
+  // Rapor kinerja coach — TIDAK ADA endpoint evaluasi → kosong + empty state, bukan dummy.
+  const coachRaporList = [];
 
-  let rescheduleRequests = [
-    { sesi:"Rina Marlina — 16:00, 12 Sep 2026", baru:"13 Sep 2026, 17:00", alasan:"Klien ada acara mendadak", status:"Menunggu" },
-    { sesi:"Yoga Pratama — 18:00, 10 Sep 2026", baru:"11 Sep 2026, 18:00", alasan:"Hujan deras", status:"Disetujui" },
-  ];
-
-  let cutiRequests = [
-    { mulai:"20 Sep 2026", selesai:"21 Sep 2026", alasan:"Acara keluarga", status:"Menunggu" },
-    { mulai:"05 Agu 2026", selesai:"05 Agu 2026", alasan:"Sakit", status:"Disetujui" },
-  ];
-
-  // Tanda waktu coach tidak bisa mengajar (agar Admin tahu saat mengatur jadwal klien baru)
-  let coachUnavailable = [
-    { id:1, tanggal:"2026-09-25", allDay:false, jamMulai:"14:00", jamSelesai:"18:00", alasan:"Menghadiri acara keluarga" },
-    { id:2, tanggal:"2026-10-02", allDay:true, jamMulai:"", jamSelesai:"", alasan:"Cuti pribadi (sudah diajukan ke Admin)" },
-  ];
-  let unavailIdSeq = 3;
-
-  const upcomingSchedule = [
-    { date:"Senin, 14 Sep 2026", time:"06:00", client:"Budi Hartono", loc:"GBK Senayan" },
-    { date:"Selasa, 15 Sep 2026", time:"16:00", client:"Rina Marlina", loc:"Online" },
-    { date:"Rabu, 16 Sep 2026", time:"07:00", client:"Andi Prasetyo", loc:"GBK Senayan" },
-    { date:"Kamis, 17 Sep 2026", time:"18:00", client:"Yoga Pratama", loc:"Online" },
-    { date:"Sabtu, 19 Sep 2026", time:"09:00", client:"Citra Ayu", loc:"Online" },
-  ];
-
-  // Aturan sesi otomatis untuk kalender 30 hari (disimulasikan dari pola jadwal mingguan coach)
-  function getSessionsForDate(date){
-    const dow = date.getDay(); // 0=Minggu ... 6=Sabtu
-    if (dow === 1) return [{ time:"06:00", client:"Budi Hartono", loc:"GBK Senayan" }];
-    if (dow === 2) return [{ time:"16:00", client:"Rina Marlina", loc:"Online" }];
-    if (dow === 3) return [{ time:"07:00", client:"Andi Prasetyo", loc:"GBK Senayan" }];
-    if (dow === 4) return [{ time:"18:00", client:"Yoga Pratama", loc:"Online" }];
-    if (dow === 5) return [{ time:"06:00", client:"Budi Hartono", loc:"GBK Senayan" }, { time:"16:00", client:"Rina Marlina", loc:"Online" }];
-    if (dow === 6) return [{ time:"09:00", client:"Citra Ayu", loc:"Online" }];
-    return []; // Minggu libur
+  // Pengajuan reschedule — dari GET /schedules/coach/requests (endpoint sudah ada).
+  const REQ_STATUS_LABEL = { menunggu:'Menunggu', disetujui:'Disetujui', ditolak:'Ditolak' };
+  let rescheduleRequests = [];
+  async function loadRescheduleRequests(){
+    const page = await n6Api('schedules/coach/requests?limit=200');
+    const items = (page && page.items) || [];
+    const nameById = {};
+    clients.forEach(c => { if (c.id != null) nameById[c.id] = c.name; });
+    rescheduleRequests = items.map(r => ({
+      id: r.id,
+      sesi: (nameById[r.client_id] || 'Klien') + (r.current_start ? ' — ' + r.current_start : ''),
+      baru: r.requested_on ? fmtTanggalID(r.requested_on) : '—',
+      alasan: r.reason || '-',
+      status: REQ_STATUS_LABEL[r.status] || r.status || 'Menunggu'
+    }));
   }
 
-  let logs = [
-    { client:"Budi Hartono", date:"Hari ini", distance:"8 km", pace:"6:10/km", loc:"GBK Senayan", note:"Progres bagus, HR stabil." },
-    { client:"Andi Prasetyo", date:"Kemarin", distance:"5 km", pace:"7:30/km", loc:"GBK Senayan", note:"Sedikit keluhan lutut, kurangi intensitas." },
-    { client:"Budi Hartono", date:"5 Sep 2026", distance:"7 km", pace:"6:20/km", loc:"GBK Senayan", note:"Latihan interval 400m x 8, pace mulai stabil." },
-    { client:"Budi Hartono", date:"1 Sep 2026", distance:"6 km", pace:"6:35/km", loc:"GBK Senayan", note:"Fokus easy run untuk pemulihan setelah long run minggu lalu." },
-    { client:"Andi Prasetyo", date:"4 Sep 2026", distance:"4 km", pace:"7:45/km", loc:"GBK Senayan", note:"Mulai program penurunan berat badan, kombinasi jalan-lari." },
-    { client:"Rina Marlina", date:"8 Sep 2026", distance:"12 km", pace:"6:50/km", loc:"Online", note:"Long run mingguan, cocok untuk persiapan Half Marathon." },
-    { client:"Rina Marlina", date:"1 Sep 2026", distance:"10 km", pace:"6:55/km", loc:"Online", note:"Tempo run, HR terkontrol di zona 3." },
-    { client:"Yoga Pratama", date:"6 Sep 2026", distance:"5 km", pace:"6:05/km", loc:"Online", note:"Speed work 1km repeat x 4, siap untuk race 5K." },
-    { client:"Citra Ayu", date:"2 Sep 2026", distance:"3 km", pace:"7:50/km", loc:"Online", note:"Sesi pertama, adaptasi ritme lari, kondisi masih perlu dipantau." },
-  ];
+  // Pengajuan cuti — TIDAK ADA endpoint → kosong + empty state (sesuai keputusan).
+  let cutiRequests = [];
+
+  // Tanda waktu coach tidak bisa mengajar (agar Admin tahu saat mengatur jadwal klien baru)
+  // Data input user lokal — mulai kosong, diisi via UI. Bukan dummy.
+  let coachUnavailable = [];
+  let unavailIdSeq = 1;
+
+  // Jadwal pertemuan terdekat — dibangun dari template mingguan GET /schedules/coach.
+  let upcomingSchedule = [];
+  const DOW_ID_FULL = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  function buildUpcomingSchedule(){
+    const out = [];
+    const today = new Date(); today.setHours(0,0,0,0);
+    for (let i = 0; i < 14 && out.length < 10; i++){
+      const d = new Date(today); d.setDate(d.getDate() + i);
+      const wd = apiWeekday(d.getDay());
+      scheduleSlots
+        .filter(s => s.weekday === wd)
+        .sort((a,b) => String(a.start_time || '').localeCompare(String(b.start_time || '')))
+        .forEach(s => out.push({
+          date: DOW_ID_FULL[d.getDay()] + ', ' + fmtTanggalID(d.toISOString().slice(0,10)),
+          time: s.start_time || '--:--',
+          client: s.note || s.training_category || '—',
+          loc: s.location || '—'
+        }));
+    }
+    upcomingSchedule = out;
+  }
+
+  // Sesi per tanggal (kalender 30 hari) — dari template mingguan GET /schedules/coach, bukan pola hardcoded.
+  function getSessionsForDate(date){
+    const wd = apiWeekday(date.getDay());
+    return scheduleSlots
+      .filter(s => s.weekday === wd)
+      .sort((a,b) => String(a.start_time || '').localeCompare(String(b.start_time || '')))
+      .map(s => ({
+        time: s.start_time || '--:--',
+        client: s.note || s.training_category || '—',
+        loc: s.location || '—'
+      }));
+  }
+
+  // Log latihan — dari data absensi nyata (GET /attendance); jarak/pace tidak ada sumbernya → '—'.
+  // Form tambah log tetap jalan (unshift ke array ini).
+  let logs = [];
+  function buildLogsFromAttendance(){
+    logs = coachAttendanceList.map(a => ({
+      client: a.sesi,
+      date: a.tanggal,
+      distance: '—',
+      pace: '—',
+      loc: '—',
+      note: a.ket && a.ket !== '-' ? a.ket : ''
+    }));
+  }
 
   const fmtIDR = n => "Rp" + n.toLocaleString('id-ID');
 
@@ -322,7 +404,12 @@
 
   /* ================= RENDER: JADWAL PERTEMUAN TERDEKAT ================= */
   function renderUpcoming(){
-    document.getElementById('upcomingBody').innerHTML = upcomingSchedule.map(u => `
+    const body = document.getElementById('upcomingBody');
+    if (!upcomingSchedule.length){
+      body.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center; padding:24px 0;">Belum ada data</td></tr>';
+      return;
+    }
+    body.innerHTML = upcomingSchedule.map(u => `
       <tr>
         <td class="strong">${u.date}</td>
         <td class="muted">${u.time}</td>
@@ -586,7 +673,12 @@
 
   /* ================= RENDER: HISTORY ================= */
   function renderHistory(){
-    document.getElementById('historyList').innerHTML = historyList.map(h => `
+    const el = document.getElementById('historyList');
+    if (!historyList.length){
+      el.innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      return;
+    }
+    el.innerHTML = historyList.map(h => `
       <div class="timeline-item">
         <div class="timeline-dot"></div>
         <div class="timeline-body">
@@ -787,7 +879,12 @@
 
   /* ================= RENDER: COACH RAPOR ================= */
   function renderCoachRapor(){
-    document.getElementById('coachRaporList').innerHTML = coachRaporList.map(r => `
+    const el = document.getElementById('coachRaporList');
+    if (!coachRaporList.length){
+      el.innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      return;
+    }
+    el.innerHTML = coachRaporList.map(r => `
       <div class="progress-row">
         <div class="progress-row-top">
           <span class="pname">${r.periode}</span>
@@ -804,7 +901,12 @@
     return `<span class="badge ${tone}">${status}</span>`;
   }
   function renderReschedule(){
-    document.getElementById('rescheduleBody').innerHTML = rescheduleRequests.map(r => `
+    const body = document.getElementById('rescheduleBody');
+    if (!rescheduleRequests.length){
+      body.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center; padding:24px 0;">Belum ada data</td></tr>';
+      return;
+    }
+    body.innerHTML = rescheduleRequests.map(r => `
       <tr>
         <td class="strong">${r.sesi}</td>
         <td class="muted">${r.baru}</td>
@@ -816,7 +918,12 @@
 
   /* ================= RENDER: CUTI ================= */
   function renderCuti(){
-    document.getElementById('cutiBody').innerHTML = cutiRequests.map(c => `
+    const body = document.getElementById('cutiBody');
+    if (!cutiRequests.length){
+      body.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center; padding:24px 0;">Belum ada data</td></tr>';
+      return;
+    }
+    body.innerHTML = cutiRequests.map(c => `
       <tr>
         <td class="strong">${c.mulai}</td>
         <td class="muted">${c.selesai}</td>
@@ -1016,7 +1123,12 @@
 
   /* ================= RENDER: LOGS ================= */
   function renderLogs(){
-    document.getElementById('logList').innerHTML = logs.map(l => `
+    const el = document.getElementById('logList');
+    if (!logs.length){
+      el.innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      return;
+    }
+    el.innerHTML = logs.map(l => `
       <div class="log-item">
         <div class="log-item-top"><span>${l.client}</span><span class="date">${l.date}</span></div>
         <div class="stats">${l.distance} · ${l.pace} · <span class="badge neutral">${l.loc || '-'}</span></div>
@@ -1246,24 +1358,33 @@
 
     if (n6ApiReady()){
       try { await loadSchedule(); }
-      catch(e){ console.warn('[coach] jadwal', e); schedule = []; }
+      catch(e){ console.warn('[coach] jadwal', e); schedule = []; scheduleSlots = []; }
       renderSchedule();
+      buildUpcomingSchedule();
+      populateRsSesi();
       try { await loadClients(); }
-      catch(e){ console.warn('[coach] klien', e); clients = []; }
+      catch(e){ console.warn('[coach] klien', e); clients = []; clientsRaw = []; }
       renderClients();
       renderRaporSelect();
+      populateLogClient();
       // Dashboard agregat (progres + grafik) — dari GET /dashboards/coach/me (backend Fase 3).
       // Endpoint belum ada → kosong + empty state; kode tetap jalan sebelum backend di-deploy.
       try { await loadCoachDashboard(); }
-      catch(e){ console.warn('[coach] dashboard', e); clientProgress = []; chartData = emptyChartData(); }
+      catch(e){ console.warn('[coach] dashboard', e); clientProgress = []; chartData = emptyChartData(); coachDashboard = null; }
+      renderHomeStats();
       try { await loadCoachAttendance(); }
       catch(e){ console.warn('[coach] absensi', e); coachAttendanceList = []; }
       renderCoachAttendance();
+      buildLogsFromAttendance();
+      try { await loadRescheduleRequests(); }
+      catch(e){ console.warn('[coach] reschedule', e); rescheduleRequests = []; }
     } else {
       // Tanpa token API: tampilkan empty state, tanpa fallback dummy.
-      schedule = []; clients = []; coachAttendanceList = [];
-      clientProgress = []; chartData = emptyChartData();
+      schedule = []; scheduleSlots = []; clients = []; clientsRaw = []; coachAttendanceList = [];
+      clientProgress = []; chartData = emptyChartData(); coachDashboard = null;
+      upcomingSchedule = []; logs = []; rescheduleRequests = [];
       renderSchedule(); renderClients(); renderRaporSelect(); renderCoachAttendance();
+      populateRsSesi(); populateLogClient(); renderHomeStats();
     }
 
     populateGajiFilters();
@@ -1271,7 +1392,8 @@
     else { gajiSummary = null; renderGaji(); }
 
     // Progres & grafik tersambung ke GET /dashboards/coach/me (Fase 3).
-    // Masih menunggu endpoint backend: histori, rapor coach, reschedule, cuti, dsb.
+    // Reschedule tersambung ke GET /schedules/coach/requests; histori, rapor coach,
+    // cuti belum ada endpoint → empty state.
     renderUpcoming();
     renderCharts();
     renderProgress();

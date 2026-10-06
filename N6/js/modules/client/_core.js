@@ -75,10 +75,10 @@ try{document.documentElement.setAttribute('data-client-theme',localStorage.getIt
     if (!date || !link){ err.classList.add('show'); return; }
     err.classList.remove('show');
     reports[date] = { link, issue, submittedAt: new Date().toISOString() };
-    if (!isDemoMode) await storeSet('reports:' + clientId, JSON.stringify(reports));
+    await storeSet('reports:' + clientId, JSON.stringify(reports));
     document.getElementById('reportLink').value = '';
     document.getElementById('reportIssue').value = '';
-    msg.textContent = isDemoMode ? 'Tersimpan sementara (mode pratinjau, tidak permanen).' : 'Laporan tersimpan.';
+    msg.textContent = 'Laporan tersimpan.';
     msg.classList.add('show');
     renderReportList();
     renderCalendar();
@@ -141,7 +141,6 @@ try{document.documentElement.setAttribute('data-client-theme',localStorage.getIt
     el.classList.add('show');
   }
 
-/*__N6_UNIT__*/  let isDemoMode = false;
 /*__N6_UNIT__*/  const isStaffMode = new URLSearchParams(window.location.search).get('staff') === '1';
 
 /*__N6_UNIT__*/  function formatChatTime(iso){

@@ -166,12 +166,8 @@
 /*__N6_UNIT__*/  function fmtCalDate(d){ return d.getDate() + ' ' + MONTH_LABEL[d.getMonth()] + ' ' + d.getFullYear(); }
 /*__N6_UNIT__*/  function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 
-/*__N6_UNIT__*/  let athletes = [
-    { id:'a1', name:'Rian Saputra', kategori:'Elite Putra', coach:'Rangga Saputra', catatan:'Fokus persiapan half marathon nasional musim ini.' },
-    { id:'a2', name:'Dewi Lestari', kategori:'Elite Putri', coach:'Dinda Ayu', catatan:'Kandidat pelatnas, fokus 10K & half marathon.' },
-    { id:'a3', name:'Bayu Kurniawan', kategori:'Elite Putra', coach:'Fajar Nugroho', catatan:'Sedang membangun basis aerobik untuk full marathon perdana.' },
-  ];
-/*__N6_UNIT__*/  let athleteIdCounter = 4;
+/*__N6_UNIT__*/  let athletes = [];   // Tidak ada endpoint — user kelola manual via UI
+/*__N6_UNIT__*/  let athleteIdCounter = 1;
 
 /*__N6_UNIT__*/  let achievementIdCounter = 6;
 

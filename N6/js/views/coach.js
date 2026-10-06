@@ -80,18 +80,18 @@ export const VIEW_COACH = `
 <div class="stat-grid">
 <div class="stat-card">
 <div class="label">Klien Aktif</div>
-<div class="value">12</div>
-<div class="sub">2 program baru bulan ini</div>
+<div class="value" id="statKlienAktif">—</div>
+<div class="sub" id="statKlienAktifSub">—</div>
 </div>
 <div class="stat-card">
 <div class="label">Sesi Hari Ini</div>
-<div class="value red">4</div>
-<div class="sub">1 sedang berlangsung</div>
+<div class="value red" id="statSesiHariIni">—</div>
+<div class="sub" id="statSesiHariIniSub">—</div>
 </div>
 <div class="stat-card">
 <div class="label">Kehadiran Bulan Ini</div>
-<div class="value green">96%</div>
-<div class="sub">Dari total sesi terjadwal</div>
+<div class="value green" id="statKehadiran">—</div>
+<div class="sub" id="statKehadiranSub">Dari total sesi terjadwal</div>
 </div>
 </div>
 <div class="card">
@@ -209,11 +209,6 @@ export const VIEW_COACH = `
 <div class="form-grid">
 <select id="logClient" required="">
 <option value="">Pilih klien</option>
-<option>Budi Hartono</option>
-<option>Andi Prasetyo</option>
-<option>Rina Marlina</option>
-<option>Yoga Pratama</option>
-<option>Citra Ayu</option>
 </select>
 <select id="logLokasi" required="">
 <option value="">Pilih lokasi latihan</option>
@@ -319,8 +314,6 @@ export const VIEW_COACH = `
 <div class="form-grid">
 <select id="rsSesi" required="">
 <option value="">Pilih sesi terjadwal</option>
-<option>Rina Marlina — 16:00, 12 Sep 2026</option>
-<option>Yoga Pratama — 18:00, 12 Sep 2026</option>
 </select>
 <input id="rsTanggal" required="" type="date"/>
 <input id="rsJam" placeholder="Jam baru (contoh: 17:00)" required="" type="text"/>

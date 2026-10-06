@@ -94,33 +94,6 @@
   function catalogById(id){ return programCatalog.find(p => p.id === id); }
   function coachById(id){ return coachRoster.find(c => c.id === id); }
 
-  function seedDemoIfEmpty(){
-    if (clients.length) return false;
-    const d = new Date();
-    const iso = (offsetDays) => { const x = new Date(d.getTime() + offsetDays*86400000); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
-    clients = [
-      { id:'dimas-prasetyo', name:'Dimas Prasetyo', phone:'081234567890', coach:'Rangga Saputra',
-        programId:'running-class', programLabel:'Running Class (5–20 orang)',
-        packageMeta:{ mode:'configurable', meetings:2, weeks:4, totalSessions:8 },
-        price:520000, priceLabel: formatRupiah(520000) + ' / 8x pertemuan',
-        status:'Aktif', joinDate: iso(-4), notes:'' },
-      { id:'siti-rahmawati', name:'Siti Rahmawati', phone:'081298765432', coach:'Dinda Ayu',
-        programId:'privat-online', programLabel:'Private Online',
-        packageMeta:{ mode:'fixed' },
-        price:800000, priceLabel: formatRupiah(800000) + ' / 1 Bulan',
-        status:'Aktif', joinDate: iso(-2), notes:'' },
-    ];
-    programCache['dimas-prasetyo'] = { pbStart:'25:30', pbEnd:'23:10', startDate: iso(-30), endDate: iso(30) };
-    programCache['siti-rahmawati'] = { pbStart:'', pbEnd:'', startDate: iso(-3), endDate: iso(27) };
-    chatCache['dimas-prasetyo'] = [
-      { sender:'coach', text:'Halo! Laporan kemarin sudah saya cek, pace-nya membaik.', at:new Date(Date.now()-86400000).toISOString() },
-      { sender:'client', text:'Siap coach, terima kasih! Btw jadwal sesi minggu depan bisa digeser ke sore?', at:new Date(Date.now()-3600000).toISOString() }
-    ];
-    reportsCache['dimas-prasetyo'] = { [iso(-2)]: { link:'https://connect.garmin.com/contoh', issue:'Lutut sedikit nyeri di km ke-4', submittedAt:new Date().toISOString() } };
-    reportsCache['siti-rahmawati'] = {};
-    return true;
-  }
-
   /* ================= LOAD DATA ================= */
   async function loadAllData(){
     // Preserve the exact existing browser records. No demo data and no automatic archiving.

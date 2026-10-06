@@ -85,15 +85,11 @@
   }
 
   function renderShell(){
-    const demoBanner = isDemoMode
-      ? '<div style="background:#FFF3CD; color:#7A5B00; font-size:11.5px; font-weight:700; text-align:center; padding:7px 10px;">MODE PRATINJAU — data contoh, belum terhubung ke client asli</div>'
-      : '';
     const staffBanner = isStaffMode
       ? '<div style="background:#111110; color:#F5F3EE; font-size:11.5px; font-weight:700; text-align:center; padding:7px 10px;">MODE STAFF — Anda melihat dashboard ini sebagai Head Coach</div>'
       : '';
     document.getElementById('root').innerHTML =
       '<div class="app-shell">' +
-        demoBanner +
         staffBanner +
 '<header class="app-header">' +
            '<div class="brand-lockup"><img src="' + CLIENT_HEADER_LOGO + '" alt="N6 logo"><div class="brand-copy"><strong>NUMBER SIX</strong><span>CLIENT DASHBOARD</span></div></div>' +
@@ -200,10 +196,10 @@
     if (!date || !link){ err.classList.add('show'); return; }
     err.classList.remove('show');
     reports[date] = { link, issue, submittedAt: new Date().toISOString() };
-    if (!isDemoMode) await storeSet('reports:' + clientId, JSON.stringify(reports));
+    await storeSet('reports:' + clientId, JSON.stringify(reports));
     document.getElementById('reportLink').value = '';
     document.getElementById('reportIssue').value = '';
-    msg.textContent = isDemoMode ? 'Tersimpan sementara (mode pratinjau, tidak permanen).' : 'Laporan tersimpan.';
+    msg.textContent = 'Laporan tersimpan.';
     msg.classList.add('show');
     renderReportList();
     renderCalendar();
@@ -298,29 +294,7 @@
     el.classList.add('show');
   }
 
-  let isDemoMode = false;
   const isStaffMode = new URLSearchParams(window.location.search).get('staff') === '1';
-
-  function seedDemoData(){
-    clientName = 'Dimas Prasetyo';
-    isDemoMode = true;
-    const d1 = todayISO();
-    const d0 = new Date(Date.now() - 86400000*2);
-    const d0str = d0.getFullYear() + '-' + String(d0.getMonth()+1).padStart(2,'0') + '-' + String(d0.getDate()).padStart(2,'0');
-    const d2 = new Date(Date.now() - 86400000*5);
-    const d2str = d2.getFullYear() + '-' + String(d2.getMonth()+1).padStart(2,'0') + '-' + String(d2.getDate()).padStart(2,'0');
-    reports = {};
-    reports[d0str] = { link: 'https://connect.garmin.com/contoh', issue: '', submittedAt: new Date().toISOString() };
-    reports[d2str] = { link: 'https://connect.garmin.com/contoh', issue: 'Lutut sedikit nyeri di km ke-4', submittedAt: new Date().toISOString() };
-    scores = {};
-    scores[d2str] = { score: 72, note: 'Pace stabil, jaga postur', evidenceLink: '', updatedAt: new Date().toISOString() };
-    scores[d0str] = { score: 80, note: 'Progres bagus', evidenceLink: '', updatedAt: new Date().toISOString() };
-    chatMessages = [
-      { sender: 'coach', text: 'Halo! Laporan kemarin sudah saya cek, pace-nya membaik. Terus jaga postur ya.', at: new Date(Date.now() - 86400000).toISOString() },
-      { sender: 'client', text: 'Siap coach, terima kasih!', at: new Date(Date.now() - 82800000).toISOString() }
-    ];
-    programInfo = { pbStart: '25:30', pbEnd: '23:10', startDate: '2026-07-01', endDate: '2026-09-30' };
-  }
 
   /* ================= CHAT ================= */
   function formatChatTime(iso){
@@ -359,7 +333,7 @@
     const text = input.value.trim();
     if (!text) return;
     chatMessages.push({ sender: isStaffMode ? 'coach' : 'client', text, at: new Date().toISOString() });
-    if (!isDemoMode) await storeSet('chat:' + clientId, JSON.stringify(chatMessages));
+    await storeSet('chat:' + clientId, JSON.stringify(chatMessages));
     input.value = '';
     renderChatThread();
     scrollChatToBottom();
@@ -512,10 +486,12 @@
           try{ chatMessages = cRaw ? JSON.parse(cRaw) : []; }catch(e){ chatMessages = []; }
           try{ programInfo = pRaw ? JSON.parse(pRaw) : programInfo; }catch(e){}
         } else {
-          seedDemoData();
+          renderInvalid();
+          return;
         }
       } else {
-        seedDemoData();
+        renderInvalid();
+        return;
       }
 
       renderShell();

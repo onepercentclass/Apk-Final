@@ -84,69 +84,7 @@ export const VIEW_HEADCOACH = `
 </header>
 <main class="content">
 <div class="content-inner">
-<section class="panel" id="panel-hub"><div class="hc-hub-head"><div><h1>Beranda Head Coach</h1><p>Program, progres, kepatuhan latihan dan perhatian klien berdasarkan data tercatat.</p></div><div class="hc-hub-actions"><button class="btn-outline" id="hcRefresh">↻ Perbarui Data</button><button class="btn-outline" hidden="" id="hcExport" style="display:none!important">↓ Ekspor Cadangan</button><button class="btn-primary" id="hcGoBuilder">+ Buat Program</button></div></div><div class="hc-kpis" id="hcKpis"></div><div class="hc-cols"><div><div class="card"><div class="card-head"><h3>Tren Volume Latihan &amp; Kepatuhan</h3><div class="hc-filter"><select id="hcPeriod"><option value="4">4 Minggu</option><option selected="" value="8">8 Minggu</option><option value="12">12 Minggu</option></select><select id="hcCoachFilter"><option value="">Semua Coach</option></select></div></div><div class="card-body"><canvas class="hc-chart" id="hcTrend"></canvas><p class="hc-muted">Volume berasal dari laporan sesi yang dicatat. Kepatuhan = sesi selesai / sesi terencana pada program.</p></div></div><div class="card"><div class="card-head"><h3>Progres Seluruh Klien</h3><div class="hc-filter"><input id="hcSearch" placeholder="Cari nama klien..."/><select id="hcStatusFilter"><option value="">Semua status</option><option value="ontrack">Sesuai target</option><option value="attention">Perlu evaluasi</option><option value="nodata">Belum ada laporan</option></select></div></div><div class="card-body"><div class="hc-list" id="hcClientList"></div></div></div></div><div><div class="card"><div class="card-head"><h3>Prioritas Minggu Ini</h3></div><div class="card-body hc-list" id="hcPriorities"></div></div><div class="card"><div class="card-head"><h3>Distribusi Status Program</h3></div><div class="card-body"><canvas class="hc-chart" id="hcDistribution" style="height:190px"></canvas><div class="hc-muted" id="hcLegend"></div></div></div><div class="card"><div class="card-head"><h3>Aktivitas Terbaru</h3></div><div class="card-body hc-list" id="hcActivity"></div></div></div></div><details class="hc-legacy-home" hidden="" style="display:none!important"><summary>Ringkasan Operasional Lama (data contoh)</summary><div class="hc-legacy-content">
-<div class="stat-grid cols-4">
-<div class="stat-card">
-<div class="label">Coach Aktif</div>
-<div class="value">3</div>
-</div>
-<div class="stat-card">
-<div class="label">Total Klien Ditangani</div>
-<div class="value">8</div>
-</div>
-<div class="stat-card">
-<div class="label">Rata-rata Kehadiran</div>
-<div class="value green">92%</div>
-</div>
-<div class="stat-card">
-<div class="label">Rata-rata Score Coach</div>
-<div class="value red">85</div>
-</div>
-</div>
-<div class="card">
-<div class="card-head"><h3>Coach Perlu Perhatian</h3></div>
-<div class="card-body" id="coachAttentionList"></div>
-</div>
-<div class="card">
-<div class="card-head"><h3>Klien Perlu Perhatian</h3></div>
-<div class="card-body" id="clientAttentionList"></div>
-</div>
-<div class="card">
-<div class="card-head"><h3>Analitik Tim</h3></div>
-<div class="card-body">
-<div class="chart-grid">
-<div class="chart-card clickable" onclick="openChartModal('scoreCoach','Distribusi Score Coach')">
-<span class="chart-expand-icon"><svg fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span>
-<h4>Distribusi Score Coach</h4>
-<div class="chart-sub">Score performa tiap coach bulan ini</div>
-<div class="chart-wrap"><canvas id="chartScoreCoach"></canvas></div>
-</div>
-<div class="chart-card clickable" onclick="openChartModal('kehadiranTren','Tren Kehadiran Tim')">
-<span class="chart-expand-icon"><svg fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span>
-<h4>Tren Kehadiran Tim</h4>
-<div class="chart-sub">Rata-rata kehadiran seluruh coach per bulan</div>
-<div class="chart-wrap"><canvas id="chartKehadiranTren"></canvas></div>
-</div>
-<div class="chart-card clickable" onclick="openChartModal('statusKlienTim','Status Klien Keseluruhan')">
-<span class="chart-expand-icon"><svg fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span>
-<h4>Status Klien Keseluruhan</h4>
-<div class="chart-sub">Distribusi kondisi seluruh klien binaan tim</div>
-<div class="chart-wrap"><canvas id="chartStatusKlienTim"></canvas></div>
-</div>
-<div class="chart-card clickable" onclick="openChartModal('ratingCoach','Rating Klien per Coach')">
-<span class="chart-expand-icon"><svg fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></span>
-<h4>Rating Klien per Coach</h4>
-<div class="chart-sub">Rata-rata rating kepuasan klien</div>
-<div class="chart-wrap"><canvas id="chartRatingCoach"></canvas></div>
-</div>
-</div>
-</div>
-</div>
-<div class="card">
-<div class="card-head"><h3>Aktivitas Terbaru Tim</h3></div>
-<div class="card-body" id="teamActivityList"></div>
-</div>
-</div></details></section>
+<section class="panel" id="panel-hub"><div class="hc-hub-head"><div><h1>Beranda Head Coach</h1><p>Program, progres, kepatuhan latihan dan perhatian klien berdasarkan data tercatat.</p></div><div class="hc-hub-actions"><button class="btn-outline" id="hcRefresh">↻ Perbarui Data</button><button class="btn-outline" hidden="" id="hcExport" style="display:none!important">↓ Ekspor Cadangan</button><button class="btn-primary" id="hcGoBuilder">+ Buat Program</button></div></div><div class="hc-kpis" id="hcKpis"></div><div class="hc-cols"><div><div class="card"><div class="card-head"><h3>Tren Volume Latihan &amp; Kepatuhan</h3><div class="hc-filter"><select id="hcPeriod"><option value="4">4 Minggu</option><option selected="" value="8">8 Minggu</option><option value="12">12 Minggu</option></select><select id="hcCoachFilter"><option value="">Semua Coach</option></select></div></div><div class="card-body"><canvas class="hc-chart" id="hcTrend"></canvas><p class="hc-muted">Volume berasal dari laporan sesi yang dicatat. Kepatuhan = sesi selesai / sesi terencana pada program.</p></div></div><div class="card"><div class="card-head"><h3>Progres Seluruh Klien</h3><div class="hc-filter"><input id="hcSearch" placeholder="Cari nama klien..."/><select id="hcStatusFilter"><option value="">Semua status</option><option value="ontrack">Sesuai target</option><option value="attention">Perlu evaluasi</option><option value="nodata">Belum ada laporan</option></select></div></div><div class="card-body"><div class="hc-list" id="hcClientList"></div></div></div></div><div><div class="card"><div class="card-head"><h3>Prioritas Minggu Ini</h3></div><div class="card-body hc-list" id="hcPriorities"></div></div><div class="card"><div class="card-head"><h3>Distribusi Status Program</h3></div><div class="card-body"><canvas class="hc-chart" id="hcDistribution" style="height:190px"></canvas><div class="hc-muted" id="hcLegend"></div></div></div><div class="card"><div class="card-head"><h3>Aktivitas Terbaru</h3></div><div class="card-body hc-list" id="hcActivity"></div></div></div></div></section>
 <section class="panel" id="panel-hcmanual"><div class="hc-hub-head"><div><h1>Buat Program</h1><p>Isi identitas klien secara manual, kemudian susun latihan mingguan untuk diunduh dan dikirim melalui WhatsApp.</p></div></div><div class="hc-banner">Program ini hanya untuk dokumen JPG/PDF. Tidak otomatis menambah klien, mengirim pesan WhatsApp, atau mengubah data monitoring.</div><div class="card"><div class="card-head"><h3>01 · Identitas &amp; Target Klien</h3></div><div class="card-body"><form class="hc-form" id="mForm"><label>Nama Klien<input id="mClient" maxlength="100" placeholder="Nama lengkap klien" required=""/></label><label>Nama Coach<input id="mCoach" maxlength="100" placeholder="Nama coach penanggung jawab" required=""/></label><label>Umur (tahun)<input id="mAge" max="100" min="10" placeholder="Contoh: 28" required="" type="number"/></label><label>Jarak yang Dikejar<select id="mDistance"><option>1.500 m</option><option>3K</option><option>5K</option><option>10K</option><option>Half Marathon</option><option>Marathon</option><option>Lainnya</option></select></label><label>PB Sekarang<input id="mPb" placeholder="Contoh: 00:52:30" required=""/></label><label>PB Target<input id="mTarget" placeholder="Contoh: 00:45:00" required=""/></label><label>Jenis Program<select id="mPhase"><option>Persiapan Umum</option><option>Persiapan Khusus</option><option>Prakompetisi</option></select></label><label>Tanggal Mulai<input id="mStart" type="date"/></label><label>Tanggal Selesai<input id="mEnd" type="date"/></label><div class="wide hc-hub-actions"><button class="btn-primary" type="submit">Lanjut · Susun Program →</button><button class="btn-outline" id="mReset" type="button">Kosongkan Form</button></div></form></div></div><div class="card" id="mPaceCard"><div class="card-head"><h3>03 · Persentase Pace &amp; HR</h3><button class="btn-outline" id="mPaceToggle" type="button">Buka Kalkulator Pace</button></div><div class="card-body" hidden="" id="mPaceBody"><p class="hc-muted">Atur intensitas pace dan jarak secara terpisah pada setiap baris. HR ditampilkan sebagai estimasi berdasarkan usia dan intensitas yang dipilih.</p><div class="hc-form" style="margin-top:14px"><label>PB Acuan (MM:SS / HH:MM:SS)<input id="mPacePb" placeholder="25:00"/></label><label>Jarak PB Acuan (meter)<input id="mPaceBase" min="100" step="100" type="number" value="5000"/></label><label>Usia (tahun)<input id="mPaceAge" max="100" min="10" placeholder="28" type="number"/></label></div><div style="overflow-x:auto;margin-top:18px"><table class="m-pace-table" style="min-width:680px"><thead><tr><th>BARIS</th><th>INTENSITAS PACE</th><th>JARAK</th><th>PACE/KM</th><th>WAKTU JARAK</th><th>HR (BPM)</th></tr></thead><tbody id="mPaceRows"></tbody></table></div><div class="hc-hub-actions" style="margin-top:14px"><button class="btn-outline" id="mPaceAddDistance" type="button">+ Jarak Custom</button><button class="btn-primary" id="mPaceRun" type="button">Hitung 10 Baris</button><button class="btn-primary" id="mPaceJpg" type="button">↓ Unduh JPG</button><button class="btn-outline" id="mPacePdf" type="button">↓ Unduh PDF</button></div><p class="hc-muted" style="margin-top:10px">HR dihitung sebagai perkiraan berdasarkan usia dan persentase intensitas yang dipilih; bukan hasil pengukuran individual.</p><div aria-live="polite" id="mPaceResult"></div></div></div></section><section class="panel" id="panel-hcmanualweeks"><div class="hc-hub-head"><div><h1>Susun Program Mingguan</h1><p>Pilih jenis latihan; estimasi HR minimum dan maksimum akan menyesuaikan usia.</p></div><button class="btn-outline" id="mBack" type="button">← Ubah Identitas</button></div><div class="hc-banner" id="mSummary"></div><div class="card"><div class="card-head"><h3>02 · Rencana Latihan</h3><div class="hc-hub-actions"><button class="btn-outline" id="mTrainToggle" type="button">+ Tambah Jenis Latihan</button><button class="btn-outline" id="mAddWeek" type="button">+ Tambah Minggu</button></div></div><div class="card-body"><div hidden="" id="mTrainEditor" style="padding:16px;border:1px solid var(--line);border-radius:10px;margin-bottom:14px;background:var(--white)"><h3 style="margin-bottom:10px">Kelola Jenis Latihan</h3><div class="hc-form"><label>Nama Jenis Latihan Baru<input id="mTrainName" maxlength="65" placeholder="Contoh: Fartlek Progresif"/></label><div class="wide hc-hub-actions"><button class="btn-primary" id="mTrainSave" type="button">Simpan Jenis Latihan</button><button class="btn-outline" id="mTrainClose" type="button">Tutup</button></div></div><p class="hc-muted" style="margin-top:10px">Jenis latihan baru langsung tersedia pada dropdown setiap hari dan disimpan di browser.</p><div class="hc-muted" id="mTrainList"></div></div><div class="m-week-tabs" id="mTabs"></div><div id="mDays"></div><div class="hc-hub-actions" style="margin-top:20px"><button class="btn-outline" id="mPrev" type="button">← Minggu Sebelumnya</button><button class="btn-outline" id="mNext" type="button">Minggu Berikutnya →</button><button class="btn-primary" id="mJpg" type="button">↓ Unduh JPG</button><button class="btn-outline" id="mPdf" type="button">↓ Unduh PDF</button></div><p class="hc-muted" style="margin-top:12px">Hanya minggu yang memiliki latihan atau keterangan yang akan diekspor. Setiap minggu dicetak sebagai satu halaman A4 pada PDF.</p></div></div></section><section class="panel" id="panel-hcclientchat"><div class="hc-hub-head"><div><h1>Pesan</h1><p>Komunikasi dan koreksi program dengan klien, Admin CS, dan Owner.</p></div></div>
 <div class="hc-banner">Pilih penerima dan percakapan. Klien dapat dicari berdasarkan nama tanpa mengetik ID. Pesan memakai penyimpanan browser yang tersedia; komunikasi antarperangkat membutuhkan backend yang terhubung.</div>
 <div class="card"><div class="card-head"><h3>Percakapan</h3></div><div class="card-body">

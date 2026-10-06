@@ -43,27 +43,6 @@
     });
   }
 
-/*__N6_UNIT__*/  function seedDemoData(){
-    clientName = 'Dimas Prasetyo';
-    isDemoMode = true;
-    const d1 = todayISO();
-    const d0 = new Date(Date.now() - 86400000*2);
-    const d0str = d0.getFullYear() + '-' + String(d0.getMonth()+1).padStart(2,'0') + '-' + String(d0.getDate()).padStart(2,'0');
-    const d2 = new Date(Date.now() - 86400000*5);
-    const d2str = d2.getFullYear() + '-' + String(d2.getMonth()+1).padStart(2,'0') + '-' + String(d2.getDate()).padStart(2,'0');
-    reports = {};
-    reports[d0str] = { link: 'https://connect.garmin.com/contoh', issue: '', submittedAt: new Date().toISOString() };
-    reports[d2str] = { link: 'https://connect.garmin.com/contoh', issue: 'Lutut sedikit nyeri di km ke-4', submittedAt: new Date().toISOString() };
-    scores = {};
-    scores[d2str] = { score: 72, note: 'Pace stabil, jaga postur', evidenceLink: '', updatedAt: new Date().toISOString() };
-    scores[d0str] = { score: 80, note: 'Progres bagus', evidenceLink: '', updatedAt: new Date().toISOString() };
-    chatMessages = [
-      { sender: 'coach', text: 'Halo! Laporan kemarin sudah saya cek, pace-nya membaik. Terus jaga postur ya.', at: new Date(Date.now() - 86400000).toISOString() },
-      { sender: 'client', text: 'Siap coach, terima kasih!', at: new Date(Date.now() - 82800000).toISOString() }
-    ];
-    programInfo = { pbStart: '25:30', pbEnd: '23:10', startDate: '2026-07-01', endDate: '2026-09-30' };
-  }
-
   /* ================= CHAT ================= */
 /*__N6_UNIT__*/  function downloadPdf(){
     const btn = document.getElementById('downloadPdfBtn');
@@ -183,10 +162,12 @@
           try{ chatMessages = cRaw ? JSON.parse(cRaw) : []; }catch(e){ chatMessages = []; }
           try{ programInfo = pRaw ? JSON.parse(pRaw) : programInfo; }catch(e){}
         } else {
-          seedDemoData();
+          renderInvalid();
+          return;
         }
       } else {
-        seedDemoData();
+        renderInvalid();
+        return;
       }
 
       renderShell();

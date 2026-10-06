@@ -11,13 +11,7 @@
  * Do not reorder or edit by hand: run tools/build.ps1 after any change.
  */
 //__N6_BODY__
-  let achievements = [
-    { id:'ac1', athleteId:'a1', event:'Jakarta Marathon 2026', tanggal:'2026-08-10', kategori:'Half Marathon Elite', posisi:'Juara 1', waktu:'1:05:23', catatan:'' },
-    { id:'ac2', athleteId:'a2', event:'Borobudur Marathon 2026', tanggal:'2026-06-15', kategori:'10K Elite Putri', posisi:'Juara 2', waktu:'35:10', catatan:'' },
-    { id:'ac3', athleteId:'a1', event:'Mandiri Jakarta Marathon 2025', tanggal:'2025-10-26', kategori:'Half Marathon Elite', posisi:'Juara 3', waktu:'1:07:45', catatan:'' },
-    { id:'ac4', athleteId:'a3', event:'Bromo Marathon 2026', tanggal:'2026-04-20', kategori:'21K Elite Putra', posisi:'Juara 1', waktu:'1:09:02', catatan:'Lomba trail perdana.' },
-    { id:'ac5', athleteId:'a2', event:'Jakarta Marathon 2026', tanggal:'2026-08-10', kategori:'10K Elite Putri', posisi:'Juara 1', waktu:'34:48', catatan:'' },
-  ];
+  let achievements = [];   // Tidak ada endpoint — user kelola manual via UI
 /*__N6_UNIT__*/  function athleteStats(athleteId){
     const list = achievements.filter(a => a.athleteId === athleteId);
     return {

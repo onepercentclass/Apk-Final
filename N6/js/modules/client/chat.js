@@ -12,15 +12,11 @@
  */
 //__N6_BODY__
   function renderShell(){
-    const demoBanner = isDemoMode
-      ? '<div style="background:#FFF3CD; color:#7A5B00; font-size:11.5px; font-weight:700; text-align:center; padding:7px 10px;">MODE PRATINJAU — data contoh, belum terhubung ke client asli</div>'
-      : '';
     const staffBanner = isStaffMode
       ? '<div style="background:#111110; color:#F5F3EE; font-size:11.5px; font-weight:700; text-align:center; padding:7px 10px;">MODE STAFF — Anda melihat dashboard ini sebagai Head Coach</div>'
       : '';
     document.getElementById('root').innerHTML =
       '<div class="app-shell">' +
-        demoBanner +
         staffBanner +
 '<header class="app-header">' +
            '<div class="brand-lockup"><img src="' + CLIENT_HEADER_LOGO + '" alt="N6 logo"><div class="brand-copy"><strong>NUMBER SIX</strong><span>CLIENT DASHBOARD</span></div></div>' +
@@ -137,7 +133,7 @@
     const text = input.value.trim();
     if (!text) return;
     chatMessages.push({ sender: isStaffMode ? 'coach' : 'client', text, at: new Date().toISOString() });
-    if (!isDemoMode) await storeSet('chat:' + clientId, JSON.stringify(chatMessages));
+    await storeSet('chat:' + clientId, JSON.stringify(chatMessages));
     input.value = '';
     renderChatThread();
     scrollChatToBottom();

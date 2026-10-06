@@ -314,6 +314,7 @@
 
   function renderCoachAttention(){
     const el = document.getElementById('coachAttentionList');
+    if (!el) return;
     if (!coaches.length){ el.innerHTML = '<div class="cal-empty">Belum ada data coach.</div>'; return; }
     const withScore = coaches.filter(c => c.score !== null && c.score !== undefined);
     if (!withScore.length){ el.innerHTML = '<div class="cal-empty">Belum ada data performa coach.</div>'; return; }
@@ -331,6 +332,7 @@
 
   function renderClientAttention(){
     const el = document.getElementById('clientAttentionList');
+    if (!el) return;
     if (!clients.length){ el.innerHTML = '<div class="cal-empty">Belum ada data klien.</div>'; return; }
     const flagged = clients.filter(c => c.status !== 'Normal');
     el.innerHTML = flagged.length ? flagged.map(c => `
@@ -392,10 +394,12 @@
     };
   }
   function renderCharts(){
-    new Chart(document.getElementById('chartScoreCoach'), buildChartConfig('scoreCoach'));
-    new Chart(document.getElementById('chartKehadiranTren'), buildChartConfig('kehadiranTren'));
-    new Chart(document.getElementById('chartStatusKlienTim'), buildChartConfig('statusKlienTim'));
-    new Chart(document.getElementById('chartRatingCoach'), buildChartConfig('ratingCoach'));
+    // Elemen chart legacy sudah dihapus dari DOM — skip bila tidak ada.
+    [['chartScoreCoach','scoreCoach'],['chartKehadiranTren','kehadiranTren'],
+     ['chartStatusKlienTim','statusKlienTim'],['chartRatingCoach','ratingCoach']].forEach(([id, key]) => {
+      const cv = document.getElementById(id);
+      if (cv) new Chart(cv, buildChartConfig(key));
+    });
   }
   let chartModalInstance = null;
   window.openChartModal = function(key, title){
@@ -674,21 +678,11 @@
   }
 
   /* ================= ATLET BINAAN & PRESTASI ================= */
-  let athletes = [
-    { id:'a1', name:'Rian Saputra', kategori:'Elite Putra', coach:'Rangga Saputra', catatan:'Fokus persiapan half marathon nasional musim ini.' },
-    { id:'a2', name:'Dewi Lestari', kategori:'Elite Putri', coach:'Dinda Ayu', catatan:'Kandidat pelatnas, fokus 10K & half marathon.' },
-    { id:'a3', name:'Bayu Kurniawan', kategori:'Elite Putra', coach:'Fajar Nugroho', catatan:'Sedang membangun basis aerobik untuk full marathon perdana.' },
-  ];
-  let athleteIdCounter = 4;
+  let athletes = [];   // Tidak ada endpoint — user kelola manual via UI
+  let athleteIdCounter = 1;
 
-  let achievements = [
-    { id:'ac1', athleteId:'a1', event:'Jakarta Marathon 2026', tanggal:'2026-08-10', kategori:'Half Marathon Elite', posisi:'Juara 1', waktu:'1:05:23', catatan:'' },
-    { id:'ac2', athleteId:'a2', event:'Borobudur Marathon 2026', tanggal:'2026-06-15', kategori:'10K Elite Putri', posisi:'Juara 2', waktu:'35:10', catatan:'' },
-    { id:'ac3', athleteId:'a1', event:'Mandiri Jakarta Marathon 2025', tanggal:'2025-10-26', kategori:'Half Marathon Elite', posisi:'Juara 3', waktu:'1:07:45', catatan:'' },
-    { id:'ac4', athleteId:'a3', event:'Bromo Marathon 2026', tanggal:'2026-04-20', kategori:'21K Elite Putra', posisi:'Juara 1', waktu:'1:09:02', catatan:'Lomba trail perdana.' },
-    { id:'ac5', athleteId:'a2', event:'Jakarta Marathon 2026', tanggal:'2026-08-10', kategori:'10K Elite Putri', posisi:'Juara 1', waktu:'34:48', catatan:'' },
-  ];
-  let achievementIdCounter = 6;
+  let achievements = [];   // Tidak ada endpoint — user kelola manual via UI
+  let achievementIdCounter = 1;
 
   function posisiTone(posisi){
     if (posisi === 'Juara 1') return 'green';
