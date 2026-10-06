@@ -144,6 +144,12 @@
       if (c.coach_id != null) c.coach = coachNameById(c.coach_id);
     });
     coaches.forEach(ch => { ch.clients = coachCount[ch.id] || 0; });
+    // Expose ke window agar modul legacy (Monitoring Klien) bisa baca data API.
+    try {
+      if (typeof window !== 'undefined') {
+        window.n6ApiClients = clients;
+      }
+    } catch (e) {}
   }
 
   async function loadRescheduleRequests(){
