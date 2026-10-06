@@ -396,20 +396,16 @@
   }
 
   window.openCoachForm = function(){
-    document.getElementById('coachFormTitle').textContent = 'Tambah Coach';
-    document.getElementById('cfCoachId').value = '';
-    document.getElementById('cfName').value = '';
-    document.getElementById('cfPhone').value = '';
-    document.getElementById('coachFormModal').classList.add('show');
+    // Daftar coach dihapus, kelola via Kelola Anggota.
+    if (typeof showToast === 'function') showToast('Kelola coach via menu Kelola Anggota');
+    const anggotaBtn = document.querySelector('[data-menu="anggota"], [data-panel="anggota"]');
+    if (anggotaBtn) anggotaBtn.click();
   };
   window.editCoach = function(id){
-    const c = coachById(id);
-    if (!c) return;
-    document.getElementById('coachFormTitle').textContent = 'Edit Coach';
-    document.getElementById('cfCoachId').value = c.id;
-    document.getElementById('cfName').value = c.name;
-    document.getElementById('cfPhone').value = c.phone || '';
-    document.getElementById('coachFormModal').classList.add('show');
+    // Daftar coach dihapus, kelola via Kelola Anggota.
+    if (typeof showToast === 'function') showToast('Kelola coach via menu Kelola Anggota');
+    const anggotaBtn = document.querySelector('[data-menu="anggota"], [data-panel="anggota"]');
+    if (anggotaBtn) anggotaBtn.click();
   };
   window.closeCoachForm = function(){ document.getElementById('coachFormModal').classList.remove('show'); };
 /*__N6_UNIT__*/  async function saveCoachForm(){

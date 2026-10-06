@@ -48,7 +48,7 @@
 
   // Coach schedule is shared with Admin CS on the SAME browser origin.
   // Other Owner records stay in the Owner namespace; never overwrite Admin client records.
-  const N6_SHARED_COACH_KEYS = new Set(['coachRoster','coachSchedule','coachDayOff']);
+  const N6_SHARED_COACH_KEYS = new Set(['coachSchedule','coachDayOff']); // coachRoster dihapus, diambil dari Kelola Anggota via API
   const N6_ADMIN_PREFIX = 'n6csAdmin:';
   const N6_OWNER_PREFIX = 'n6Owner:';
   // Key yang didukung API — data ini lintas role via backend.
@@ -118,9 +118,19 @@
     try{ programCatalog = catalogRaw ? JSON.parse(catalogRaw) : []; }catch(e){ programCatalog = []; }
     if (!programCatalog.length){ programCatalog = DEFAULT_PROGRAM_CATALOG; await storeSet('programCatalog', JSON.stringify(programCatalog)); }
 
-    const rosterRaw = await storeGet('coachRoster');
-    try{ coachRoster = rosterRaw ? JSON.parse(rosterRaw) : []; }catch(e){ coachRoster = []; }
-    if (!coachRoster.length && rosterRaw === null){ coachRoster = DEFAULT_COACH_ROSTER; /* local display fallback only; never inject demo coaches into Admin */ }
+    // coachRoster diambil dari Kelola Anggota (API /accounts?tier=3), bukan localStorage.
+    try {
+      const accPage = await n6Api('accounts?tier=3&limit=200');
+      const accItems = (accPage && accPage.items) || [];
+      coachRoster = accItems.map(a => ({
+        id: a.coach_id || a.id,
+        accountId: a.id,
+        name: a.full_name || a.username,
+        username: a.username,
+        phone: a.phone || '',
+        email: a.email || '',
+      }));
+    } catch (e) { coachRoster = []; }
 
     const schedRaw = await storeGet('coachSchedule');
     try{ coachSchedule = schedRaw ? JSON.parse(schedRaw) : {}; }catch(e){ coachSchedule = {}; }
@@ -195,7 +205,7 @@
   async function persistTickets(){ await storeSet('tickets', JSON.stringify(tickets)); }
   async function persistChat(id){ await storeSet('chat:' + id, JSON.stringify(chatCache[id] || [])); }
   async function persistProgram(id){ await storeSet('program:' + id, JSON.stringify(programCache[id] || {})); }
-  async function persistCoachRoster(){ await storeSet('coachRoster', JSON.stringify(coachRoster)); }
+  async function persistCoachRoster(){ /* dihapus: coachRoster dari API Kelola Anggota */ }
   async function persistCoachSchedule(){ await storeSet('coachSchedule', JSON.stringify(coachSchedule)); }
   async function persistCoachDayOff(){ await storeSet('coachDayOff', JSON.stringify(coachDayOff)); }
   async function persistExpenses(){ await storeSet('expenses', JSON.stringify(expenses)); }
@@ -1871,20 +1881,17 @@
   }
 
   window.openCoachForm = function(){
-    document.getElementById('coachFormTitle').textContent = 'Tambah Coach';
-    document.getElementById('cfCoachId').value = '';
-    document.getElementById('cfName').value = '';
-    document.getElementById('cfPhone').value = '';
-    document.getElementById('coachFormModal').classList.add('show');
+    // Daftar coach dihapus, kelola via Kelola Anggota.
+    // Arahkan user ke menu Kelola Anggota.
+    if (typeof showToast === 'function') showToast('Kelola coach via menu Kelola Anggota');
+    const anggotaBtn = document.querySelector('[data-menu="anggota"], [data-panel="anggota"]');
+    if (anggotaBtn) anggotaBtn.click();
   };
   window.editCoach = function(id){
-    const c = coachById(id);
-    if (!c) return;
-    document.getElementById('coachFormTitle').textContent = 'Edit Coach';
-    document.getElementById('cfCoachId').value = c.id;
-    document.getElementById('cfName').value = c.name;
-    document.getElementById('cfPhone').value = c.phone || '';
-    document.getElementById('coachFormModal').classList.add('show');
+    // Daftar coach dihapus, kelola via Kelola Anggota.
+    if (typeof showToast === 'function') showToast('Kelola coach via menu Kelola Anggota');
+    const anggotaBtn = document.querySelector('[data-menu="anggota"], [data-panel="anggota"]');
+    if (anggotaBtn) anggotaBtn.click();
   };
   window.closeCoachForm = function(){ document.getElementById('coachFormModal').classList.remove('show'); };
   async function saveCoachForm(){

@@ -114,7 +114,19 @@
       catch(err){ console.error('Data rusak pada '+key,err); showToast('Data '+key+' tidak terbaca. Jangan hapus cadangan.'); return fallback; }
     };
     programCatalog=await read('programCatalog',DEFAULT_PROGRAM_CATALOG);
-    coachRoster=await read('coachRoster',[]);
+    // coachRoster diambil dari Kelola Anggota (API /accounts?tier=3), bukan localStorage.
+    try {
+      const accPage = await n6Api('accounts?tier=3&limit=200');
+      const accItems = (accPage && accPage.items) || [];
+      coachRoster = accItems.map(a => ({
+        id: a.coach_id || a.id,
+        accountId: a.id,
+        name: a.full_name || a.username,
+        username: a.username,
+        phone: a.phone || '',
+        email: a.email || '',
+      }));
+    } catch (e) { coachRoster = []; }
     coachSchedule=await read('coachSchedule',{});
     coachDayOff=await read('coachDayOff',{});
     clients=await read('clients',[]);
@@ -138,7 +150,7 @@
   async function persistTickets(){ await storeSet('tickets', JSON.stringify(tickets)); }
   async function persistChat(id){ await storeSet('chat:' + id, JSON.stringify(chatCache[id] || [])); }
   async function persistProgram(id){ await storeSet('program:' + id, JSON.stringify(programCache[id] || {})); }
-  async function persistCoachRoster(){ await storeSet('coachRoster', JSON.stringify(coachRoster)); }
+  async function persistCoachRoster(){ /* dihapus: coachRoster dari API Kelola Anggota */ }
   async function persistCoachSchedule(){ await storeSet('coachSchedule', JSON.stringify(coachSchedule)); }
   async function persistCoachDayOff(){ await storeSet('coachDayOff', JSON.stringify(coachDayOff)); }
 

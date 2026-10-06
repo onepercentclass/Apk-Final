@@ -20,7 +20,19 @@
       catch(err){ console.error('Data rusak pada '+key,err); showToast('Data '+key+' tidak terbaca. Jangan hapus cadangan.'); return fallback; }
     };
     programCatalog=await read('programCatalog',DEFAULT_PROGRAM_CATALOG);
-    coachRoster=await read('coachRoster',[]);
+    // coachRoster diambil dari Kelola Anggota (API /accounts?tier=3), bukan localStorage.
+    try {
+      const accPage = await n6Api('accounts?tier=3&limit=200');
+      const accItems = (accPage && accPage.items) || [];
+      coachRoster = accItems.map(a => ({
+        id: a.coach_id || a.id,
+        accountId: a.id,
+        name: a.full_name || a.username,
+        username: a.username,
+        phone: a.phone || '',
+        email: a.email || '',
+      }));
+    } catch (e) { coachRoster = []; }
     coachSchedule=await read('coachSchedule',{});
     coachDayOff=await read('coachDayOff',{});
     clients=await read('clients',[]);
