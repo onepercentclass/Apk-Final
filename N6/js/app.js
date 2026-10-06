@@ -25,7 +25,7 @@ import { enforce, setSession, getSession } from './core/access.js';
 import { ensureApiLogin } from './core/login.js';
 import * as router from './core/router.js';
 import { whenStylesLoaded, loadScript, $, el } from './core/dom.js';
-import { APP_NAME, APP_SUBTITLE } from './core/config.js';
+import { APP_NAME, APP_SUBTITLE, ROLE_PARAM } from './core/config.js';
 import { EVENTS, bus } from './core/events.js';
 
 const MOUNT_ID = 'n6-app';
@@ -73,24 +73,31 @@ async function boot() {
   const startedAt = performance.now();
 
   const route = router.init();
+  // Role dianggap eksplisit hanya bila tertulis di URL (?role=...).
+  // Tanpa itu, role BARU ditentukan setelah login dari tier user — jadi
+  // jangan tampilkan seolah-olah ini dashboard owner sebelum login.
+  const roleExplicit = new URL(window.location.href).searchParams.has(ROLE_PARAM);
   const role = getRole(route.role);
   setSession({ role: role.key });
 
-  document.title = `${role.title} — ${APP_NAME} ${APP_SUBTITLE}`;
+  // Branding netral untuk layar login bila role belum ditentukan.
+  const bootRole = roleExplicit ? role : { ...role, title: APP_NAME, label: APP_NAME };
+  document.title = `${bootRole.title} — ${APP_SUBTITLE}`;
 
   // API login gate: with API_ENABLED=true this blocks the bootstrap until a
   // valid token exists (shows the login form when needed). Resolves
   // immediately in localStorage-only mode.
-  await ensureApiLogin(role);
+  await ensureApiLogin(bootRole);
 
   // Redirect ke view sesuai tier user (hindari coach buka view owner dll).
+  // Bila role tidak eksplisit di URL, selalu arahkan ke role milik tier user.
   // Hanya bila API aktif dan tier diketahui.
   try {
     const ub = (getSession().backend) || {};
     const tierRole = { 0: 'owner', 1: 'admin', 2: 'headcoach', 3: 'coach', 4: 'client' }[ub.tier];
-    if (tierRole && tierRole !== role.key) {
+    if (tierRole && (!roleExplicit || tierRole !== role.key)) {
       const url = new URL(window.location.href);
-      url.searchParams.set('role', tierRole);
+      url.searchParams.set(ROLE_PARAM, tierRole);
       url.searchParams.delete('menu');
       window.location.replace(url.toString());
       return;
