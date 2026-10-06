@@ -4,7 +4,7 @@
  * GENERATED FILE - do not edit. Source of truth is js/modules/headcoach/*.js
  * Rebuilt by tools/build.sh; concatenation is byte-identical to the
  * original <script> block in headcoach.html.
- * Build: git:0b9dbe1
+ * Build: git:f99262a
  */
 
 

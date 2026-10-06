@@ -504,17 +504,17 @@ Error di production tidak terlacak.
 
 ---
 
-### Fase H: Developer Experience
+### Fase H: Developer Experience ✅ SELESAI (2026-10-06, parsial)
 
 **Tujuan:** Memudahkan developer baru dan mencegah regresi.
 
 | Aksi | Detail | Prioritas |
 |------|--------|-----------|
-| H1 | **Konvensi `catch`**: tidak boleh ada `catch(e){}` kosong — wajib log atau beri komentar alasan | Tinggi |
+| H1 | **Konvensi `catch`**: tidak boleh ada `catch(e){}` kosong | Tinggi | ✅ Selesai di Fase F (12 diganti) |
 | H2 | **Magic string terpusat**: pindahkan string berulang (`'n6:api:token'`, URL API, nama localStorage key) ke `js/core/constants.js` | Tinggi |
 | H3 | **`?debug=1` mode**: tampilkan panel debug kecil (versi, role, API status, jumlah data di memory) | Sedang |
 | H4 | **Dokumentasi fungsi**: setiap fungsi public di `modules/` diberi komentar JSDoc singkat (1-2 baris: apa input/outputnya) | Sedang |
-| H5 | **Smoke test**: buat `tools/smoke-test.sh` — cek setiap `dist/*.js` lolos `node --check`, setiap `manifest.js` valid, tidak ada `TODO`/`FIXME` yang menggantung | Sedang |
+| H5 | **Smoke test**: `tools/smoke-test.sh` (4 cek: syntax, manifest, TODO, build) | Sedang | ✅ Selesai | — cek setiap `dist/*.js` lolos `node --check`, setiap `manifest.js` valid, tidak ada `TODO`/`FIXME` yang menggantung | Sedang |
 | H6 | **ESLint basic**: tambah `.eslintrc` minimal (no-undef, no-unused-vars) untuk tangkap typo variabel | Rendah |
 
 **File yang disentuh:**

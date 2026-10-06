@@ -30,6 +30,7 @@ import { EVENTS, bus } from './core/events.js';
 import { logger } from './core/logger.js';
 import { installGlobalHandlers } from './core/error-handler.js';
 import { N6_VERSION } from './core/version.js';
+import { showDebugPanel } from './core/debug-panel.js';
 
 // Pasang global error handler sedini mungkin (Fase G)
 installGlobalHandlers();
@@ -37,6 +38,19 @@ installGlobalHandlers();
 // Versi aplikasi (Fase G3)
 window.N6_VERSION = N6_VERSION;
 logger.info('app', `N6 ${N6_VERSION} starting`);
+
+// Tampilkan debug panel jika ?debug=1 atau localStorage flag (Fase H3)
+try {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('debug') === '1' || window.localStorage?.getItem('n6:debug') === '1') {
+    // Tunda sampai DOM siap
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(showDebugPanel, 1000));
+    } else {
+      setTimeout(showDebugPanel, 1000);
+    }
+  }
+} catch (e) { /* abaikan */ }
 
 const MOUNT_ID = 'n6-app';
 
