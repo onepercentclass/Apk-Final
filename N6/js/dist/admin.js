@@ -332,10 +332,10 @@
     });
   };
   window.deleteArchivedClient = function(id){
-    const c = archivedClients.find(x => x.id === id);
+    const c = archivedClients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus permanen data "' + c.name + '"? Laporan latihan, riwayat chat, dan data program klien ini akan hilang selamanya dan tidak bisa dikembalikan.')) return;
-    archivedClients = archivedClients.filter(x => x.id !== id);
+    archivedClients = archivedClients.filter(x => String(x.id) !== String(id));
     Promise.all([
       storeSet('archivedClients', JSON.stringify(archivedClients)),
       storeSet('chat:' + id, JSON.stringify([])),
@@ -459,7 +459,7 @@
     document.getElementById('clientFormModal').classList.add('show');
   };
   window.editClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const meta = c.packageMeta || {};
@@ -622,10 +622,10 @@
   }
 
   window.deleteClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus klien "' + c.name + '"? Data laporan dan chat klien ini tidak akan tampil lagi di dashboard.')) return;
-    clients = clients.filter(x => x.id !== id);
+    clients = clients.filter(x => String(x.id) !== String(id));
     persistClients().then(() => { showToast('Klien dihapus'); renderAll(); });
   };
 
@@ -679,7 +679,7 @@
   }
 
   window.downloadInvoice = async function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c){ showToast('Klien tidak ditemukan'); return; }
     const p = programCache[c.id] || {};
     const invoiceNo = ensureInvoiceNumber(c);
@@ -1046,7 +1046,7 @@
 
   /* ================= DETAIL KLIEN ================= */
   window.openClientDetail = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const reports = reportsCache[id] || {};
@@ -1171,7 +1171,7 @@
   }
 
   window.updateTicketStatus = function(id, status){
-    const t = tickets.find(x => x.id === id);
+    const t = tickets.find(x => String(x.id) === String(id));
     if (!t) return;
     t.status = status;
     persistTickets().then(() => { showToast('Status tiket diperbarui'); renderAll(); });
@@ -1570,7 +1570,7 @@
     const c = coachById(id);
     if (!c) return;
     if (!confirm('Hapus coach "' + c.name + '" dari roster? Jadwal ketersediaannya juga akan dihapus.')) return;
-    coachRoster = coachRoster.filter(x => x.id !== id);
+    coachRoster = coachRoster.filter(x => String(x.id) !== String(id));
     delete coachSchedule[id];
     Promise.all([persistCoachRoster(), persistCoachSchedule()]).then(() => {
       showToast('Coach dihapus');

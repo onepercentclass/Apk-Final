@@ -116,7 +116,7 @@
     const c = archivedClients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus permanen data "' + c.name + '"? Laporan latihan, riwayat chat, dan data program klien ini akan hilang selamanya dan tidak bisa dikembalikan.')) return;
-    archivedClients = archivedClients.filter(x => x.id !== id);
+    archivedClients = archivedClients.filter(x => String(x.id) !== String(id));
     Promise.all([
       storeSet('archivedClients', JSON.stringify(archivedClients)),
       storeSet('chat:' + id, JSON.stringify([])),
@@ -344,7 +344,7 @@
     const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus klien "' + c.name + '"? Data laporan dan chat klien ini tidak akan tampil lagi di dashboard.')) return;
-    clients = clients.filter(x => x.id !== id);
+    clients = clients.filter(x => String(x.id) !== String(id));
     persistClients().then(() => { showToast('Klien dihapus'); renderAll(); });
   };
 
