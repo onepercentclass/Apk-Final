@@ -46,22 +46,17 @@
     return 'dashboard-client.html?client=' + encodeURIComponent(slugify(name)) + (staff ? '&staff=1' : '');
   }
 
+  /* Fase 3: diisi dari GET dashboards/headcoach/team; kosong -> grafik tampil kosong (tanpa fallback dummy). */
   const chartData = {
-    coachLabels: coaches.map(c => c.name.split(' ')[0]),
-    scoreCoach: coaches.map(c => c.score),
-    ratingCoach: coaches.map(c => c.rating),
-    bulanLabel: ["Apr","Mei","Jun","Jul","Agu","Sep"],
-    kehadiranTren: [90,91,89,93,92,92],
-    statusKlien: { normal:5, bermasalah:2, cedera:1 }
+    coachLabels: [],
+    scoreCoach: [],
+    ratingCoach: [],
+    bulanLabel: [],
+    kehadiranTren: [],
+    statusKlien: { normal:0, bermasalah:0, cedera:0 }
   };
 
-  let teamActivityList = [
-    { date:"10 Sep 2026", text:"Rangga Saputra menyelesaikan sesi dengan Budi Hartono." },
-    { date:"09 Sep 2026", text:"Rangga Saputra mengajukan reschedule sesi Rina Marlina." },
-    { date:"08 Sep 2026", text:"Fajar Nugroho tercatat terlambat pada sesi pagi." },
-    { date:"05 Sep 2026", text:"Dinda Ayu mengajukan cuti 1 hari." },
-    { date:"02 Sep 2026", text:"Andi Prasetyo (klien Rangga Saputra) dilaporkan mengalami cedera lutut." },
-  ];
+  let teamActivityList = [];   // Fase 3: diisi dari GET dashboards/headcoach/team (activities)
 
   /* rescheduleRequests, cutiRequests, evalHistory, teamAttendance dideklarasikan di atas (diisi dari API) */
 
@@ -115,9 +110,9 @@
         id: a.id,
         name: a.full_name || a.username || ('Coach #' + a.id),
         clients: 0,          // dihitung setelah clients dimuat
-        kehadiran: null,     // Fase 3: butuh endpoint agregat
-        score: null,         // Fase 3: butuh endpoint agregat
-        rating: null,        // Fase 3: butuh endpoint agregat
+        kehadiran: null,     // Fase 3: diisi dari dashboards/headcoach/team
+        score: null,         // Fase 3: diisi dari dashboards/headcoach/team
+        rating: null,        // Fase 3: diisi dari dashboards/headcoach/team
       }));
   }
 
@@ -176,6 +171,61 @@
     }));
   }
 
+  async function loadTeamDashboard(){
+    /* Fase 3: endpoint agregat headcoach. Kode defensif — fungsi ini TIDAK pernah throw:
+       bila endpoint belum ada (404) atau error, chartData & teamActivityList dibiarkan
+       kosong sehingga UI menampilkan empty state / grafik kosong, TANPA fallback dummy. */
+    try {
+      const data = await n6Api('dashboards/headcoach/team');
+
+      // 1) Merge statistik per coach (cocokkan id dulu, lalu nama sebagai fallback)
+      const list = Array.isArray(data && data.coaches) ? data.coaches : [];
+      const byId = {};
+      list.forEach(c => { byId[String(c.id)] = c; });
+      const byName = (nm) => list.find(c =>
+        c.name && nm && String(c.name).trim().toLowerCase() === String(nm).trim().toLowerCase());
+      coaches.forEach(ch => {
+        const agg = byId[String(ch.id)] || byName(ch.name);
+        if (!agg) return;
+        if (agg.attendance_pct !== null && agg.attendance_pct !== undefined){
+          ch.kehadiran = agg.attendance_pct;
+          ch.score = agg.attendance_pct;   // skor coach memakai attendance_pct dari endpoint
+        }
+        if (agg.rating !== null && agg.rating !== undefined) ch.rating = agg.rating;  // null -> tampil "-"
+        if (agg.clients !== null && agg.clients !== undefined) ch.clients = agg.clients;
+      });
+
+      // 2) chartData: label + skor + rating per coach
+      chartData.coachLabels = coaches.map(c => c.name.split(' ')[0]);
+      chartData.scoreCoach = coaches.map(c => c.score);
+      chartData.ratingCoach = coaches.map(c => c.rating);
+
+      // 3) chartData: tren kehadiran tim
+      if (data && data.attendance_trend){
+        chartData.bulanLabel = Array.isArray(data.attendance_trend.labels) ? data.attendance_trend.labels : [];
+        chartData.kehadiranTren = Array.isArray(data.attendance_trend.values) ? data.attendance_trend.values : [];
+      }
+
+      // 4) chartData: status klien (doughnut)
+      if (data && data.client_status){
+        chartData.statusKlien = {
+          normal: data.client_status.normal || 0,
+          bermasalah: data.client_status.bermasalah || 0,
+          cedera: data.client_status.cedera || 0,
+        };
+      }
+
+      // 5) Aktivitas terbaru tim
+      teamActivityList = (Array.isArray(data && data.activities) ? data.activities : []).map(a => ({
+        date: a.date || fmtTanggal(a.created_at) || '-',
+        text: a.text || '',
+      }));
+    } catch(e){
+      console.warn('[hc] dashboards/headcoach/team belum tersedia', e);
+      // dibiarkan kosong -> empty state
+    }
+  }
+
   function setLoading(sel){
     const el = document.getElementById(sel);
     if (el) el.innerHTML = '<div class="cal-empty">Memuat data...</div>';
@@ -191,6 +241,7 @@
     try {
       await loadCoaches();
       await loadClients();           // butuh coaches untuk lookup nama
+      await loadTeamDashboard();     // Fase 3: agregat tim; internal try/catch, tak pernah throw
       await Promise.all([
         loadRescheduleRequests().catch(e => { console.warn('[hc] reschedule', e); rescheduleRequests = []; }),
         loadTeamAttendance().catch(e => { console.warn('[hc] attendance', e); teamAttendance = []; }),
@@ -294,7 +345,13 @@
   }
 
   function renderTeamActivity(){
-    document.getElementById('teamActivityList').innerHTML = teamActivityList.map(a => `
+    const el = document.getElementById('teamActivityList');
+    if (!el) return;
+    if (!teamActivityList.length){
+      el.innerHTML = '<div class="cal-empty">Belum ada aktivitas tim.</div>';
+      return;
+    }
+    el.innerHTML = teamActivityList.map(a => `
       <div class="timeline-item">
         <div class="timeline-dot"></div>
         <div class="timeline-body">
@@ -312,14 +369,14 @@
   function buildChartConfig(key){
     if (key === 'scoreCoach') return {
       type:'bar',
-      data:{ labels: chartData.coachLabels, datasets:[{ data: chartData.scoreCoach, backgroundColor: chartData.scoreCoach.map(s => s>=85?CHART_GREEN:s>=70?CHART_AMBER:CHART_RED), borderRadius:4, maxBarThickness:36 }] },
+      data:{ labels: chartData.coachLabels, datasets:[{ data: chartData.scoreCoach, backgroundColor: chartData.scoreCoach.map(s => s == null ? '#D8D5CC' : (s>=85?CHART_GREEN:s>=70?CHART_AMBER:CHART_RED)), borderRadius:4, maxBarThickness:36 }] },
       options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
         scales:{ x:{grid:{display:false}, ticks:{color:CHART_ASPHALT, font:{size:11}}}, y:{beginAtZero:true, max:100, ticks:{color:CHART_ASPHALT, font:{size:11}}, grid:{color:CHART_GRID}} } }
     };
     if (key === 'kehadiranTren') return {
       type:'line',
       data:{ labels: chartData.bulanLabel, datasets:[{ data: chartData.kehadiranTren, borderColor:CHART_RED, backgroundColor:'rgba(214,40,40,0.08)', fill:true, tension:0.35, pointRadius:3, pointBackgroundColor:CHART_RED }] },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>c.parsed.y+'%'}}},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>(c.parsed.y == null ? '-' : c.parsed.y)+'%'}}},
         scales:{ x:{grid:{display:false}, ticks:{color:CHART_ASPHALT, font:{size:11}}}, y:{ticks:{callback:(v)=>v+'%', color:CHART_ASPHALT, font:{size:11}}, grid:{color:CHART_GRID}} } }
     };
     if (key === 'statusKlienTim') return {
@@ -330,7 +387,7 @@
     if (key === 'ratingCoach') return {
       type:'bar',
       data:{ labels: chartData.coachLabels, datasets:[{ data: chartData.ratingCoach, backgroundColor: CHART_INK, borderRadius:4, maxBarThickness:36 }] },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>c.parsed.y+' / 5.0'}}},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>(c.parsed.y == null ? '-' : c.parsed.y)+' / 5.0'}}},
         scales:{ x:{grid:{display:false}, ticks:{color:CHART_ASPHALT, font:{size:11}}}, y:{min:0, max:5, ticks:{color:CHART_ASPHALT, font:{size:11}}, grid:{color:CHART_GRID}} } }
     };
   }

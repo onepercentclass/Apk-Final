@@ -75,34 +75,78 @@
     }));
   }
 
-  const clientProgress = [
-    { name:"Budi Hartono", goal:"10K", progress:72, note:"Pace membaik dari 6:40 → 6:10/km dalam 6 minggu." },
-    { name:"Andi Prasetyo", goal:"Turun 8 kg", progress:45, note:"Sudah turun 3.6 kg dari target 8 kg." },
-    { name:"Rina Marlina", goal:"Half Marathon", progress:60, note:"Latihan jarak jauh mingguan konsisten." },
-    { name:"Yoga Pratama", goal:"5K", progress:88, note:"Tinggal fine-tuning pace menjelang race." },
-    { name:"Citra Ayu", goal:"Full Marathon", progress:20, note:"Baru mulai fase base building." },
-  ];
+  // Progres klien — dari GET /dashboards/coach/me → { progress: [{client_id, name, pct, last_session, note}] }
+  // Endpoint agregat dibuat di backend Fase 3; bila belum ada (404) → kosong + empty state, tanpa fallback dummy.
+  let clientProgress = [];
+  let coachDashboard = null;
+  async function loadCoachDashboard(){
+    const data = await n6Api('dashboards/coach/me');
+    coachDashboard = data || {};
+    const goalById = {};
+    clients.forEach(c => { if (c.id != null) goalById[c.id] = c.goal; });
+    const items = coachDashboard.progress || [];
+    clientProgress = items.map(p => ({
+      id: p.client_id != null ? p.client_id : null,
+      name: p.name || '—',
+      goal: goalById[p.client_id] || '—',
+      progress: p.pct != null ? Math.max(0, Math.min(100, Math.round(Number(p.pct)))) : 0,
+      note: p.note || '—'
+    }));
+    chartData = buildChartDataFromDashboard(coachDashboard);
+  }
 
-  const raporData = {
-    "Budi Hartono": { sesi:12, totalJarak:"86 km", avgPace:"6:15/km", kehadiran:"100%", catatan:"Progres sangat baik dan konsisten. Siap diarahkan untuk ikut race 10K bulan depan." },
-    "Andi Prasetyo": { sesi:10, totalJarak:"48 km", avgPace:"7:20/km", kehadiran:"90%", catatan:"Penurunan berat badan sesuai target. Perlu jaga konsistensi jadwal latihan sore." },
-    "Rina Marlina": { sesi:9, totalJarak:"64 km", avgPace:"6:50/km", kehadiran:"95%", catatan:"Volume latihan mingguan meningkat bertahap, siap lanjut ke fase build-up HM." },
-    "Yoga Pratama": { sesi:11, totalJarak:"39 km", avgPace:"6:05/km", kehadiran:"100%", catatan:"Sangat siap untuk target 5K, tinggal jaga pola tidur menjelang race." },
-    "Citra Ayu": { sesi:4, totalJarak:"22 km", avgPace:"7:45/km", kehadiran:"80%", catatan:"Masih tahap adaptasi. Perlu pendampingan lebih intens di fase awal." },
-  };
+  // Rapor per klien — dari GET /dashboards/clients/{id}/progress → { client, sessions, report, history }
+  // Belum ada endpoint → hasil null → empty state "Belum ada data", bukan dummy.
+  let raporCache = {};   // clientId -> { sesi, totalJarak, avgPace, kehadiran, catatan } | null
+  let raporCurrentId = null;
+  function normalizeRapor(data){
+    if (!data || typeof data !== 'object') return null;
+    const sessions = data.sessions || {};
+    const report = data.report || {};
+    const sesi = sessions.total != null ? Number(sessions.total) : null;
+    if (sesi == null && report.total_jarak == null && report.avg_pace == null && report.totalJarak == null && report.avgPace == null) return null;
+    return {
+      sesi: sesi != null ? sesi : '—',
+      totalJarak: report.total_jarak || report.totalJarak || '—',
+      avgPace: report.avg_pace || report.avgPace || '—',
+      kehadiran: sessions.pct != null ? Math.round(Number(sessions.pct)) + '%' : '—',
+      catatan: report.catatan || report.note || '—'
+    };
+  }
 
-  // Data untuk grafik Prestasi & Performa
-  const chartData = {
-    bulanLabel: ["Apr","Mei","Jun","Jul","Agu","Sep"],
-    pencapaianKlien: [1, 2, 1, 3, 2, 3],
-    performaTren: [4, 6, 7, 9, 11, 14], // % rata-rata peningkatan performa kumulatif
-    statusKlien: { normal: 3, bermasalah: 1, cedera: 1 }, // dari 5 klien binaan
-    profesional: {
-      labels: ["Kedisiplinan","Komunikasi","Teknik Latihan","Kepemimpinan","Empati"],
-      values: [92, 88, 85, 78, 90]
-    },
-    ratingTren: [4.5, 4.6, 4.7, 4.6, 4.8, 4.8]
-  };
+  // Data grafik — dari GET /dashboards/coach/me (distribusi status + tren performa).
+  // Belum ada endpoint → grafik kosong, bukan dummy. Rating: endpoint tidak menyediakan → tampil "-".
+  let chartData = emptyChartData();
+  function emptyChartData(){
+    return {
+      bulanLabel: ['—'],
+      pencapaianKlien: [0],
+      performaLabel: ['—'],
+      performaTren: [0],
+      statusKlien: { normal: 0, bermasalah: 0, cedera: 0 },
+      profesional: { labels: [], values: [] },
+      ratingTren: []
+    };
+  }
+  function buildChartDataFromDashboard(d){
+    const byStatus = (d && d.clients && d.clients.by_status) || {};
+    const num = v => (v == null || isNaN(Number(v)) ? 0 : Number(v));
+    const items = (d && d.progress) || [];
+    const labels = items.map(p => String(p.name || '—').split(' ')[0]);
+    return {
+      bulanLabel: ['—'],
+      pencapaianKlien: [0],
+      performaLabel: labels.length ? labels : ['—'],
+      performaTren: items.length ? items.map(p => num(p.pct)) : [0],
+      statusKlien: {
+        normal: num(byStatus.aktif) + num(byStatus.normal),
+        bermasalah: num(byStatus.bermasalah) + num(byStatus.nonaktif) + num(byStatus.tidak_aktif),
+        cedera: num(byStatus.cedera)
+      },
+      profesional: { labels: [], values: [] },
+      ratingTren: []
+    };
+  }
 
   // Riwayat absensi sesi klien — dari GET /attendance (difilter milik coach oleh backend)
   let coachAttendanceList = [];
@@ -154,12 +198,6 @@
     const el = document.getElementById('gajiSesiBody');
     if (el) el.innerHTML = '<tr><td colspan="3" class="muted" style="text-align:center; padding:24px 0;">Memuat data...</td></tr>';
   }
-
-  const bonusList = [
-    { bulan:9, tahun:2026, jumlah:200000, ket:"Bonus kehadiran 100%" },
-    { bulan:8, tahun:2026, jumlah:100000, ket:"Bonus referral klien baru" },
-    { bulan:7, tahun:2026, jumlah:0, ket:"-" },
-  ];
 
   const coachRaporList = [
     { periode:"Agustus 2026", kehadiran:"96%", kepuasan:"4.8 / 5", catatan:"Konsisten dan komunikatif dengan klien. Pertahankan kualitas ini." },
@@ -321,7 +359,7 @@
     if (key === 'performa') return {
       type: 'line',
       data: {
-        labels: chartData.bulanLabel,
+        labels: chartData.performaLabel,
         datasets: [{
           data: chartData.performaTren, borderColor: CHART_RED, backgroundColor: 'rgba(214,40,40,0.08)',
           fill:true, tension:0.35, pointRadius:3, pointBackgroundColor: CHART_RED
@@ -394,9 +432,12 @@
     new Chart(document.getElementById('chartProfesional'), buildChartConfig('profesional'));
     new Chart(document.getElementById('chartRatingTren'), buildChartConfig('ratingTren'));
 
-    // Star rating
-    const rating = chartData.ratingTren[chartData.ratingTren.length-1];
-    const full = Math.floor(rating);
+    // Star rating — endpoint tidak menyediakan rating → tampilkan "-" dan bintang kosong
+    const ratingBox = document.getElementById('coachStars').closest('.score-box');
+    const ratingBig = ratingBox ? ratingBox.querySelector('.big') : null;
+    if (ratingBig) ratingBig.innerHTML = '-';
+    const rating = chartData.ratingTren.length ? chartData.ratingTren[chartData.ratingTren.length-1] : null;
+    const full = rating != null ? Math.floor(rating) : 0;
     const starsHtml = Array.from({length:5}, (_, i) => {
       const cls = i < full ? 'filled' : 'empty';
       return `<svg class="${cls}" viewBox="0 0 24 24" stroke-width="1.5"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.8 5.5 21 7.5 13.5 2 9 9 9"/></svg>`;
@@ -446,7 +487,12 @@
 
   /* ================= RENDER: PROGRESS ================= */
   function renderProgress(){
-    document.getElementById('progressList').innerHTML = clientProgress.map(p => `
+    const el = document.getElementById('progressList');
+    if (!clientProgress.length){
+      el.innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      return;
+    }
+    el.innerHTML = clientProgress.map(p => `
       <div class="progress-row">
         <div class="progress-row-top">
           <span class="pname">${p.name}</span>
@@ -490,15 +536,42 @@
       document.getElementById('raporNote').innerHTML = '';
       return;
     }
-    sel.innerHTML = clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-    sel.addEventListener('change', () => renderRaporDetail(sel.value));
-    renderRaporDetail(clients[0].name);
+    sel.innerHTML = clients.map(c => `<option value="${c.id != null ? c.id : ''}">${c.name}</option>`).join('');
+    sel.onchange = () => loadAndRenderRapor(sel.value);
+    loadAndRenderRapor(clients[0].id);
   }
-  function renderRaporDetail(name){
-    const r = raporData[name];
+  async function loadAndRenderRapor(clientId){
+    raporCurrentId = clientId;
+    const statsEl = document.getElementById('raporStats');
+    const noteEl = document.getElementById('raporNote');
+    if (clientId == null || clientId === ''){
+      statsEl.innerHTML = '<div class="cal-empty">Belum ada data</div>';
+      noteEl.innerHTML = '';
+      return;
+    }
+    if (Object.prototype.hasOwnProperty.call(raporCache, clientId)){
+      renderRaporDetail(raporCache[clientId]);
+      return;
+    }
+    statsEl.innerHTML = '<div class="cal-empty">Memuat data...</div>';
+    noteEl.innerHTML = '';
+    let data = null;
+    try {
+      const res = await n6Api('dashboards/clients/' + encodeURIComponent(clientId) + '/progress');
+      data = normalizeRapor(res);
+    } catch(e){
+      // Endpoint belum ada (404) atau gagal → empty state, bukan dummy
+      console.warn('[coach] rapor', e);
+      data = null;
+    }
+    // Abaikan hasil basi bila user sudah pindah klien saat fetch berjalan
+    if (raporCurrentId !== clientId) return;
+    raporCache[clientId] = data;
+    renderRaporDetail(data);
+  }
+  function renderRaporDetail(r){
     if (!r){
-      // Fase 3: rapor per klien belum ada endpoint — tampilkan empty state, bukan dummy.
-      document.getElementById('raporStats').innerHTML = '<div class="cal-empty">Belum ada data rapor untuk klien ini.</div>';
+      document.getElementById('raporStats').innerHTML = '<div class="cal-empty">Belum ada data</div>';
       document.getElementById('raporNote').innerHTML = '';
       return;
     }
@@ -1086,8 +1159,10 @@
   /* ================= RAPOR PDF EXPORT ================= */
   const LOGO_DATA = "assets/img/logo-report.png";
   document.getElementById('downloadRaporBtn').addEventListener('click', function(){
-    const name = document.getElementById('raporClientSelect').value;
-    const r = raporData[name];
+    const sel = document.getElementById('raporClientSelect');
+    const id = sel.value;
+    const name = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : 'Klien';
+    const r = raporCache[id];
     if (!r){ showToast('Belum ada data rapor untuk klien ini'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:'pt', format:'a4' });
@@ -1177,12 +1252,17 @@
       catch(e){ console.warn('[coach] klien', e); clients = []; }
       renderClients();
       renderRaporSelect();
+      // Dashboard agregat (progres + grafik) — dari GET /dashboards/coach/me (backend Fase 3).
+      // Endpoint belum ada → kosong + empty state; kode tetap jalan sebelum backend di-deploy.
+      try { await loadCoachDashboard(); }
+      catch(e){ console.warn('[coach] dashboard', e); clientProgress = []; chartData = emptyChartData(); }
       try { await loadCoachAttendance(); }
       catch(e){ console.warn('[coach] absensi', e); coachAttendanceList = []; }
       renderCoachAttendance();
     } else {
       // Tanpa token API: tampilkan empty state, tanpa fallback dummy.
       schedule = []; clients = []; coachAttendanceList = [];
+      clientProgress = []; chartData = emptyChartData();
       renderSchedule(); renderClients(); renderRaporSelect(); renderCoachAttendance();
     }
 
@@ -1190,7 +1270,8 @@
     if (n6ApiReady()){ await refreshGaji(); }
     else { gajiSummary = null; renderGaji(); }
 
-    // Fase 3 (masih dummy, menunggu endpoint agregat): progress, grafik, histori, rapor coach, dsb.
+    // Progres & grafik tersambung ke GET /dashboards/coach/me (Fase 3).
+    // Masih menunggu endpoint backend: histori, rapor coach, reschedule, cuti, dsb.
     renderUpcoming();
     renderCharts();
     renderProgress();

@@ -24,6 +24,7 @@ from .routers import (
     clients,
     commissions,
     corrections,
+    dashboards,
     finance,
     messages,
     monitoring,
@@ -58,6 +59,7 @@ router.include_router(finance.router)
 router.include_router(tickets.router)
 router.include_router(messages.router)
 router.include_router(attendance.router)
+router.include_router(dashboards.router)
 
 # -------------------------------------------------------------- head coach
 router.include_router(monitoring.router)
