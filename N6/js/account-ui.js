@@ -42,8 +42,8 @@
     '.n6a-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}',
     '.n6a-empty{padding:40px 20px;text-align:center;color:var(--asphalt);font-size:13px}',
     '.n6a-pager{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid #F0EEE7;flex-wrap:wrap;gap:8px}',
-    '.n6a-wrap input[type=password],.n6a-wrap input[type=email],.n6a-wrap input[type=text],.n6a-wrap select{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;background:var(--white);color:var(--ink);box-sizing:border-box}',
-    '.n6a-wrap input:focus,.n6a-wrap select:focus{outline:none;border-color:var(--ink)}',
+    '.n6a-wrap input[type=password],.n6a-wrap input[type=email],.n6a-wrap input[type=text],.n6a-wrap select,#n6AkunRoot input[type=password],#n6AkunRoot input[type=email],#n6AkunRoot input[type=text],#n6AkunRoot select{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;background:var(--white);color:var(--ink);box-sizing:border-box}',
+    '.n6a-wrap input:focus,.n6a-wrap select:focus,#n6AkunRoot input:focus,#n6AkunRoot select:focus{outline:none;border-color:var(--ink)}',
     '.n6a-wrap .field-label{margin-bottom:6px}',
     '@media(max-width:640px){.n6a-wrap{max-width:none}}',
   ].join('\n');
@@ -316,16 +316,19 @@
 
   async function updateAkunStats() {
     try {
-      var data = await api('accounts?limit=1000&offset=0');
+      var data = await api('accounts?limit=500&offset=0');
       var items = data.items || [];
+      var total = data.total || items.length;
       var aktif = items.filter(function (a) { return a.is_active; }).length;
       var tim = items.filter(function (a) { return a.is_active && a.tier >= 1 && a.tier <= 3; }).length;
       var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
-      set('n6StatTotal', items.length);
+      set('n6StatTotal', total);
       set('n6StatAktif', aktif);
-      set('n6StatNonaktif', items.length - aktif);
+      set('n6StatNonaktif', total - aktif);
       set('n6StatTim', tim);
-    } catch (e) {}
+    } catch (e) {
+      // Biarkan "-" jika gagal; tabel utama tetap tampil
+    }
   }
 
   async function loadAkun() {
