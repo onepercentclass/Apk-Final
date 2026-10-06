@@ -1,15 +1,14 @@
 /**
  * N6 build manifest - client
  *
- * Every unit of the original client.html main script is stored in exactly one file
- * under js/modules/client/. This array restores the original source order when the
- * fragments are concatenated.
- *
- * shape: [ '<file-stem>', <how many consecutive units come from that file> ]
- *
- * Regenerate with: powershell -ExecutionPolicy Bypass -File tools/build.ps1
+ * Dibuat ulang saat Fase C.
  */
 //__N6_MANIFEST__
 export const MANIFEST_CLIENT = [
-  ['_synced', 1],
+  ['_core', 14],
+  ['ikon', 5],
+  ['laporan', 5],
+  ['kalender', 3],
+  ['chat', 6],
+  ['profil', 5],
 ];

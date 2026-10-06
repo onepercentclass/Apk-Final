@@ -1,17 +1,36 @@
 /**
  * N6 modules - headcoach / koreksi
- * menu label : Koreksi
- * minimum tier: 2
  *
- * Source-fragment. These files are concatenated in the order declared by
- * js/modules/headcoach/manifest.js and wrapped in the role's original IIFE by
- * tools/build.ps1 -> js/dist/headcoach.js. Concatenating every fragment in manifest
- * order reproduces headcoach.html's main script byte for byte.
- *
- * Do not reorder or edit by hand: run tools/build.ps1 after any change.
+ * Dibuat saat Fase C: pecah dari _synced.js menjadi modul granular.
  */
 //__N6_BODY__
-  function renderDayTabs(){
+  const DAY_NAMES = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+
+/*__N6_UNIT__*/  const FIRST_NAMES = ["Budi","Andi","Rina","Yoga","Citra","Sari","Reza","Maya","Dewi","Bayu","Nadia","Rizky","Agus","Wulan","Doni","Fitri","Hendra","Sinta","Galih","Putri","Indra","Lina","Tia","Dian","Yudi","Rara","Fajar","Wahyu"];
+/*__N6_UNIT__*/  const LAST_NAMES = ["Hartono","Prasetyo","Marlina","Pratama","Ayu","Wijaya","Firmansyah","Putri","Lestari","Setiawan","Ramadhan","Salim","Kurniawan","Handayani","Gunawan","Dewi","Permana","Kusuma","Anggraini","Puspita","Santoso","Kirana"];
+/*__N6_UNIT__*/  const LOCATIONS = ["GBK Senayan","Online","Lapangan A. Yani","Taman Menteng","Online","Stadion Madya","Online"];
+
+/*__N6_UNIT__*/  function generateSubmissions(){
+    // Data dummy dinonaktifkan — menunggu endpoint API hasil latihan klien (Fase 3).
+    return [];
+  }
+/*__N6_UNIT__*/  let submissions = generateSubmissions();
+
+/*__N6_UNIT__*/  function getMonday(d){
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    date.setDate(date.getDate() + diff);
+    date.setHours(0,0,0,0);
+    return date;
+  }
+/*__N6_UNIT__*/  const koreksiMonday = getMonday(new Date());
+/*__N6_UNIT__*/  const koreksiWeekDates = [];
+  for (let i=0;i<7;i++){ const d = new Date(koreksiMonday); d.setDate(d.getDate()+i); koreksiWeekDates.push(d); }
+/*__N6_UNIT__*/  const todayIndex = (new Date().getDay() + 6) % 7;
+/*__N6_UNIT__*/  let selectedDayIndex = todayIndex;
+
+/*__N6_UNIT__*/  function renderDayTabs(){
     document.getElementById('dayTabs').innerHTML = koreksiWeekDates.map((d, i) => {
       const pendingCount = submissions.filter(s => s.dayIndex === i && !s.reviewed).length;
       const classes = ['day-tab-btn'];
@@ -84,12 +103,12 @@
     `).join('');
   }
 
-  window.selectKoreksiDay = function(i){
+/*__N6_UNIT__*/  window.selectKoreksiDay = function(i){
     selectedDayIndex = i;
     renderDayTabs();
     renderSubmissionList();
   };
-  window.reviewSubmission = async function(id){
+/*__N6_UNIT__*/  window.reviewSubmission = async function(id){
     const item = submissions.find(s => s.id === id);
     if (!item) return;
     const input = document.getElementById('koreksi-' + id);
@@ -118,14 +137,14 @@
   document.getElementById('onlyPendingToggle').addEventListener('change', renderSubmissionList);
 
   /* ================= TEMPLATE KATA KOREKSI: APPLY & CRUD ================= */
-  window.applyTemplateToField = function(fieldId, code){
+/*__N6_UNIT__*/  window.applyTemplateToField = function(fieldId, code){
     const tpl = koreksiTemplates.find(t => t.code === code);
     const field = document.getElementById(fieldId);
     if (!tpl || !field) return;
     field.value = tpl.text;
     field.focus();
   };
-  window.applyTemplateCode = function(fieldId, codeFieldId){
+/*__N6_UNIT__*/  window.applyTemplateCode = function(fieldId, codeFieldId){
     const codeField = document.getElementById(codeFieldId);
     const code = codeField ? codeField.value.trim() : '';
     if (!code){ showToast('Masukkan kode template terlebih dahulu.'); return; }
@@ -159,7 +178,7 @@
   }
 
 /*__N6_UNIT__*/  let tplEditing = { kind:null, index:null };
-  window.openTemplateModal = function(kind, index){
+/*__N6_UNIT__*/  window.openTemplateModal = function(kind, index){
     tplEditing = { kind:kind, index:index };
     const list = kind === 'koreksi' ? koreksiTemplates : programTemplates;
     const item = (index !== null && index !== undefined) ? list[index] : null;
@@ -172,7 +191,7 @@
     document.getElementById('tplText').placeholder = kind === 'koreksi' ? 'Isi teks koreksi lengkap yang akan otomatis mengisi kolom keterangan' : 'Keterangan/deskripsi program yang akan otomatis mengisi kolom saat template ini dipilih';
     document.getElementById('templateModal').classList.add('show');
   };
-  window.closeTemplateModal = function(){
+/*__N6_UNIT__*/  window.closeTemplateModal = function(){
     document.getElementById('templateModal').classList.remove('show');
   };
   document.getElementById('templateForm').addEventListener('submit', function(e){
@@ -199,7 +218,7 @@
     }
     showToast('Template disimpan.');
   });
-  window.deleteTemplate = function(kind, index){
+/*__N6_UNIT__*/  window.deleteTemplate = function(kind, index){
     const list = kind === 'koreksi' ? koreksiTemplates : programTemplates;
     list.splice(index, 1);
     if (kind === 'koreksi'){
@@ -213,38 +232,113 @@
   };
 
   /* ================= PROGRAM LARI: BUILDER ================= */
-/*__N6_UNIT__*/  function renderRescheduleApproval(){
-    document.getElementById('rescheduleApprovalList').innerHTML = rescheduleRequests.map((r, i) => `
-      <div class="review-item">
-        <div class="review-item-top"><span class="who">${r.coach}</span><span class="when">${statusTag(r.status)}</span></div>
-        <div class="stats">${r.sesi} → <b>${r.baru}</b></div>
-        <div class="note">${r.alasan || '-'}</div>
-        ${r.status === 'Menunggu' ? `
-          <div class="action-btns">
-            <button class="btn-approve" onclick="setRescheduleStatus(${i},'Disetujui')">Setujui</button>
-            <button class="btn-reject" onclick="setRescheduleStatus(${i},'Ditolak')">Tolak</button>
-          </div>` : ''}
+/*__N6_UNIT__*/  function renderProgramTplPickList(){
+    const body = document.getElementById('programTplPickList');
+    if (!body) return;
+    if (!programTemplates.length){
+      body.innerHTML = '<div class="cal-empty">Belum ada template program. Tambahkan lewat tab "Kelola Template Program".</div>';
+      return;
+    }
+    body.innerHTML = programTemplates.map((t, i) => `
+      <div class="program-tpl-card ${selectedProgramTplIndex === i ? 'selected' : ''}" onclick="pickProgramTpl(${i})">
+        <div class="name">${t.label}</div>
+        <div class="desc">${t.text}</div>
       </div>
     `).join('');
   }
-/*__N6_UNIT__*/  function renderCutiApproval(){
-    document.getElementById('cutiApprovalList').innerHTML = cutiRequests.map((c, i) => `
-      <div class="review-item">
-        <div class="review-item-top"><span class="who">${c.coach}</span><span class="when">${statusTag(c.status)}</span></div>
-        <div class="stats">${c.mulai} — ${c.selesai}</div>
-        <div class="note">${c.alasan || '-'}</div>
-        ${c.status === 'Menunggu' ? `
-          <div class="action-btns">
-            <button class="btn-approve" onclick="setCutiStatus(${i},'Disetujui')">Setujui</button>
-            <button class="btn-reject" onclick="setCutiStatus(${i},'Ditolak')">Tolak</button>
-          </div>` : ''}
-      </div>
-    `).join('');
-  }
-  window.setCutiStatus = function(i, status){
-    cutiRequests[i].status = status;
-    renderCutiApproval();
-    showToast('Cuti ' + cutiRequests[i].coach + ' ditandai: ' + status);
+/*__N6_UNIT__*/  window.pickProgramTpl = function(i){
+    selectedProgramTplIndex = i;
+    const t = programTemplates[i];
+    document.getElementById('programNamaTpl').value = t.label;
+    document.getElementById('programKeterangan').value = t.text;
+    renderProgramTplPickList();
   };
 
-  /* ================= NAV: MAIN TABS ================= */
+/*__N6_UNIT__*/  function renderProgramTemplateList(){
+    const body = document.getElementById('programTemplateList');
+    if (!body) return;
+    if (!programTemplates.length){ body.innerHTML = '<div class="cal-empty">Belum ada template program.</div>'; return; }
+    body.innerHTML = programTemplates.map((t, i) => `
+      <div class="tpl-manage-item">
+        <div class="tpl-manage-body">
+          <div class="lbl">${t.label}</div>
+          <div class="txt">${t.text}</div>
+        </div>
+        <div class="tpl-manage-actions">
+          <button class="icon-btn" onclick="openTemplateModal('program', ${i})" title="Edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="icon-btn danger" onclick="deleteTemplate('program', ${i})" title="Hapus">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+/*__N6_UNIT__*/  function populateProgramClientSelect(){
+    const el = document.getElementById('programClient');
+    if (!el) return;
+    el.innerHTML = '<option value="">Pilih klien tujuan</option>' +
+      clients.map(c => `<option value="${c.name}">${c.name} (Coach: ${c.coach})</option>`).join('');
+  }
+
+/*__N6_UNIT__*/  function fmtProgramTime(){
+    return new Date().toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+
+/*__N6_UNIT__*/  const PROGRAMS_STORAGE_KEY = 'programs:n6-shared';
+/*__N6_UNIT__*/  async function syncProgramsToStorage(){
+    if (!window.storage) return;
+    try{ await window.storage.set(PROGRAMS_STORAGE_KEY, JSON.stringify(sentPrograms), true); }
+    catch(e){ /* penyimpanan tidak tersedia di lingkungan ini — data tetap tersimpan lokal */ }
+  }
+/*__N6_UNIT__*/  async function loadProgramsFromStorage(){
+    if (!window.storage) return;
+    try{
+      const raw = await window.storage.get(PROGRAMS_STORAGE_KEY, true);
+      if (raw && raw.value) sentPrograms = JSON.parse(raw.value);
+    }catch(e){ /* penyimpanan tidak tersedia di lingkungan ini — memakai data lokal */ }
+    renderSentProgramList();
+  }
+
+/*__N6_UNIT__*/  function programStatusBadge(status){
+    if (status === 'diproses') return '<span class="badge blue">Sedang Diproses Admin</span>';
+    if (status === 'terkirim') return '<span class="badge green">Sudah Dikirim ke Klien</span>';
+    return '<span class="badge amber">Menunggu Diproses Admin</span>';
+  }
+
+/*__N6_UNIT__*/  function renderSentProgramList(){
+    const body = document.getElementById('sentProgramList');
+    if (!body) return;
+    if (!sentPrograms.length){ body.innerHTML = '<div class="cal-empty">Belum ada program yang dikirim ke Admin/CS.</div>'; return; }
+    body.innerHTML = sentPrograms.slice().reverse().map(p => `
+      <div class="sent-program-item">
+        <div class="sent-program-top"><span class="who">${p.client}</span>${programStatusBadge(p.status)}</div>
+        <div class="sent-program-name">${p.tplName}</div>
+        <div class="sent-program-desc">${p.keterangan}</div>
+        <div class="sent-program-when">Dikirim ${p.at}</div>
+      </div>
+    `).join('');
+  }
+
+/*__N6_UNIT__*/  const programBuildFormEl = document.getElementById('programBuildForm');
+  if (programBuildFormEl){
+    programBuildFormEl.addEventListener('submit', function(e){
+      e.preventDefault();
+      const client = document.getElementById('programClient').value;
+      const tplName = document.getElementById('programNamaTpl').value.trim();
+      const keterangan = document.getElementById('programKeterangan').value.trim();
+      if (!client){ showToast('Pilih klien tujuan terlebih dahulu.'); return; }
+      if (!tplName){ showToast('Pilih salah satu template program di atas.'); return; }
+      sentPrograms.push({ id:'p' + Date.now(), client:client, tplName:tplName, keterangan:keterangan, status:'pending', at:fmtProgramTime() });
+      renderSentProgramList();
+      syncProgramsToStorage();
+      programBuildFormEl.reset();
+      selectedProgramTplIndex = null;
+      renderProgramTplPickList();
+      showToast('Program "' + tplName + '" terkirim ke Admin/CS untuk ' + client + '.');
+    });
+  }
+
+  /* ================= CHAT INTERNAL: HEAD COACH <-> ADMIN / OWNER ================= */

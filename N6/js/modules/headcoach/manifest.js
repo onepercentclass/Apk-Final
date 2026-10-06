@@ -1,15 +1,17 @@
 /**
  * N6 build manifest - headcoach
  *
- * Every unit of the original headcoach.html main script is stored in exactly one file
- * under js/modules/headcoach/. This array restores the original source order when the
- * fragments are concatenated.
- *
- * shape: [ '<file-stem>', <how many consecutive units come from that file> ]
- *
- * Regenerate with: powershell -ExecutionPolicy Bypass -File tools/build.ps1
+ * Dibuat ulang saat Fase C.
  */
 //__N6_MANIFEST__
 export const MANIFEST_HEADCOACH = [
-  ['_synced', 1],
+  ['_core', 33],
+  ['hub', 16],
+  ['daftar-coach', 20],
+  ['klien', 12],
+  ['atlet', 14],
+  ['koreksi', 34],
+  ['chat', 5],
+  ['persetujuan', 5],
+  ['bootstrap', 13],
 ];

@@ -1,40 +1,13 @@
 /**
  * N6 modules - headcoach / atlet
- * menu label : Atlet Binaan
- * minimum tier: 2
  *
- * Source-fragment. These files are concatenated in the order declared by
- * js/modules/headcoach/manifest.js and wrapped in the role's original IIFE by
- * tools/build.ps1 -> js/dist/headcoach.js. Concatenating every fragment in manifest
- * order reproduces headcoach.html's main script byte for byte.
- *
- * Do not reorder or edit by hand: run tools/build.ps1 after any change.
+ * Dibuat saat Fase C: pecah dari _synced.js menjadi modul granular.
  */
 //__N6_BODY__
-  let achievements = [];   // Tidak ada endpoint — user kelola manual via UI
-/*__N6_UNIT__*/  function athleteStats(athleteId){
-    const list = achievements.filter(a => a.athleteId === athleteId);
-    return {
-      total: list.length,
-      juara1: list.filter(a => a.posisi === 'Juara 1').length,
-      juara2: list.filter(a => a.posisi === 'Juara 2').length,
-      juara3: list.filter(a => a.posisi === 'Juara 3').length,
-    };
-  }
 
-/*__N6_UNIT__*/  function renderPodiumSummary(){
-    const ranked = athletes.map(a => ({ athlete:a, stats:athleteStats(a.id) }))
-      .sort((x, y) => (y.stats.juara1*3 + y.stats.juara2*2 + y.stats.juara3) - (x.stats.juara1*3 + x.stats.juara2*2 + x.stats.juara3))
-      .slice(0, 3);
-    const labels = ['🥇 Terbanyak Juara', '🥈 Peringkat 2', '🥉 Peringkat 3'];
-    document.getElementById('podiumSummary').innerHTML = ranked.length ? ranked.map((r, i) => `
-      <div class="podium-card">
-        <div class="rank">${labels[i] || ('Peringkat ' + (i+1))}</div>
-        <div class="name">${r.athlete.name}</div>
-        <div class="cnt">${r.stats.total} prestasi</div>
-        <div style="font-size:11px; color:var(--asphalt); margin-top:4px;">🥇${r.stats.juara1} · 🥈${r.stats.juara2} · 🥉${r.stats.juara3}</div>
-      </div>
-    `).join('') : '<div class="cal-empty">Belum ada data atlet.</div>';
+  function populateAthleteCoachSelect(){
+    document.getElementById('athCoach').innerHTML = '<option value="">Coach pembina</option>' +
+      coaches.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
   }
 
 /*__N6_UNIT__*/  function populateAthleteSelectsForAchv(){
@@ -77,11 +50,17 @@
     }).join('');
   }
 
-  window.viewAthleteAchievements = function(athleteId){
+/*__N6_UNIT__*/  window.viewAthleteAchievements = function(athleteId){
     document.querySelector('#panel-atlet .subtab-btn[data-sub="prestasi"]').click();
     document.getElementById('filterAthleteAchv').value = athleteId;
     renderAchievementList();
   };
+
+/*__N6_UNIT__*/  function fmtAchvDate(tanggal){
+    if (!tanggal) return '-';
+    const [y,m,d] = tanggal.split('-');
+    return parseInt(d,10) + ' ' + MONTH_LABEL[parseInt(m,10)-1] + ' ' + y;
+  }
 
 /*__N6_UNIT__*/  function renderAchievementList(){
     const filter = document.getElementById('filterAthleteAchv').value;
@@ -115,7 +94,7 @@
   document.getElementById('filterAthleteAchv').addEventListener('change', renderAchievementList);
 
 /*__N6_UNIT__*/  let athleteEditingId = null;
-  window.openAthleteModal = function(id){
+/*__N6_UNIT__*/  window.openAthleteModal = function(id){
     athleteEditingId = id;
     const a = id ? athletes.find(x => x.id === id) : null;
     document.getElementById('athleteModalTitle').textContent = a ? 'Edit Atlet' : 'Tambah Atlet';
@@ -125,7 +104,7 @@
     document.getElementById('athCatatan').value = a ? a.catatan || '' : '';
     document.getElementById('athleteModal').classList.add('show');
   };
-  window.closeAthleteModal = function(){ document.getElementById('athleteModal').classList.remove('show'); };
+/*__N6_UNIT__*/  window.closeAthleteModal = function(){ document.getElementById('athleteModal').classList.remove('show'); };
   document.getElementById('athleteForm').addEventListener('submit', function(e){
     e.preventDefault();
     const name = document.getElementById('athName').value.trim();
@@ -145,7 +124,7 @@
     populateAthleteSelectsForAchv();
     showToast('Data atlet disimpan.');
   });
-  window.deleteAthlete = function(id){
+/*__N6_UNIT__*/  window.deleteAthlete = function(id){
     athletes = athletes.filter(a => a.id !== id);
     achievements = achievements.filter(a => a.athleteId !== id);
     renderAthleteList();
@@ -156,7 +135,7 @@
   };
 
 /*__N6_UNIT__*/  let achievementEditingId = null;
-  window.openAchievementModal = function(id){
+/*__N6_UNIT__*/  window.openAchievementModal = function(id){
     achievementEditingId = id;
     const ac = id ? achievements.find(x => x.id === id) : null;
     document.getElementById('achievementModalTitle').textContent = ac ? 'Edit Prestasi' : 'Catat Prestasi';
@@ -169,7 +148,7 @@
     document.getElementById('achCatatan').value = ac ? ac.catatan || '' : '';
     document.getElementById('achievementModal').classList.add('show');
   };
-  window.closeAchievementModal = function(){ document.getElementById('achievementModal').classList.remove('show'); };
+/*__N6_UNIT__*/  window.closeAchievementModal = function(){ document.getElementById('achievementModal').classList.remove('show'); };
   document.getElementById('achievementForm').addEventListener('submit', function(e){
     e.preventDefault();
     const athleteId = document.getElementById('achAthlete').value;
@@ -192,7 +171,7 @@
     renderPodiumSummary();
     showToast('Prestasi disimpan.');
   });
-  window.deleteAchievement = function(id){
+/*__N6_UNIT__*/  window.deleteAchievement = function(id){
     achievements = achievements.filter(a => a.id !== id);
     renderAchievementList();
     renderAthleteList();
