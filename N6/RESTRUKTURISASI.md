@@ -170,14 +170,25 @@ saat rename + split dilakukan.
 
 ---
 
-### Fase C: Rename File Modul (Konsistensi)
+### Fase C: Split _synced.js → Modul Granular ✅ SELESAI (2026-10-06)
 
-**Tujuan:** Nama file yang jelas dan deskriptif. Hilangkan prefix `extra-N-` yang tidak bermakna.
+**Tujuan:** Kembalikan granularitas modul yang hilang saat Fase B.
 
-**Konvensi penamaan baru:**
-- Modul menu: `<nama-menu>.js` (contoh: `klien.js`, `jadwal.js`)
-- Modul fitur khusus: `<nama-fitur>.js` (contoh: `monitoring.js`, `pdf-reports.js`)
-- Modul tema/UI: `<nama>-theme.js`, `<nama>-ui.js`
+**Catatan perubahan rencana:** Rencana awal (rename 15 file individual) tidak lagi relevan karena Fase B mengganti semua modul dengan single `_synced.js` per role. Fase C disesuaikan menjadi: pecah kembali tiap `_synced.js` menjadi modul-modul deskriptif.
+
+**Hasil:**
+- Owner: 13 modul (`_core`, `beranda`, `klien`, `klien-invoice` ✂️, `jadwal-klien`, `harga`, `komisi`, `keuangan`, `tiket`, `pesan`, `jadwal-coach`, `jadwal-coach-export` ✂️, `bootstrap`)
+- Admin: 11 modul (`_core`, `beranda`, `klien`, `klien-invoice` ✂️, `jadwal-klien`, `harga`, `tiket`, `pesan`, `jadwal-coach`, `jadwal-coach-export` ✂️, `bootstrap`)
+- Headcoach: 9 modul (`_core`, `hub`, `daftar-coach`, `klien`, `atlet`, `koreksi`, `chat`, `persetujuan`, `bootstrap`)
+- Coach: 8 modul (`_core`, `home`, `jadwal`, `klien`, `keuangan`, `laporan`, `absensi`, `bootstrap`)
+- Client: 6 modul (`_core`, `ikon`, `laporan`, `kalender`, `chat`, `profil`)
+- File `extra-*.js` yang terhapus saat Fase B telah direstore (owner 3, admin 1, headcoach 5, coach 2)
+
+**Verifikasi:**
+- `tools/build.sh --check`: "bundle already up to date" untuk 5 role (output byte-identical)
+- Commit: `1efe54e`, push ke origin/main
+
+**Rencana awal yang dibatalkan:** Tabel rename C.1–C.5 di bawah ini adalah rencana pra-Fase B dan sudah tidak berlaku.
 
 #### C.1 — Owner (`js/modules/owner/`)
 
