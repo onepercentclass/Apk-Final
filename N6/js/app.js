@@ -139,6 +139,15 @@ async function boot() {
 
   router.observeNavigation(document);
 
+  // Terapkan menu dari URL (?menu=...) pada load awal — tanpa ini panel
+  // tidak tampil bila user membuka link langsung ke menu tertentu.
+  try {
+    if (route.menu) {
+      const btn = document.querySelector(`[data-panel="${route.menu}"]`);
+      if (btn && !btn.hidden && !btn.dataset.n6Locked) btn.click();
+    }
+  } catch (e) { /* abaikan */ }
+
   bus.emit(EVENTS.READY, {
     role: role.key,
     tier: role.tier,
