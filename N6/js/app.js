@@ -99,6 +99,10 @@ async function boot() {
       const url = new URL(window.location.href);
       url.searchParams.set(ROLE_PARAM, tierRole);
       url.searchParams.delete('menu');
+      // Client portal butuh ?client=<id> — ambil dari akun yang login bila ada.
+      if (tierRole === 'client' && ub.client_id && !url.searchParams.has('client')) {
+        url.searchParams.set('client', String(ub.client_id));
+      }
       window.location.replace(url.toString());
       return;
     }

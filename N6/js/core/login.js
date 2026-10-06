@@ -144,6 +144,8 @@ export async function ensureApiLogin(role) {
       role: me.role,
       menus: me.menus || [],
       actions: me.actions || {},
+      client_id: me.client_id || null,
+      coach_id: me.coach_id || null,
     },
   });
   try {

@@ -128,8 +128,8 @@ export const VIEW_COACH = `
 <div class="score-row">
 <div class="score-box">
 <div class="lbl">Score Coach</div>
-<div class="big">87<span style="font-size:15px; color:var(--asphalt);">/100</span></div>
-<div class="progress-track" style="margin-top:8px;"><div class="progress-fill" style="width:87%;"></div></div>
+<div class="big" id="coachScoreBig">—<span style="font-size:15px; color:var(--asphalt);">/100</span></div>
+<div class="progress-track" style="margin-top:8px;"><div class="progress-fill" id="coachScoreFill" style="width:0%;"></div></div>
 </div>
 <div class="score-box">
 <div class="lbl">Rating dari Klien</div>

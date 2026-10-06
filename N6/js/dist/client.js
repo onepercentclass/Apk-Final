@@ -81,7 +81,18 @@
       '<div class="invalid-state">' +
         '<h2>Link tidak valid</h2>' +
         '<p>Halaman ini khusus untuk satu client dan diberikan oleh coach N6. Hubungi coach kamu untuk mendapatkan link dashboard yang benar.</p>' +
+        '<p><button type="button" class="btn-outline" id="invalidLogoutBtn">Keluar</button></p>' +
       '</div>';
+    const btn = document.getElementById('invalidLogoutBtn');
+    if (btn) btn.addEventListener('click', () => {
+      try {
+        const cfg = window.N6_API || {};
+        localStorage.removeItem(cfg.tokenKey || 'n6:api:token');
+        localStorage.removeItem(cfg.refreshKey || 'n6:api:refresh');
+        localStorage.removeItem(cfg.userKey || 'n6:api:user');
+      } catch (e) {}
+      window.location.replace(window.location.pathname);
+    });
   }
 
   function renderShell(){
