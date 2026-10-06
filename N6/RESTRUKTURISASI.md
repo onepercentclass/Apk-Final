@@ -101,6 +101,11 @@ N6/
 
 **Path yang berubah:** Tidak ada (hanya tambah file baru)
 
+**Verifikasi (definition of done):**
+- [ ] `tools/build.sh` menghasilkan output **byte-identical** dengan `js/dist/*.js` saat ini untuk semua 5 role
+- [ ] `tools/build.sh --check` exit 0 (tidak ada perubahan)
+- Risiko: NOL — output identik = tidak ada perubahan perilaku = tidak perlu browser test
+
 ---
 
 ### Fase B: Sinkronisasi `modules/` ← `dist/`
@@ -129,6 +134,12 @@ N6/
 - [ ] `adminRead()` prefer API data (headcoach extra-1)
 - [ ] `openCoachForm`/`editCoach` redirect (owner)
 - [ ] `syncClientsToApi()` (app.js)
+
+**Verifikasi (definition of done):**
+- [ ] `tools/build.sh --check` lolos setelah semua porting
+- [ ] Review `git diff` per perubahan yang di-port (pastikan tidak ada yang terlewat)
+- [ ] Browser test **fitur yang diubah saja**: edit klien (owner+admin), daftar coach, monitoring klien
+- ⚠️ Fase paling berisiko — jangan lanjut ke Fase C sebelum semua checklist hijau
 
 ---
 
@@ -270,6 +281,13 @@ N6/
 **Prinsip split:** hanya jika beda "alasan berubah" (single responsibility).
 `_core.js`, file < 300 baris, dan `dist/` tidak di-split.
 
+**Verifikasi (definition of done):**
+- [ ] `tools/build.sh --check` lolos (manifest cocok dengan file di disk)
+- [ ] `node --check` lolos untuk semua file JS yang di-rename/di-split
+- [ ] `grep -r "extra-" --include="*.js" js/` tidak menemukan referensi ke nama lama
+- [ ] Browser smoke test semua 5 role: login → buka tiap menu → tidak ada error console
+- [ ] Fungsi hasil split (`downloadInvoice`, `downloadCoachScheduleImage`) dicoba langsung
+
 ---
 
 ### Fase D: Bersihkan `tools/split/`
@@ -283,6 +301,10 @@ N6/
 
 **Rekomendasi:** Archive dulu (jangan hapus permanen), hapus permanen setelah 30 hari jika tidak dibutuhkan.
 
+**Verifikasi (definition of done):**
+- [ ] `grep -r "tools/split" --include="*.sh" --include="*.ps1" --include="*.md" N6/` tidak menemukan referensi aktif
+- Risiko rendah — tidak perlu browser test
+
 ---
 
 ### Fase E: Audit `vendor/` dan `assets/`
@@ -292,6 +314,11 @@ N6/
 | E1 | Audit isi `N6/vendor/` — apa saja, dari mana, apakah masih dipakai |
 | E2 | Rename logo di `assets/img/` dengan pola konsisten: `logo-{varian}-{ukuran}.png` |
 | E3 | Hapus logo yang tidak dipakai (jika ada) |
+
+**Verifikasi (definition of done):**
+- [ ] `grep -r "vendor/" --include="*.html" --include="*.js" N6/` — semua file vendor yang tersisa masih direferensikan
+- [ ] `grep -r "assets/img/" --include="*.html" --include="*.js" --include="*.css" N6/` — semua logo yang tersisa masih dipakai
+- Risiko rendah — tidak perlu browser test (kecuali ada logo yang diganti, cek visual sekali)
 
 ---
 
@@ -309,6 +336,14 @@ Fase A (Build Linux)
 - Fase A dulu karena tanpa build yang jalan, Fase B/C berisiko
 - Fase B sebelum C karena rename file saat `dist/`/`modules/` tidak sinkron = kekacauan
 - Fase D/E bisa paralel setelah A selesai
+
+### Prinsip Pengaman (berlaku untuk semua fase)
+
+1. **Satu fase = satu commit.** Kalau fase N bermasalah, `git revert` ke fase N-1.
+2. **Jangan lanjut ke fase berikutnya kalau fase saat ini belum hijau** (semua checklist verifikasi tercentang).
+3. **Deploy ke VPS hanya setelah verifikasi fase lolos.** Tidak ada deploy "coba-coba".
+4. **Verifikasi berlapis:** otomatis (script) → statis (`node --check`, `grep`) → manual (browser) → deploy.
+5. Setiap fase yang menyentuh kode yang jalan (B, C, F, G) **wajib** browser test sebelum deploy.
 
 ---
 
@@ -407,6 +442,12 @@ logger.error('saveClientForm', 'gagal simpan', err);
 - EDIT: `js/core/bundles.js` (tambahkan logger ke load order paling awal)
 - EDIT: semua `catch(e){}` kosong di `js/modules/*/` (~50+ lokasi)
 
+**Verifikasi (definition of done):**
+- [ ] Tanpa `?debug=1`: aplikasi berperilaku **persis sama** seperti sebelum Fase F (tidak ada log tambahan di console, tidak ada perubahan UI)
+- [ ] Dengan `?debug=1`: log `debug`/`info` muncul dengan format `[modul][fungsi] pesan`
+- [ ] `grep -rn "catch(e){}" js/modules/` → 0 hasil (atau sisa yang beralasan dengan komentar)
+- [ ] Browser test: picu satu error sengaja (misal: matikan network saat simpan) → `logger.error` tercatat
+
 ---
 
 ### Fase G: Error Tracking & Build Metadata
@@ -425,6 +466,12 @@ logger.error('saveClientForm', 'gagal simpan', err);
 - BARU: `js/core/logger.js` (dari Fase F), `js/core/error-handler.js`
 - EDIT: `js/app.js` (pasang global handler)
 - EDIT: `tools/build.sh` (sisipkan metadata)
+
+**Verifikasi (definition of done):**
+- [ ] `head -1 js/dist/owner.js` menampilkan header metadata (git hash + timestamp)
+- [ ] Versi tampil di UI (footer/settings), format `vYYYY.MM.DD-<hash>`
+- [ ] Browser test: picu `ReferenceError` sengaja di console → toast user-friendly muncul + error tercatat dengan konteks lengkap
+- [ ] `tools/build.sh --check` tetap lolos (metadata tidak merusak byte-comparison — atau update mekanisme check)
 
 ---
 
@@ -445,6 +492,12 @@ logger.error('saveClientForm', 'gagal simpan', err);
 - BARU: `js/core/constants.js`, `js/core/error-handler.js`, `tools/smoke-test.sh`, `.eslintrc.json`
 - EDIT: `js/core/env.js` (tambah flag `DEBUG`)
 - EDIT: berbagai file (ganti magic string dengan konstanta)
+
+**Verifikasi (definition of done):**
+- [ ] `tools/smoke-test.sh` exit 0 (semua `dist/*.js` lolos `node --check`, manifest valid)
+- [ ] ESLint exit 0 (tidak ada `no-undef` / `no-unused-vars`)
+- [ ] `grep -rn "'n6:api:token'" js/` → 0 hasil di luar `constants.js` (semua pakai konstanta)
+- [ ] Aplikasi tetap jalan normal (tidak ada perubahan perilaku — hanya refactor)
 
 ---
 
@@ -541,3 +594,9 @@ Fase I (Contract Test) — independen, bisa dikerjakan kapan saja setelah Fase A
 - [ ] Test manual: jalankan melawan `api.denisbergkam.com`
 - [ ] Simpan fixture response ke `tools/contract/fixtures/`
 - [ ] Tambahkan ke checklist deploy
+
+**Verifikasi (definition of done):**
+- [ ] `tools/contract-test.sh` berjalan end-to-end melawan backend asli dan menghasilkan laporan
+- [ ] Semua endpoint yang dipakai frontend terdaftar di `expectations.json` (tidak ada yang terlewat — cek via grep pola `n6Api(` dan `fetch(`)
+- [ ] 0 field ❌ hilang pada saat fase selesai (atau yang hilang sudah ditangani/didokumentasikan)
+- [ ] Dijalankan sebagai bagian dari checklist pre-deploy
