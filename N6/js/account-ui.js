@@ -429,21 +429,6 @@
     loadAkun();
   }
 
-  /* ================= judul panel (bundle tidak mengenal panel baru) ================= */
-
-  function fixTitles() {
-    var titles = { akun: 'Kelola Anggota', sandi: 'Ganti Password' };
-    document.querySelectorAll('.side-nav button[data-panel], .bottom-nav button[data-panel]').forEach(function (btn) {
-      var key = btn.getAttribute('data-panel');
-      if (titles[key]) {
-        btn.addEventListener('click', function () {
-          var t = document.getElementById('pageTitle');
-          if (t) t.textContent = titles[key];
-        });
-      }
-    });
-  }
-
   /* ================= boot ================= */
 
   /* ============ CLIENT: suntik ke dropdown akun (bundle render #root) ============ */
@@ -507,7 +492,6 @@
     }
     initGantiPassword();
     initKelolaAnggota();
-    fixTitles();
   }
 
   if (document.readyState === 'loading') {

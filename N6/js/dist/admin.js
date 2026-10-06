@@ -1624,7 +1624,7 @@
   }
 
   /* ================= NAV / PANEL SWITCH ================= */
-  const panelTitles = { beranda:'Beranda', klien:'Klien', jadwalklien:'Jadwal Klien', jadwalcoach:'Jadwal Coach', harga:'Daftar Harga', tiket:'Tiket & Keluhan', pesan:'Pesan' };
+  const panelTitles = { beranda:'Beranda', klien:'Klien', jadwalklien:'Jadwal Klien', jadwalcoach:'Jadwal Coach', harga:'Daftar Harga', tiket:'Tiket & Keluhan', pesan:'Pesan', sandi:'Ganti Password' };
   function switchPanel(name){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-' + name).classList.add('active');

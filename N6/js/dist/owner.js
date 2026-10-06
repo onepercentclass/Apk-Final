@@ -1928,7 +1928,7 @@
   }
 
   /* ================= NAV / PANEL SWITCH ================= */
-  const panelTitles = { beranda:'Beranda', klien:'Klien', jadwalklien:'Jadwal Klien', jadwalcoach:'Jadwal Coach', harga:'Harga & Program', komisi:'Performa & Komisi', keuangan:'Keuangan', performa:'Performa Tim', tiket:'Tiket & Keluhan', pesan:'Pesan' };
+  const panelTitles = { beranda:'Beranda', klien:'Klien', jadwalklien:'Jadwal Klien', jadwalcoach:'Jadwal Coach', harga:'Harga & Program', komisi:'Performa & Komisi', keuangan:'Keuangan', performa:'Performa Tim', tiket:'Tiket & Keluhan', pesan:'Pesan', akun:'Kelola Anggota', sandi:'Ganti Password' };
   function switchPanel(name){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     if(name === 'performa') name = 'komisi';

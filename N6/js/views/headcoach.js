@@ -38,12 +38,12 @@ export const VIEW_HEADCOACH = `
 <button data-panel="atlet">
 <svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"></path><path d="M17 5h3a2 2 0 0 1-2 4h-1M7 5H4a2 2 0 0 0 2 4h1"></path></svg>
         Atlet Binaan
-      </button></nav>
-<div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 12px 4px"></div>
+      </button>
+<div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 0 4px"></div>
 <button data-panel="sandi" type="button">
 <svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
 <span>Ganti Password</span>
-</button></div>
+</button></nav></div>
 </div>
 </div>
 <div class="modal-overlay" id="coachDetailModal" onclick="if(event.target===this) closeCoachDetail()">
