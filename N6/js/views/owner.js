@@ -96,10 +96,7 @@ export const VIEW_OWNER = `
 <div class="bell" id="bellIcon">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
 </div>
-<button aria-label="Buka popup akun, login, logout dan pengaturan" class="desktop-account-trigger" id="desktopAccountBtn" title="Akun, login &amp; logout" type="button"><span aria-hidden="true">♙</span></button><div class="avatar-wrap">
-<div class="avatar"><img alt="N6" class="logo-white" src="assets/img/logo-white.png"/><img alt="N6" class="logo-black" src="assets/img/logo-black.png"/></div>
-<div class="avatar-name"><b>Owner</b><span>Akses Penuh</span></div>
-</div>
+<button aria-label="Buka popup akun, login, logout dan pengaturan" class="desktop-account-trigger" id="desktopAccountBtn" title="Akun, login &amp; logout" type="button"><span aria-hidden="true">♙</span></button>
 </div>
 </header>
 <main class="content">

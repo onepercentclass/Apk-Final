@@ -85,10 +85,6 @@ export const VIEW_ADMIN = `
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
 </div>
 <button aria-label="Buka akun dan pengaturan" class="n6-theme-btn" id="n6ThemeBtn" title="Akun" type="button">♙</button>
-<div class="avatar-wrap">
-<div class="avatar">CS</div>
-<div class="avatar-name"><b>Admin CS</b><span>Customer Service</span></div>
-</div>
 </div>
 </header>
 <main class="content">
