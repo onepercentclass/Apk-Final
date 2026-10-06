@@ -45,13 +45,23 @@
 /*__N6_UNIT__*/  const N6_SHARED_COACH_KEYS = new Set(['coachRoster','coachSchedule','coachDayOff']);
 /*__N6_UNIT__*/  const N6_ADMIN_PREFIX = 'n6csAdmin:';
 /*__N6_UNIT__*/  const N6_OWNER_PREFIX = 'n6Owner:';
+/*__N6_UNIT__*/  const N6_API_KEYS = new Set(['clients','tickets','messages']);
 /*__N6_UNIT__*/  async function storeGet(key){
+    if (N6_API_KEYS.has(key) && typeof window !== 'undefined' && window.storage) {
+      try {
+        const r = await window.storage.get(key, true);
+        if (r && r.value != null) return r.value;
+      } catch (e) {}
+    }
     if (N6_SHARED_COACH_KEYS.has(key)) {
       try { const v=localStorage.getItem(N6_ADMIN_PREFIX+key); if(v!==null)return v; } catch(e){}
     }
     try { return localStorage.getItem(N6_OWNER_PREFIX+key); } catch(e){ return null; }
   }
 /*__N6_UNIT__*/  async function storeSet(key,value){
+    if (N6_API_KEYS.has(key) && typeof window !== 'undefined' && window.storage) {
+      try { await window.storage.set(key, value, true); } catch (e) {}
+    }
     if(N6_SHARED_COACH_KEYS.has(key)){
       try{localStorage.setItem(N6_ADMIN_PREFIX+key,value);
         if(localStorage.getItem(N6_ADMIN_PREFIX+key)!==value)throw Error('Verification failed');

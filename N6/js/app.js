@@ -140,6 +140,17 @@ async function boot() {
   // Adapter ini meneruskan ke repository aktif (API atau localStorage).
   try {
     if (typeof window !== 'undefined' && !window.storage) {
+      // Import endpoints untuk sync clients (lazy, agar tidak circular).
+      let apiEndpoints = null;
+      const getEndpoints = async () => {
+        if (!apiEndpoints) {
+          try {
+            const mod = await import('./core/api.js');
+            apiEndpoints = mod.endpoints;
+          } catch (e) {}
+        }
+        return apiEndpoints;
+      };
       window.storage = {
         async get(key, parseJson) {
           let val = null;
@@ -154,11 +165,61 @@ async function boot() {
         async set(key, value, parseJson) {
           try {
             const data = (parseJson && typeof value === 'string') ? JSON.parse(value) : value;
+            // Sync khusus untuk clients: diff array lokal vs API, lalu POST/PATCH/arsip.
+            if (key === 'clients' && Array.isArray(data) && repository.source === 'api') {
+              const ep = await getEndpoints();
+              if (ep && ep.clients) {
+                await syncClientsToApi(ep.clients, data);
+                return true;
+              }
+            }
             await repository.set(key, data);
             return true;
           } catch (e) { return false; }
         },
       };
+      // Sinkronisasi array clients lokal ke API: buat baru, update berubah, arsipkan yang hilang.
+      async function syncClientsToApi(clientsEp, localArr) {
+        let remote = [];
+        try {
+          const res = await clientsEp.list();
+          remote = (res && Array.isArray(res.items)) ? res.items : (Array.isArray(res) ? res : []);
+        } catch (e) { return; }
+        const remoteById = new Map(remote.map(c => [String(c.id), c]));
+        const localIds = new Set();
+        for (const c of localArr) {
+          if (!c || typeof c !== 'object') continue;
+          const id = c.id != null ? String(c.id) : null;
+          if (id && remoteById.has(id)) {
+            localIds.add(id);
+            // Update bila ada perubahan (bandingkan field utama).
+            const r = remoteById.get(id);
+            const body = {};
+            for (const f of ['name','phone','email','status','coach_id','notes']) {
+              if (c[f] !== undefined && c[f] !== r[f]) body[f] = c[f];
+            }
+            if (Object.keys(body).length) {
+              try { await clientsEp.update(id, body); } catch (e) {}
+            }
+          } else {
+            // Buat baru.
+            try {
+              const body = { name: c.name || 'Tanpa Nama' };
+              for (const f of ['phone','email','status','coach_id','notes','joined_on']) {
+                if (c[f] !== undefined) body[f] = c[f];
+              }
+              if (!body.status) body.status = 'aktif';
+              await clientsEp.create(body);
+            } catch (e) {}
+          }
+        }
+        // Arsipkan yang ada di API tapi tidak di lokal.
+        for (const r of remote) {
+          if (!localIds.has(String(r.id))) {
+            try { await clientsEp.archive(String(r.id), {}); } catch (e) {}
+          }
+        }
+      }
     }
   } catch (e) { /* abaikan */ }
 

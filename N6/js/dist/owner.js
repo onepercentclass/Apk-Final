@@ -51,13 +51,26 @@
   const N6_SHARED_COACH_KEYS = new Set(['coachRoster','coachSchedule','coachDayOff']);
   const N6_ADMIN_PREFIX = 'n6csAdmin:';
   const N6_OWNER_PREFIX = 'n6Owner:';
+  // Key yang didukung API — data ini lintas role via backend.
+  const N6_API_KEYS = new Set(['clients','tickets','messages']);
   async function storeGet(key){
+    // Coba via repository API dulu untuk key yang didukung.
+    if (N6_API_KEYS.has(key) && window.storage) {
+      try {
+        const r = await window.storage.get(key, true);
+        if (r && r.value != null) return r.value;
+      } catch (e) { /* fallback ke localStorage */ }
+    }
     if (N6_SHARED_COACH_KEYS.has(key)) {
       try { const v=localStorage.getItem(N6_ADMIN_PREFIX+key); if(v!==null)return v; } catch(e){}
     }
     try { return localStorage.getItem(N6_OWNER_PREFIX+key); } catch(e){ return null; }
   }
   async function storeSet(key,value){
+    // Tulis ke API untuk key yang didukung (best-effort), selalu tulis lokal juga.
+    if (N6_API_KEYS.has(key) && window.storage) {
+      try { await window.storage.set(key, value, true); } catch (e) { /* abaikan */ }
+    }
     if(N6_SHARED_COACH_KEYS.has(key)){
       try{localStorage.setItem(N6_ADMIN_PREFIX+key,value);
         if(localStorage.getItem(N6_ADMIN_PREFIX+key)!==value)throw Error('Verification failed');
