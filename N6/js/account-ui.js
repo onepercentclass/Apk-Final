@@ -42,6 +42,9 @@
     '.n6a-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}',
     '.n6a-empty{padding:40px 20px;text-align:center;color:var(--asphalt);font-size:13px}',
     '.n6a-pager{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid #F0EEE7;flex-wrap:wrap;gap:8px}',
+    '.n6a-wrap input[type=password],.n6a-wrap input[type=email],.n6a-wrap input[type=text],.n6a-wrap select{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;background:var(--white);color:var(--ink);box-sizing:border-box}',
+    '.n6a-wrap input:focus,.n6a-wrap select:focus{outline:none;border-color:var(--ink)}',
+    '.n6a-wrap .field-label{margin-bottom:6px}',
     '@media(max-width:640px){.n6a-wrap{max-width:none}}',
   ].join('\n');
   function injectAccountCss() {
