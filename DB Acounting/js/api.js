@@ -109,5 +109,13 @@ const ApiClient = (() => {
   const getAccount = () => get('/auth/me');
   const saveAccount = (acc) => post('/auth/profile', acc);
 
-  return { enabled, getToken, setToken, clearToken, request, get, post, put, endpoints, ping, listCompanies, getCompany, saveCompany, getAccount, saveAccount };
+  // Kelola Anggota (owner) + Ganti Password — butuh mode API & login.
+  const accounts = () => get('/accounts');
+  const createAccount = (data) => post('/accounts', data);
+  const updateAccount = (id, data) => request('/accounts/' + id, { method: 'PATCH', body: JSON.stringify(data) });
+  const setAccountTier = (id, tier) => put('/accounts/' + id + '/tier', { tier });
+  const deactivateAccount = (id) => request('/accounts/' + id, { method: 'DELETE' });
+  const changePassword = (current_password, new_password) => put('/auth/password', { current_password, new_password });
+
+  return { enabled, getToken, setToken, clearToken, request, get, post, put, endpoints, ping, listCompanies, getCompany, saveCompany, getAccount, saveAccount, accounts, createAccount, updateAccount, setAccountTier, deactivateAccount, changePassword };
 })();

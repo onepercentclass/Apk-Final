@@ -72,3 +72,17 @@ def me(tier_def: dict = Depends(current_tier)):
 @router.post("/profile")
 def save_profile(body: dict, user: models.User = Depends(get_current_user)):
     return {"ok": True, "tier": user.tier}
+
+
+@router.put("/password")
+def change_password(body: schemas.PasswordChange, user: models.User = Depends(get_current_user),
+                    db: Session = Depends(get_db)):
+    """Ganti password sendiri. Verifikasi password lama; tolak bila sama."""
+    if not security.verify_password(body.current_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Password saat ini salah")
+    if body.current_password == body.new_password:
+        raise HTTPException(status_code=400, detail="Password baru harus berbeda")
+    user.password_hash = security.hash_password(body.new_password)
+    db.add(user)
+    db.commit()
+    return {"ok": True}

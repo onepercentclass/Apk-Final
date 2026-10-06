@@ -18,11 +18,21 @@ async function request(method, path, body) {
     sessionStorage.setItem('dbfin-login-msg', 'Sesi berakhir, silakan login kembali.');
     window.dispatchEvent(new CustomEvent('api:unauthorized'));
   }
-  if (!res.ok) throw new Error(`${method} ${path} gagal (${res.status})`);
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const d = await res.json();
+      detail = d && (d.detail || d.message) || '';
+    } catch (e) { /* bukan JSON */ }
+    throw new Error(detail || `${method} ${path} gagal (${res.status})`);
+  }
   return res.status === 204 ? null : res.json();
 }
 
 export const api = {
   get: path => request('GET', path),
+  post: (path, body) => request('POST', path, body),
   put: (path, body) => request('PUT', path, body),
+  patch: (path, body) => request('PATCH', path, body),
+  delete: path => request('DELETE', path),
 };

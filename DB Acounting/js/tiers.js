@@ -17,7 +17,7 @@ const TierAccess = (() => {
     name: 'Owner',
     roleLabel: 'Super Admin',
     description: 'Pemilik — akses penuh seluruh menu dan pengaturan.',
-    menus: ['dashboard', 'transaksi', 'penjualan', 'pembelian', 'kasbank', 'jurnal', 'persediaan', 'asettetap', 'kontak', 'laporan', 'pajak', 'perusahaan', 'pengaturan'],
+    menus: ['dashboard', 'transaksi', 'penjualan', 'pembelian', 'kasbank', 'jurnal', 'persediaan', 'asettetap', 'kontak', 'laporan', 'pajak', 'perusahaan', 'pengaturan', 'akun', 'sandi'],
     permissions: { view: true, create: true, edit: true, del: true, expo: true, manageUsers: true, manageSettings: true },
   };
 

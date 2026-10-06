@@ -7,12 +7,13 @@ Urutan include sama seperti main.py backend asli.
 from fastapi import APIRouter
 
 from app.apps.claisrox.resources import RESOURCES
-from app.apps.claisrox.routers import auth, finance, snapshot
+from app.apps.claisrox.routers import accounts, auth, finance, snapshot
 from app.apps.claisrox.routers.crud import build_crud_router
 
 router = APIRouter()
 
 router.include_router(auth.router)
+router.include_router(accounts.router)
 router.include_router(snapshot.router)
 router.include_router(finance.router)
 for res in RESOURCES:

@@ -12,6 +12,8 @@
     { key: "laporan", label: "Laporan", icon: "laporan" },
     { key: "fasilitas", label: "Fasilitas", icon: "fasilitas" },
     { key: "pengaturan", label: "Pengaturan", icon: "pengaturan" },
+    { key: "akun", label: "Kelola Anggota", icon: "member" },
+    { key: "sandi", label: "Ganti Password", icon: "pengaturan" },
   ];
 
   // Menu yang tampil di navigasi bawah (handphone); sisanya lewat tombol "Menu"

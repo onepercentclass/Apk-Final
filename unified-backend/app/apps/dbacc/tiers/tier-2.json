@@ -10,7 +10,8 @@
     "pembelian",
     "kasbank",
     "persediaan",
-    "kontak"
+    "kontak",
+    "sandi"
   ],
   "permissions": {
     "view": true,

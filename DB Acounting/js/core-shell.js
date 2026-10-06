@@ -19,6 +19,8 @@ const NAV=[
   {r:'pajak',label:'Manajemen Pajak',icon:'tax'},
   {r:'perusahaan',label:'Multi Perusahaan',icon:'multico'},
   {r:'pengaturan',label:'Pengaturan',icon:'settings'},
+  {r:'akun',label:'Kelola Anggota',icon:'people'},
+  {r:'sandi',label:'Ganti Password',icon:'key'},
 ];
 
 function renderSidebar(){

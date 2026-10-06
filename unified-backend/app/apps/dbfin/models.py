@@ -23,6 +23,7 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(256))
     name: Mapped[str] = mapped_column(String(120))
     tier: Mapped[int] = mapped_column(Integer, default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     theme: Mapped[str] = mapped_column(String(10), default="dark")
     hide_balance: Mapped[bool] = mapped_column(Boolean, default=False)
 

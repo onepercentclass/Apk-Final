@@ -16,7 +16,9 @@
     "laporan",
     "pajak",
     "perusahaan",
-    "pengaturan"
+    "pengaturan",
+    "akun",
+    "sandi"
   ],
   "permissions": {
     "view": true,

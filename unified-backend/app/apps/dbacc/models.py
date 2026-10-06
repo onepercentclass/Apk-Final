@@ -7,7 +7,7 @@ Salinan dari DB Acounting/backend/app/models.py dengan adaptasi:
 """
 import uuid
 
-from sqlalchemy import Column, DateTime, Integer, String, func
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
 
 from app.core.database import JSONType, app_base
 Base = app_base("dbacc")
@@ -26,6 +26,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     tier = Column(Integer, nullable=False, default=0)
+    is_active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -32,3 +33,24 @@ def me(user: User = Depends(get_current_user)):
         tier_name=tier_name,
         menus=menus_for_tier(user.tier),
     )
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=256)
+    new_password: str = Field(min_length=8, max_length=256)
+
+
+@router.put("/password")
+def change_password(
+    body: PasswordChange,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Ganti password sendiri. Berlaku untuk semua tier yang sudah login."""
+    if not security.verify_password(body.current_password, user.password_hash):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Password saat ini salah")
+    if body.current_password == body.new_password:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Password baru harus berbeda")
+    user.password_hash = security.hash_password(body.new_password)
+    db.commit()
+    return {"ok": True, "detail": "Password berhasil diganti"}

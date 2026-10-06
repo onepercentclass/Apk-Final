@@ -4,7 +4,7 @@ Salinan verbatim dari DB Acounting/backend/app/schemas.py (tidak diubah).
 """
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class RegisterIn(BaseModel):
@@ -64,3 +64,8 @@ class CompanyPayload(BaseModel):
 
 class MetaSync(BaseModel):
     companies: List[CompanyMeta]
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=256)

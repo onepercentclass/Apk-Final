@@ -5,10 +5,11 @@ TANPA prefix global — mount point di main.py yang menangani namespace
 """
 from fastapi import APIRouter
 
-from .routers import auth, companies, reports, transactions
+from .routers import accounts, auth, companies, reports, transactions
 
 router = APIRouter()
 router.include_router(auth.router)
+router.include_router(accounts.router)
 router.include_router(companies.router)
 router.include_router(transactions.router)
 router.include_router(reports.router)

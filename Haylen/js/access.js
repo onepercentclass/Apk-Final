@@ -8,22 +8,22 @@
   const TIERS = {
     0: {
       tier: 0, name: "Owner",
-      menus: { dashboard: "full", member: "full", kelas_program: "full", coach: "full", jadwal: "full", transaksi: "view", laporan: "full", fasilitas: "full", pengaturan: "full" },
+      menus: { dashboard: "full", member: "full", kelas_program: "full", coach: "full", jadwal: "full", transaksi: "view", laporan: "full", fasilitas: "full", pengaturan: "full", akun: "full", sandi: "full" },
       features: { lihat_omzet_laba: "full", kelola_member: "full", kelola_program: "full", kelola_coach: "full", jadwal_kelas: "full", absensi: "view", transaksi: "view", laporan_bisnis: "full", pengaturan_sistem: "full" },
     },
     1: {
       tier: 1, name: "Admin",
-      menus: { dashboard: "limited", member: "full", kelas_program: "full", coach: "full", jadwal: "full", transaksi: "manage", laporan: "limited", fasilitas: "full", pengaturan: "limited" },
+      menus: { dashboard: "limited", member: "full", kelas_program: "full", coach: "full", jadwal: "full", transaksi: "manage", laporan: "limited", fasilitas: "full", pengaturan: "limited", sandi: "full" },
       features: { lihat_omzet_laba: "limited", kelola_member: "full", kelola_program: "full", kelola_coach: "full", jadwal_kelas: "full", absensi: "manage", transaksi: "manage", laporan_bisnis: "limited", pengaturan_sistem: "limited" },
     },
     2: {
       tier: 2, name: "Coach",
-      menus: { dashboard: "limited", member: "limited", kelas_program: "none", coach: "none", jadwal: "full", transaksi: "none", laporan: "none", fasilitas: "none", pengaturan: "none" },
+      menus: { dashboard: "limited", member: "limited", kelas_program: "none", coach: "none", jadwal: "full", transaksi: "none", laporan: "none", fasilitas: "none", pengaturan: "none", sandi: "full" },
       features: { lihat_omzet_laba: "none", kelola_member: "limited", kelola_program: "none", kelola_coach: "none", jadwal_kelas: "full", absensi: "full", transaksi: "none", laporan_bisnis: "none", pengaturan_sistem: "none" },
     },
     3: {
       tier: 3, name: "Reserved",
-      menus: { dashboard: "view", member: "none", kelas_program: "none", coach: "none", jadwal: "none", transaksi: "none", laporan: "none", fasilitas: "none", pengaturan: "none" },
+      menus: { dashboard: "view", member: "none", kelas_program: "none", coach: "none", jadwal: "none", transaksi: "none", laporan: "none", fasilitas: "none", pengaturan: "none", sandi: "full" },
       features: { lihat_omzet_laba: "none", kelola_member: "none", kelola_program: "none", kelola_coach: "none", jadwal_kelas: "none", absensi: "none", transaksi: "none", laporan_bisnis: "none", pengaturan_sistem: "none" },
     },
   };

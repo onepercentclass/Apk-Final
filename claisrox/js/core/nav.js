@@ -11,6 +11,8 @@ const NAV = [
   {id:'online', label:'Toko Online', icon:'store'},
   {id:'laporan', label:'Laporan', icon:'file'},
   {id:'keuangan', label:'Keuangan', icon:'coin'},
+  {id:'akun', label:'Kelola Anggota', icon:'users'},
+  {id:'sandi', label:'Ganti Password', icon:'lock'},
 ];
 const ICONS = {
   home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
@@ -25,6 +27,7 @@ const ICONS = {
   factory:'<path d="M3 21V11l5 3.2V11l5 3.2V11l5 3v7z"/><path d="M3 21h17"/><path d="M8 21v-4M13 21v-4"/>',
   store:'<path d="M3 9.5l1.3-5.5h15.4L21 9.5"/><path d="M4 9.5V20h16V9.5"/><path d="M9.5 20v-6h5v6"/>',
   file:'<path d="M6 2h8l5 5v15H6z"/><path d="M14 2v5h5"/><path d="M9 13h6M9 17h6"/>',
+  lock:'<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/>',
 };
 function iconSvg(name){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`; }
 

@@ -1,5 +1,11 @@
 {
   "tier": 0,
   "name": "Owner",
-  "access": ["accounts", "invest", "settings"]
+  "access": [
+    "accounts",
+    "invest",
+    "settings",
+    "akun",
+    "sandi"
+  ]
 }

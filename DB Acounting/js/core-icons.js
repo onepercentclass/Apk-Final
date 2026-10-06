@@ -33,6 +33,7 @@ const ICONS={
   sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.3M12 19.2v2.3M4.4 4.4l1.6 1.6M18 18l1.6 1.6M2.5 12h2.3M19.2 12h2.3M4.4 19.6 6 18M18 6l1.6-1.6"/>',
   moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/>',
   download:'<path d="M12 4v11M7.5 11l4.5 4.5L16.5 11"/><path d="M5 18.5h14"/>',
+  key:'<circle cx="8" cy="14" r="4"/><path d="M11 11l8-8M17 4l2 2M14 7l2 2"/>',
 };
 function ic(name,size=17){return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`;}
 

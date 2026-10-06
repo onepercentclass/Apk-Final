@@ -11,7 +11,8 @@
     "transaksi": "none",
     "laporan": "none",
     "fasilitas": "none",
-    "pengaturan": "none"
+    "pengaturan": "none",
+    "sandi": "full"
   },
   "features": {
     "lihat_omzet_laba": "none",

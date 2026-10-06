@@ -11,7 +11,9 @@
     "transaksi": "view",
     "laporan": "full",
     "fasilitas": "full",
-    "pengaturan": "full"
+    "pengaturan": "full",
+    "akun": "full",
+    "sandi": "full"
   },
   "features": {
     "lihat_omzet_laba": "full",

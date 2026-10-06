@@ -71,6 +71,8 @@ function renderAll(){
   renderProductionTable();
   renderOnlineOrdersTable();
   renderLaporan();
+  renderAkun();
+  renderSandi();
 }
 
 async function bootstrap(){

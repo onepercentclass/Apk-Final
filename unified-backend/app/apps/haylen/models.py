@@ -1,7 +1,7 @@
 """Model tabel Haylen (schema PostgreSQL: haylen)."""
 from datetime import date
 
-from sqlalchemy import BigInteger, Date, Integer, String
+from sqlalchemy import BigInteger, Boolean, Date, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import JSONType, app_base  # noqa: F401 (JSONType: konvensi porting)
@@ -19,6 +19,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(120))
     role: Mapped[str] = mapped_column(String(30), default="Owner")
     tier: Mapped[int] = mapped_column(Integer, default=0)  # 0=owner,1=admin,2=coach,3=reserved
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
 
 
 class Member(Base):

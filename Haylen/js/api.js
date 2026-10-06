@@ -29,7 +29,9 @@
       body: body ? JSON.stringify(body) : undefined,
     });
     if (!res.ok) {
-      const err = new Error("Request gagal (" + res.status + ")");
+      let detail = "Request gagal (" + res.status + ")";
+      try { const d = await res.json(); if (d && d.detail) detail = d.detail; } catch (e) {}
+      const err = new Error(detail);
       err.status = res.status;
       throw err;
     }
@@ -66,6 +68,26 @@
     // Hak akses user ini dari backend (satu-satunya sumber konfigurasi tier).
     async accessMe() {
       return cfg.USE_API ? http("GET", ENDPOINTS.accessMe) : null;
+    },
+    // Kelola akun (owner only di server).
+    async accounts() {
+      return http("GET", "/accounts");
+    },
+    async createAccount(data) {
+      return http("POST", "/accounts", data);
+    },
+    async updateAccount(id, data) {
+      return http("PATCH", "/accounts/" + id, data);
+    },
+    async setAccountTier(id, tier) {
+      return http("PUT", "/accounts/" + id + "/tier", { tier });
+    },
+    async deactivateAccount(id) {
+      return http("DELETE", "/accounts/" + id);
+    },
+    // Ganti password sendiri.
+    async changePassword(current_password, new_password) {
+      return http("PUT", "/auth/password", { current_password, new_password });
     },
   };
 })();

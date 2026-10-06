@@ -15,7 +15,8 @@
     "kontak",
     "laporan",
     "pajak",
-    "perusahaan"
+    "perusahaan",
+    "sandi"
   ],
   "permissions": {
     "view": true,

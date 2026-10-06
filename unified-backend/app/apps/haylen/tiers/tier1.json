@@ -11,7 +11,8 @@
     "transaksi": "manage",
     "laporan": "limited",
     "fasilitas": "full",
-    "pengaturan": "limited"
+    "pengaturan": "limited",
+    "sandi": "full"
   },
   "features": {
     "lihat_omzet_laba": "limited",
