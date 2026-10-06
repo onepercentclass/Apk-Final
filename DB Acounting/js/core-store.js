@@ -42,17 +42,17 @@ async function initDb() {
     } catch (e) { /* jatuh ke localStorage */ }
   }
 
-  // Mode lokal (aktif): baca dari localStorage, seed bila kosong.
+  // Mode lokal (aktif): baca dari localStorage; daftar kosong bila belum ada (tanpa data contoh).
   try {
     const meta = lsGet(LS_META);
     if (meta && meta.companies && meta.companies.length) {
       S.companies = meta.companies;
     } else {
-      S.companies = SEED_COMPANIES.map((m) => ({ id: m.id, name: m.name, industry: m.industry, color: m.color, dark: m.dark, initial: m.initial }));
+      S.companies = [];
       lsSet(LS_META, { companies: S.companies });
     }
     const savedActive = lsGet(LS_ACTIVE);
-    S.activeId = (savedActive && S.companies.some((c) => c.id === savedActive)) ? savedActive : S.companies[0].id;
+    S.activeId = (savedActive && S.companies.some((c) => c.id === savedActive)) ? savedActive : (S.companies.length ? S.companies[0].id : null);
     for (const m of S.companies) {
       const cached = lsGet(LS_CO_PREFIX + m.id);
       if (cached && cached.id) { S.data[m.id] = cached; }
@@ -62,9 +62,9 @@ async function initDb() {
 }
 
 function seedLocal() {
-  S.companies = SEED_COMPANIES.map((m) => ({ id: m.id, name: m.name, industry: m.industry, color: m.color, dark: m.dark, initial: m.initial }));
-  S.activeId = S.companies[0].id;
-  S.companies.forEach((m) => { S.data[m.id] = newCompanyData(m); });
+  // Tanpa data contoh: mulai dari daftar perusahaan kosong.
+  S.companies = [];
+  S.activeId = null;
 }
 
 async function saveCompany(id) {

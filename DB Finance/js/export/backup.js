@@ -63,7 +63,7 @@ export function initRestore() {
         S.theme = 'dark';
       }
       if (!S.name) {
-        S.name = 'Denis';
+        S.name = 'Pengguna';
       }
       applyTheme();
       U.month = TODAY_S.slice(0, 7);

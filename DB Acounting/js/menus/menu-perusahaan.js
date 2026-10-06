@@ -1,5 +1,14 @@
 /* ---- MULTI PERUSAHAAN ---- */
 PAGES.perusahaan=function(){
+  if(!S.companies.length){
+    return `
+    <div class="page-title">Multi Perusahaan</div><div class="page-sub">Kelola seluruh perusahaan dalam satu akun.</div>
+    <div class="card card-pad"><div class="empty">
+      <div class="et">Belum ada perusahaan</div>
+      <div class="es">Tambahkan perusahaan pertama Anda untuk mulai mencatat transaksi dan laporan keuangan.</div>
+      <div style="margin-top:14px;"><button class="btn btn-primary" onclick="openCompanyModal()">${ic('plus',14)}Buat Perusahaan Baru</button></div>
+    </div></div>`;
+  }
   return `
   <div class="row" style="margin-bottom:4px;"><div><div class="page-title">Multi Perusahaan</div><div class="page-sub">Kelola seluruh perusahaan dalam satu akun.</div></div>
     <button class="btn btn-primary" style="margin-left:auto;" onclick="openCompanyModal()">${ic('plus',14)}Tambah Perusahaan</button></div>

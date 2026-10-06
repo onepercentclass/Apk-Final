@@ -30,6 +30,7 @@ function navItemHtml(n){
 }
 function renderSidebar(){
   const c=co();
+  const hasCo=!!(c&&c.id);
   const vis=visibleNav();
   const mainNav=vis.filter(n=>ACCOUNT_ROUTES.indexOf(n.r)===-1);
   const acctNav=vis.filter(n=>ACCOUNT_ROUTES.indexOf(n.r)!==-1);
@@ -39,8 +40,10 @@ function renderSidebar(){
       <div><div class="brand-text">DB Accounting</div><div class="brand-sub">Accounting Suite</div></div>
     </div>
     <div class="company-picker" onclick="navigate('perusahaan')">
-      <div class="co-badge" style="background:${c.color};color:${c.dark?'#111':'#fff'}">${esc(c.initial)}</div>
-      <div><div class="cp-name">${esc(c.name)}</div><div class="cp-sub">${S.companies.length} perusahaan aktif</div></div>
+      ${hasCo?`<div class="co-badge" style="background:${c.color};color:${c.dark?'#111':'#fff'}">${esc(c.initial)}</div>
+      <div><div class="cp-name">${esc(c.name)}</div><div class="cp-sub">${S.companies.length} perusahaan aktif</div></div>`
+      :`<div class="co-badge" style="background:var(--border);color:var(--text-2)">&ndash;</div>
+      <div><div class="cp-name">Belum ada perusahaan</div><div class="cp-sub">Klik untuk menambah</div></div>`}
       <div class="cp-arrow">${ic('chevdown',14)}</div>
     </div>
     <nav class="navlist">
@@ -49,7 +52,7 @@ function renderSidebar(){
     ${acctNav.length?`<nav class="navlist" style="flex:none;border-top:1px solid var(--border);padding-top:10px;margin-top:4px;">
       ${acctNav.map(navItemHtml).join('')}
     </nav>`:''}
-    <div class="sidebar-foot">DB Accounting v1.0 · ${esc(c.name)}</div>
+    <div class="sidebar-foot">DB Accounting v1.0${hasCo?` &middot; ${esc(c.name)}`:''}</div>
   `;
 }
 function closeSidebarMobile(){document.getElementById('sidebar').classList.remove('open');}
@@ -109,6 +112,11 @@ async function submitEditAccount(){
 }
 
 function renderAll(){
+  // Tanpa perusahaan: arahkan ke halaman perusahaan (empty state + tombol buat baru).
+  if(!S.companies.length && S.route!=='perusahaan' &&
+     (typeof TierAccess==='undefined' || TierAccess.canAccess('perusahaan'))){
+    S.route='perusahaan';
+  }
   renderSidebar();renderTopbar();
   const view=document.getElementById('view');
   try{

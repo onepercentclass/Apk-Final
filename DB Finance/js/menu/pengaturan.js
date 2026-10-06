@@ -26,7 +26,7 @@ export function renderPengaturan() {
   <button class="set" data-act="nav" data-v="invest" style="border-top:1px solid var(--bd)"><span class="ci g">${ic('trend')}</span><span class="m"><b>Investasi</b><small>Portofolio dan imbal hasil</small></span>${ic('chr', 18)}</button>
   <button class="set" data-act="nav" data-v="bills" style="border-top:1px solid var(--bd)"><span class="ci r">${ic('bell')}</span><span class="m"><b>Tagihan & Pengingat</b><small>${urgent()} tagihan dalam 7 hari</small></span>${ic('chr', 18)}</button>
   <button class="set" data-act="nav" data-v="goals" style="border-top:1px solid var(--bd)"><span class="ci b">${ic('target')}</span><span class="m"><b>Tujuan Keuangan</b><small>${S.goals.length} tujuan aktif</small></span>${ic('chr', 18)}</button></div>
- <div class="card" style="margin-top:14px"><div class="card-h"><h3>Data</h3></div><p class="mu" style="font-size:13px;margin-bottom:12px">Data tersimpan di peramban perangkat ini saja. Unduh backup secara berkala.</p><button class="btn pri full" data-act="export" style="margin-bottom:10px">Unduh Laporan & Backup</button><button class="btn danger" data-act="reset">Atur ulang ke data contoh</button></div></div></div>`;
+ <div class="card" style="margin-top:14px"><div class="card-h"><h3>Data</h3></div><p class="mu" style="font-size:13px;margin-bottom:12px">Data tersimpan di server. Unduh backup secara berkala.</p><button class="btn pri full" data-act="export" style="margin-bottom:10px">Unduh Laporan & Backup</button><button class="btn danger" data-act="reset">Hapus semua data</button></div></div></div>`;
 }
 
 registerActions({
@@ -51,11 +51,11 @@ registerActions({
     }
     S.name = v.n;
   }),
-  reset: () => confirmBox('Semua data akan diganti dengan data contoh. Lanjutkan?', () => {
-    const th = S.theme;
-    replaceState({ ...defaults(), theme: th });
+  reset: () => confirmBox('Semua data akan dihapus permanen. Lanjutkan?', () => {
+    const th = S.theme, nm = S.name;
+    replaceState({ ...defaults(), theme: th, name: nm });
     U.month = TODAY_S.slice(0, 7);
     commit();
-    toast('Data diatur ulang');
-  }, 'Atur ulang'),
+    toast('Semua data dihapus');
+  }, 'Hapus'),
 });

@@ -8,7 +8,6 @@ import { TODAY_S } from './utils.js';
 function load() {
   const o = readLocal();
   if (o && Array.isArray(o.txs)) {
-    if (o.name === 'Andi Pratama') o.name = 'Denis';
     if (!Array.isArray(o.accounts)) o.accounts = DEFAULT_ACCTS.map(a => ({ id: a.id, n: a.n, type: a.type, no: a.no, c: a.c }));
     o.opening = o.opening || {};
     return o;

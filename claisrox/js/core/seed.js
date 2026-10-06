@@ -1,4 +1,14 @@
 function seedData(){
+  // Mode API: server adalah sumber kebenaran — jangan isi data contoh.
+  // Kembalikan struktur kosong agar dummy tidak bocor ke localStorage/server.
+  // Mode non-API (offline/demo lokal): seed contoh tetap dipakai seperti semula.
+  if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.api && APP_CONFIG.api.enabled) {
+    return {
+      products: [], materials: [], suppliers: [], customers: [],
+      sales: [], purchases: [], recipes: [], productions: [], onlineOrders: [],
+      finance: { modal: 0, piutang: 0, hutang: 0 }
+    };
+  }
   const products = [
     {id:uid('P'), name:'Semir Ban Gloss 500ml', category:'Perawatan Body & Cat', buyPrice:9000, sellPrice:18000, stock:120, minStock:20, unit:'botol'},
     {id:uid('P'), name:'Poles Body Motor Wax', category:'Perawatan Body & Cat', buyPrice:14000, sellPrice:27000, stock:64, minStock:15, unit:'botol'},

@@ -28,13 +28,6 @@ const DEFAULT_COA=()=>[
   {code:'5-9000',name:'Beban Lain-lain',type:'Beban',cat:'Lain-lain',locked:true},
 ];
 
-const SEED_COMPANIES=[
-  {id:'claisrox',name:'Claisrox',industry:'Chemical Perawatan Kendaraan Motor',color:'#E8383A',initial:'C',npwp:'',fiscalStart:1},
-  {id:'satu-persen',name:'1%',industry:'Edukasi & Pengembangan Diri',color:'#EDEFF3',dark:true,initial:'1%',npwp:'',fiscalStart:1},
-  {id:'number-six',name:'Number Six',industry:'Running Training (N6)',color:'#3B82F6',initial:'N6',npwp:'',fiscalStart:1},
-  {id:'haylen',name:'Haylen Swimming Club',industry:'Kepelatihan Renang',color:'#08A2FA',initial:'H',npwp:'',fiscalStart:1},
-];
-
 function newCompanyData(meta){
   return {
     id:meta.id,name:meta.name,industry:meta.industry||'',color:meta.color||'#1EB682',initial:meta.initial||meta.name.slice(0,2).toUpperCase(),

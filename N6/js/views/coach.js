@@ -77,7 +77,6 @@ export const VIEW_COACH = `
 <div class="content-inner">
 <!-- ===================== PANEL: HOME ===================== -->
 <section class="panel active" id="panel-home">
-<div class="demo-disclaimer">Pratinjau dashboard: statistik, jadwal, gaji, dan grafik bawaan masih berupa data contoh. Hubungkan akun Coach ke data Admin/Owner untuk penggunaan operasional lintas perangkat.</div>
 <div class="stat-grid">
 <div class="stat-card">
 <div class="label">Klien Aktif</div>
