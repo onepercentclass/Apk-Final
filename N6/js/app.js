@@ -82,6 +82,21 @@ async function boot() {
   // valid token exists (shows the login form when needed). Resolves
   // immediately in localStorage-only mode.
   await ensureApiLogin(role);
+
+  // Redirect ke view sesuai tier user (hindari coach buka view owner dll).
+  // Hanya bila API aktif dan tier diketahui.
+  try {
+    const ub = (getSession().backend) || {};
+    const tierRole = { 0: 'owner', 1: 'admin', 2: 'headcoach', 3: 'coach', 4: 'client' }[ub.tier];
+    if (tierRole && tierRole !== role.key) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('role', tierRole);
+      url.searchParams.delete('menu');
+      window.location.replace(url.toString());
+      return;
+    }
+  } catch (e) { /* abaikan, lanjut boot normal */ }
+
   document.title = `${role.title} — ${APP_NAME} ${APP_SUBTITLE}`;
 
   showBootScreen(role);
