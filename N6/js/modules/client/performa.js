@@ -147,10 +147,31 @@
   (async function init(){
     try{
       if (clientId){
-        const clientsRaw = await storeGet('clients');
-        let clients = [];
-        try{ clients = clientsRaw ? JSON.parse(clientsRaw) : []; }catch(e){ clients = []; }
-        const found = clients.find(c => c.id === clientId);
+        let found = null;
+        // Tier 4 (client) tidak bisa list semua clients — resolve via portal/me
+        // atau cocokkan dengan client_id dari session login.
+        try {
+          const cfg = window.N6_API || {};
+          const userKey = cfg.userKey || 'n6:api:user';
+          const meRaw = localStorage.getItem(userKey);
+          if (meRaw) {
+            const me = JSON.parse(meRaw);
+            if (me && me.client_id != null && String(me.client_id) === String(clientId)) {
+              found = { id: me.client_id, name: me.full_name || me.username || 'Client' };
+            }
+          }
+        } catch (e) { /* abaikan, lanjut ke fallback */ }
+        // Fallback: cari di daftar clients (untuk staff mode / API nonaktif).
+        if (!found) {
+          const clientsRaw = await storeGet('clients');
+          let clients = [];
+          try{ clients = clientsRaw ? JSON.parse(clientsRaw) : []; }catch(e){ clients = []; }
+          // API bisa mengembalikan {items:[...]} — normalisasi ke array.
+          if (clients && !Array.isArray(clients) && Array.isArray(clients.items)) {
+            clients = clients.items;
+          }
+          found = clients.find(c => String(c.id) === String(clientId));
+        }
         if (found){
           clientName = found.name;
           const rRaw = await storeGet('reports:' + clientId);
