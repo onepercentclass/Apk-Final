@@ -548,7 +548,7 @@
     document.getElementById('clientFormModal').classList.add('show');
   };
   window.editClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const meta = c.packageMeta || {};
@@ -620,14 +620,14 @@
       coach: document.getElementById('fCoach').value,
       programId: progId, programLabel, packageMeta, price, priceLabel,
       status: 'Aktif',
-      joinDate: isNew ? todayISO() : (clients.find(c=>c.id===id)||{}).joinDate || todayISO(),
+      joinDate: isNew ? todayISO() : (clients.find(c=>String(c.id)===String(id))||{}).joinDate || todayISO(),
       paymentStatus: document.getElementById('fPaymentStatus').value,
       amountPaid: parseInt(document.getElementById('fAmountPaid').value, 10) || 0,
-      invoiceNumber: (clients.find(c=>c.id===id)||{}).invoiceNumber || '',
+      invoiceNumber: (clients.find(c=>String(c.id)===String(id))||{}).invoiceNumber || '',
       notes: document.getElementById('fNotes').value.trim()
     };
     if (isNew){ clients.push(data); }
-    else { const idx = clients.findIndex(c => c.id === id); clients[idx] = { ...clients[idx], ...data }; }
+    else { const idx = clients.findIndex(c => String(c.id) === String(id)); if (idx >= 0) clients[idx] = { ...clients[idx], ...data }; }
 
     programCache[id] = {
       pbStart: document.getElementById('fPbStart').value.trim(),

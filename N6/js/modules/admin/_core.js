@@ -106,7 +106,7 @@
 /*__N6_UNIT__*/  let pendingArchiveNotice = 0;
 
 /*__N6_UNIT__*/  function catalogById(id){ return programCatalog.find(p => p.id === id); }
-/*__N6_UNIT__*/  function coachById(id){ return coachRoster.find(c => c.id === id); }
+/*__N6_UNIT__*/  function coachById(id){ return coachRoster.find(c => String(c.id) === String(id)); }
 
 /*__N6_UNIT__*/  async function persistClients(){ await storeSet('clients', JSON.stringify(clients)); }
 /*__N6_UNIT__*/  async function persistTickets(){ await storeSet('tickets', JSON.stringify(tickets)); }

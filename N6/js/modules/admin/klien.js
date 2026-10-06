@@ -99,7 +99,7 @@
     }).join('') : '<div class="list-empty">Belum ada klien yang diarsipkan otomatis.</div>';
   }
   window.restoreArchivedClient = function(id){
-    const idx = archivedClients.findIndex(c => c.id === id);
+    const idx = archivedClients.findIndex(c => String(c.id) === String(id));
     if (idx < 0) return;
     const restored = { ...archivedClients[idx] };
     delete restored.archivedAt;
@@ -113,7 +113,7 @@
     });
   };
   window.deleteArchivedClient = function(id){
-    const c = archivedClients.find(x => x.id === id);
+    const c = archivedClients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus permanen data "' + c.name + '"? Laporan latihan, riwayat chat, dan data program klien ini akan hilang selamanya dan tidak bisa dikembalikan.')) return;
     archivedClients = archivedClients.filter(x => x.id !== id);
@@ -178,7 +178,7 @@
     document.getElementById('clientFormModal').classList.add('show');
   };
   window.editClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const meta = c.packageMeta || {};
@@ -230,7 +230,7 @@
     if (isNew){
       let base = slugify(name) || 'klien';
       id = base; let n = 2;
-      while (clients.some(c => c.id === id)){ id = base + '-' + n; n++; }
+      while (clients.some(c => String(c.id) === String(id))){ id = base + '-' + n; n++; }
     }
 
     const program = catalogById(progId);
@@ -294,7 +294,7 @@
     if (isSemi && isNew && name2){
       let base2 = slugify(name2) || 'klien';
       let id2 = base2; let n2 = 2;
-      while (clients.some(c => c.id === id2) || id2 === id){ id2 = base2 + '-' + n2; n2++; }
+      while (clients.some(c => String(c.id) === String(id)2) || id2 === id){ id2 = base2 + '-' + n2; n2++; }
 
       const data1 = buildClientData(id, name, { ...packageMeta, pairWith: id2, pairLabel: name2 });
       const data2 = buildClientData(id2, name2, { ...packageMeta, pairWith: id, pairLabel: name });
@@ -313,7 +313,7 @@
 
     // ===== Edit klien Semi Private yang sudah ada — sinkronkan nama pasangan bila diubah =====
     if (isSemi && !isNew){
-      const existing = clients.find(c => c.id === id);
+      const existing = clients.find(c => String(c.id) === String(id));
       const prevMeta = (existing && existing.packageMeta) || {};
       packageMeta = { ...packageMeta, pairWith: prevMeta.pairWith || null, pairLabel: name2 || prevMeta.pairLabel || '' };
       if (prevMeta.pairWith){
@@ -330,7 +330,7 @@
 
     const data = buildClientData(id, name, packageMeta);
     if (isNew){ clients.push(data); }
-    else { const idx = clients.findIndex(c => c.id === id); clients[idx] = { ...clients[idx], ...data }; }
+    else { const idx = clients.findIndex(c => String(c.id) === String(id)); clients[idx] = { ...clients[idx], ...data }; }
 
     await persistClients();
     await finalizeClient(id);
@@ -341,7 +341,7 @@
   }
 
   window.deleteClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus klien "' + c.name + '"? Data laporan dan chat klien ini tidak akan tampil lagi di dashboard.')) return;
     clients = clients.filter(x => x.id !== id);

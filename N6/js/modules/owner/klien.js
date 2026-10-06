@@ -148,7 +148,7 @@
     }).join('') : '<div class="list-empty">Belum ada klien yang diarsipkan otomatis.</div>';
   }
   window.restoreArchivedClient = function(id){
-    const idx = archivedClients.findIndex(c => c.id === id);
+    const idx = archivedClients.findIndex(c => String(c.id) === String(id));
     if (idx < 0) return;
     const restored = { ...archivedClients[idx] };
     delete restored.archivedAt;
@@ -162,10 +162,10 @@
     });
   };
   window.deleteArchivedClient = function(id){
-    const c = archivedClients.find(x => x.id === id);
+    const c = archivedClients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus permanen data "' + c.name + '"? Laporan latihan, riwayat chat, dan data program klien ini akan hilang selamanya dan tidak bisa dikembalikan.')) return;
-    archivedClients = archivedClients.filter(x => x.id !== id);
+    archivedClients = archivedClients.filter(x => String(x.id) !== String(id));
     Promise.all([
       storeSet('archivedClients', JSON.stringify(archivedClients)),
       storeSet('chat:' + id, JSON.stringify([])),
@@ -226,7 +226,7 @@
     document.getElementById('clientFormModal').classList.add('show');
   };
   window.editClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const meta = c.packageMeta || {};
@@ -264,7 +264,7 @@
     if (isNew){
       let base = slugify(name) || 'klien';
       id = base; let n = 2;
-      while (clients.some(c => c.id === id)){ id = base + '-' + n; n++; }
+      while (clients.some(c => String(c.id) === String(id))){ id = base + '-' + n; n++; }
     }
 
     const progId = document.getElementById('fProgram').value;
@@ -298,14 +298,14 @@
       coach: document.getElementById('fCoach').value,
       programId: progId, programLabel, packageMeta, price, priceLabel,
       status: 'Aktif',
-      joinDate: isNew ? todayISO() : (clients.find(c=>c.id===id)||{}).joinDate || todayISO(),
+      joinDate: isNew ? todayISO() : (clients.find(c=>String(c.id)===String(id))||{}).joinDate || todayISO(),
       paymentStatus: document.getElementById('fPaymentStatus').value,
       amountPaid: parseInt(document.getElementById('fAmountPaid').value, 10) || 0,
-      invoiceNumber: (clients.find(c=>c.id===id)||{}).invoiceNumber || '',
+      invoiceNumber: (clients.find(c=>String(c.id)===String(id))||{}).invoiceNumber || '',
       notes: document.getElementById('fNotes').value.trim()
     };
     if (isNew){ clients.push(data); }
-    else { const idx = clients.findIndex(c => c.id === id); clients[idx] = { ...clients[idx], ...data }; }
+    else { const idx = clients.findIndex(c => String(c.id) === String(id)); clients[idx] = { ...clients[idx], ...data }; }
 
     programCache[id] = {
       pbStart: document.getElementById('fPbStart').value.trim(),
@@ -326,10 +326,10 @@
   }
 
   window.deleteClient = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     if (!confirm('Hapus klien "' + c.name + '"? Data laporan dan chat klien ini tidak akan tampil lagi di dashboard.')) return;
-    clients = clients.filter(x => x.id !== id);
+    clients = clients.filter(x => String(x.id) !== String(id));
     persistClients().then(() => { showToast('Klien dihapus'); renderAll(); });
   };
 
@@ -343,7 +343,7 @@
   }
 
   window.downloadInvoice = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c){ showToast('Klien tidak ditemukan'); return; }
     const p = programCache[c.id] || {};
     const invoiceNo = ensureInvoiceNumber(c);
@@ -476,7 +476,7 @@
 
   /* ================= DETAIL KLIEN ================= */
   window.openClientDetail = function(id){
-    const c = clients.find(x => x.id === id);
+    const c = clients.find(x => String(x.id) === String(id));
     if (!c) return;
     const p = programCache[id] || {};
     const reports = reportsCache[id] || {};
