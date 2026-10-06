@@ -2,8 +2,9 @@
  * N6 dist bundle - owner
  *
  * GENERATED FILE - do not edit. Source of truth is js/modules/owner/*.js
- * Rebuilt by tools/build.ps1; concatenation is byte-identical to the
+ * Rebuilt by tools/build.sh; concatenation is byte-identical to the
  * original <script> block in owner.html.
+ * Build: git:0b9dbe1
  */
 
 

@@ -28,6 +28,15 @@ import { whenStylesLoaded, loadScript, $, el } from './core/dom.js';
 import { APP_NAME, APP_SUBTITLE, ROLE_PARAM } from './core/config.js';
 import { EVENTS, bus } from './core/events.js';
 import { logger } from './core/logger.js';
+import { installGlobalHandlers } from './core/error-handler.js';
+import { N6_VERSION } from './core/version.js';
+
+// Pasang global error handler sedini mungkin (Fase G)
+installGlobalHandlers();
+
+// Versi aplikasi (Fase G3)
+window.N6_VERSION = N6_VERSION;
+logger.info('app', `N6 ${N6_VERSION} starting`);
 
 const MOUNT_ID = 'n6-app';
 

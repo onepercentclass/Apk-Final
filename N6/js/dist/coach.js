@@ -2,8 +2,9 @@
  * N6 dist bundle - coach
  *
  * GENERATED FILE - do not edit. Source of truth is js/modules/coach/*.js
- * Rebuilt by tools/build.ps1; concatenation is byte-identical to the
+ * Rebuilt by tools/build.sh; concatenation is byte-identical to the
  * original <script> block in coach.html.
+ * Build: git:0b9dbe1
  */
 
 
