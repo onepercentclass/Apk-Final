@@ -359,3 +359,110 @@ Fase A (Build Linux)
 - File ini adalah ACUAN. Jangan eksekusi tanpa konfirmasi user per fase.
 - Setiap fase selesai → commit + push + lapor ke user.
 - Jika ada temuan baru saat eksekusi, update file ini.
+
+---
+
+## 8. Tambahan: Maintainability & Debugging (Fase F, G, H)
+
+> Ditambahkan 2026-10-06 atas permintaan user: "agar struktur aplikasinya lebih
+> mudah di maintenance dan pelacakan debugging lebih robus"
+
+**Temuan awal:** `js/dist/owner.js` (~100KB) hanya punya **1** `console.log`
+dan **21** `try/catch` — praktis tidak ada infrastruktur debugging.
+Error di production tidak terlacak.
+
+---
+
+### Fase F: Sistem Logging Terpusat
+
+**Tujuan:** Satu pintu untuk semua log, bisa dinyalakan/dimatikan, dengan level.
+
+| Aksi | Detail |
+|------|--------|
+| F1 | Buat `js/core/logger.js` — wrapper dengan level: `debug`, `info`, `warn`, `error` |
+| F2 | Logger baca flag dari `localStorage['n6:debug']` atau `?debug=1` di URL |
+| F3 | Mode production: hanya `warn` + `error` yang tampil; `debug`/`info` silent |
+| F4 | Setiap `catch(e)` kosong (`catch(e){}`) diganti dengan `logger.warn('konteks', e)` |
+| F5 | Tambahkan konteks otomatis: nama modul + nama fungsi di setiap log |
+
+**Contoh API:**
+```js
+// js/core/logger.js
+logger.debug('coachRoster', 'fetch selesai', { count: 5 });
+logger.error('saveClientForm', 'gagal simpan', err);
+```
+
+**File yang disentuh:**
+- BARU: `js/core/logger.js`
+- EDIT: `js/core/bundles.js` (tambahkan logger ke load order paling awal)
+- EDIT: semua `catch(e){}` kosong di `js/modules/*/` (~50+ lokasi)
+
+---
+
+### Fase G: Error Tracking & Build Metadata
+
+**Tujuan:** Error di production bisa dilacak sampai ke versi code tertentu.
+
+| Aksi | Detail |
+|------|--------|
+| G1 | Tambahkan **global error handler** di `js/app.js`: `window.onerror` + `unhandledrejection` → kirim ke logger + tampilkan toast user-friendly |
+| G2 | **Build metadata di `dist/`**: setiap hasil build sisipkan header comment berisi git hash + timestamp + role, contoh: `/* N6 owner.js — build 2026-10-06T18:00Z — git:a1b2c3d */` |
+| G3 | **Versi aplikasi di UI**: tampilkan versi singkat di footer/settings (misal: `v2026.10.06-a1b2c3d`), agar user bisa lapor "error di versi X" |
+| G4 | **API error mapping**: setiap `fetch` gagal log URL + status + response body (di mode debug) |
+| G5 | Buat `js/core/error-handler.js` — format error konsisten: `{ modul, fungsi, pesan, stack, timestamp, userAgent }` |
+
+**File yang disentuh:**
+- BARU: `js/core/logger.js` (dari Fase F), `js/core/error-handler.js`
+- EDIT: `js/app.js` (pasang global handler)
+- EDIT: `tools/build.sh` (sisipkan metadata)
+
+---
+
+### Fase H: Developer Experience
+
+**Tujuan:** Memudahkan developer baru dan mencegah regresi.
+
+| Aksi | Detail | Prioritas |
+|------|--------|-----------|
+| H1 | **Konvensi `catch`**: tidak boleh ada `catch(e){}` kosong — wajib log atau beri komentar alasan | Tinggi |
+| H2 | **Magic string terpusat**: pindahkan string berulang (`'n6:api:token'`, URL API, nama localStorage key) ke `js/core/constants.js` | Tinggi |
+| H3 | **`?debug=1` mode**: tampilkan panel debug kecil (versi, role, API status, jumlah data di memory) | Sedang |
+| H4 | **Dokumentasi fungsi**: setiap fungsi public di `modules/` diberi komentar JSDoc singkat (1-2 baris: apa input/outputnya) | Sedang |
+| H5 | **Smoke test**: buat `tools/smoke-test.sh` — cek setiap `dist/*.js` lolos `node --check`, setiap `manifest.js` valid, tidak ada `TODO`/`FIXME` yang menggantung | Sedang |
+| H6 | **ESLint basic**: tambah `.eslintrc` minimal (no-undef, no-unused-vars) untuk tangkap typo variabel | Rendah |
+
+**File yang disentuh:**
+- BARU: `js/core/constants.js`, `js/core/error-handler.js`, `tools/smoke-test.sh`, `.eslintrc.json`
+- EDIT: `js/core/env.js` (tambah flag `DEBUG`)
+- EDIT: berbagai file (ganti magic string dengan konstanta)
+
+---
+
+### Urutan Eksekusi Tambahan
+
+```
+Fase F (Logger) → Fase G (Error Tracking) → Fase H (DevEx)
+```
+
+Bisa dikerjakan setelah Fase A+B selesai (butuh build yang stabil dulu).
+Fase F+G+H independen terhadap Fase C/D/E — bisa paralel.
+
+### Checklist Tambahan
+
+**Fase F:**
+- [ ] Buat `js/core/logger.js`
+- [ ] Tambahkan ke `bundles.js` load order
+- [ ] Ganti semua `catch(e){}` kosong dengan `logger.warn/error`
+- [ ] Test: `?debug=1` menampilkan log, tanpa param tidak tampil
+
+**Fase G:**
+- [ ] Buat `js/core/error-handler.js`
+- [ ] Pasang `window.onerror` di `app.js`
+- [ ] Update `build.sh` sisipkan metadata
+- [ ] Tampilkan versi di UI
+
+**Fase H:**
+- [ ] Buat `js/core/constants.js`, migrasi magic strings
+- [ ] Buat `tools/smoke-test.sh`
+- [ ] Tambah `.eslintrc.json`
+- [ ] Dokumentasi JSDoc fungsi public
