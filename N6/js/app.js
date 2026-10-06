@@ -174,13 +174,15 @@ async function boot() {
         dbg(`app child[${i}]`, c.tagName + '.' + c.className + '#' + c.id + ' h=' + c.offsetHeight);
       });
     }
-    const allMains = document.querySelectorAll('.main');
-    dbg('total .main in doc', allMains.length);
-    allMains.forEach((m, i) => {
-      const p = m.parentElement;
-      dbg(`.main[${i}] parent`, p ? p.tagName + '.' + p.className + '#' + p.id : 'none');
-      dbg(`.main[${i}] height`, m.offsetHeight);
-    });
+    const sidebar = appEl ? appEl.querySelector(':scope > .sidebar') : null;
+    dbg('sidebar children count', sidebar?.children.length);
+    if (sidebar) {
+      [...sidebar.children].forEach((c, i) => {
+        dbg(`sidebar child[${i}]`, c.tagName + '.' + c.className + '#' + c.id + ' h=' + c.offsetHeight);
+      });
+      const panelsInSidebar = sidebar.querySelectorAll('.panel').length;
+      dbg('panels inside sidebar', panelsInSidebar);
+    }
     const topbar = document.querySelector('.main .topbar');
     dbg('topbar exists', !!topbar);
     dbg('topbar display', topbar ? getComputedStyle(topbar).display : 'n/a');
