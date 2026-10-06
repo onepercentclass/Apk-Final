@@ -43,16 +43,7 @@ export const VIEW_HEADCOACH = `
 <button data-panel="sandi" type="button">
 <svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
 <span>Ganti Password</span>
-</button></nav></div>
-</div>
-</div>
-<div class="modal-overlay" id="coachDetailModal" onclick="if(event.target===this) closeCoachDetail()">
-<div class="modal-box">
-<div class="modal-head">
-<h3 id="coachDetailTitle">Detail Coach</h3>
-<button class="modal-close" onclick="closeCoachDetail()">
-<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M18 6L6 18M6 6l12 12"></path></svg>
-</button>
+</button></nav>
 <div class="side-foot">
 <b id="hcSideFootName">Head Coach</b>
       Head Coach — N6 Running Training
@@ -530,6 +521,18 @@ Rabu: Recovery / istirahat
 </div>
 </div>
 <div class="toast" id="toast">Tersimpan</div>
+
+<div class="modal-overlay" id="coachDetailModal" onclick="if(event.target===this) closeCoachDetail()">
+<div class="modal-box">
+<div class="modal-head">
+<h3 id="coachDetailTitle">Detail Coach</h3>
+<button class="modal-close" onclick="closeCoachDetail()">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+</button>
+</div>
+<div class="modal-body" id="coachDetailBody"></div>
+</div>
+</div>
 
 <!-- N6: script block moved to js/modules/headcoach + js/dist/headcoach.js -->
 

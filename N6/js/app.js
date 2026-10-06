@@ -148,47 +148,6 @@ async function boot() {
     }
   } catch (e) { /* abaikan */ }
 
-  // DEBUG: lacak kenapa konten tidak tampil (hapus setelah masalah ketemu)
-  try {
-    const dbg = (msg, val) => console.info('[n6-debug]', msg, val);
-    const mountEl = document.getElementById(MOUNT_ID);
-    dbg('mount children', mountEl?.children.length);
-    if (mountEl) {
-      [...mountEl.children].forEach((c, i) => {
-        dbg(`child[${i}]`, c.tagName + '.' + c.className + '#' + c.id);
-        dbg(`child[${i}] display`, getComputedStyle(c).display);
-        dbg(`child[${i}] offsetHeight`, c.offsetHeight);
-      });
-    }
-    dbg('panels total', document.querySelectorAll('.panel').length);
-    dbg('panels active', document.querySelectorAll('.panel.active').length);
-    const active = document.querySelector('.panel.active');
-    dbg('active panel id', active?.id);
-    dbg('active panel display', active ? getComputedStyle(active).display : 'n/a');
-    dbg('active panel offsetHeight', active?.offsetHeight);
-    dbg('active panel innerHTML length', active?.innerHTML.length);
-    const appEl = document.querySelector('#n6-app > .app');
-    dbg('appEl children count', appEl?.children.length);
-    if (appEl) {
-      [...appEl.children].forEach((c, i) => {
-        dbg(`app child[${i}]`, c.tagName + '.' + c.className + '#' + c.id + ' h=' + c.offsetHeight);
-      });
-    }
-    const sidebar = appEl ? appEl.querySelector(':scope > .sidebar') : null;
-    dbg('sidebar children count', sidebar?.children.length);
-    if (sidebar) {
-      [...sidebar.children].forEach((c, i) => {
-        dbg(`sidebar child[${i}]`, c.tagName + '.' + c.className + '#' + c.id + ' h=' + c.offsetHeight);
-      });
-      const panelsInSidebar = sidebar.querySelectorAll('.panel').length;
-      dbg('panels inside sidebar', panelsInSidebar);
-    }
-    const topbar = document.querySelector('.main .topbar');
-    dbg('topbar exists', !!topbar);
-    dbg('topbar display', topbar ? getComputedStyle(topbar).display : 'n/a');
-    dbg('body data-role', document.body.getAttribute('data-role'));
-  } catch (e) { console.warn('[n6-debug] gagal', e); }
-
   bus.emit(EVENTS.READY, {
     role: role.key,
     tier: role.tier,
