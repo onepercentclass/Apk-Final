@@ -168,19 +168,19 @@ async function boot() {
     dbg('active panel offsetHeight', active?.offsetHeight);
     dbg('active panel innerHTML length', active?.innerHTML.length);
     const appEl = document.querySelector('#n6-app > .app');
-    const main = appEl ? appEl.querySelector(':scope > .main') : null;
-    dbg('.main exists', !!main);
-    dbg('.main display', main ? getComputedStyle(main).display : 'n/a');
-    dbg('.main offsetHeight', main?.offsetHeight);
-    dbg('.main children count', main?.children.length);
-    const content = main ? main.querySelector(':scope > .content') : null;
-    dbg('.content exists', !!content);
-    dbg('.content offsetHeight', content?.offsetHeight);
-    dbg('.content display', content ? getComputedStyle(content).display : 'n/a');
-    const realPanel = content ? content.querySelector('.panel.active') : null;
-    dbg('real active panel id', realPanel?.id);
-    dbg('real active panel height', realPanel?.offsetHeight);
-    dbg('real active panel children', realPanel?.children.length);
+    dbg('appEl children count', appEl?.children.length);
+    if (appEl) {
+      [...appEl.children].forEach((c, i) => {
+        dbg(`app child[${i}]`, c.tagName + '.' + c.className + '#' + c.id + ' h=' + c.offsetHeight);
+      });
+    }
+    const allMains = document.querySelectorAll('.main');
+    dbg('total .main in doc', allMains.length);
+    allMains.forEach((m, i) => {
+      const p = m.parentElement;
+      dbg(`.main[${i}] parent`, p ? p.tagName + '.' + p.className + '#' + p.id : 'none');
+      dbg(`.main[${i}] height`, m.offsetHeight);
+    });
     const topbar = document.querySelector('.main .topbar');
     dbg('topbar exists', !!topbar);
     dbg('topbar display', topbar ? getComputedStyle(topbar).display : 'n/a');
