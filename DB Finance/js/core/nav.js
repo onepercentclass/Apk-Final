@@ -26,6 +26,12 @@ export const menuOrder = () => MENUS.map(m => m.id);
 const navItems = () => MENUS.filter(m => can(m.id)).map(m => [m.id, m.label, m.icon]);
 const mobileNavItems = () => MOBILE.filter(m => can(m[0]));
 
+/** Menu akun (Kelola Anggota & Ganti Password) di-render terpisah di bawah sidebar. */
+const ACCOUNT_IDS = ['akun', 'sandi'];
+const mainNavItems = () => navItems().filter(n => !ACCOUNT_IDS.includes(n[0]));
+const accountNavItems = () => navItems().filter(n => ACCOUNT_IDS.includes(n[0]));
+const navBtn = n => `<button class="nv ${U.page === n[0] ? 'on' : ''}" data-act="nav" data-v="${n[0]}">${ic(n[2], 20)}${n[1]}</button>`;
+
 /** Isi halaman aktif. */
 export function renderPage() {
   resetCharts();
@@ -39,9 +45,11 @@ export function renderPage() {
 export function render() {
   document.body.dataset.page = U.page;
   const mOn = id => U.page === id || (id === 'settings' && ['invest', 'bills', 'goals', 'accounts'].includes(U.page));
+  const accNav = accountNavItems();
   $('#app').innerHTML = `
  <aside class="sidebar"><div class="brand"><div class="logo">${logoImg()}</div><div><b>DB Track</b></div></div>
-  <nav class="sb-nav" aria-label="Navigasi utama">${navItems().map(n => `<button class="nv ${U.page === n[0] ? 'on' : ''}" data-act="nav" data-v="${n[0]}">${ic(n[2], 20)}${n[1]}</button>`).join('')}</nav>
+  <nav class="sb-nav" aria-label="Navigasi utama">${mainNavItems().map(navBtn).join('')}</nav>
+  ${accNav.length ? `<div class="sb-account"><div class="sb-sep" role="separator"></div><nav aria-label="Akun">${accNav.map(navBtn).join('')}</nav></div>` : ''}
   <div class="sb-card"><span class="g-t">${ic('target', 26)}</span><b>Disiplin hari ini, kebebasan finansial nanti.</b><button class="btn pri full" data-act="nav" data-v="goals">Atur Tujuan Keuangan</button></div></aside>
  <div class="main"><header class="topbar">
   <div class="tb-brand"><div class="logo">${logoImg()}</div><span>DB Track</span></div>

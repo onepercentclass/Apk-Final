@@ -37,11 +37,21 @@
       `<button class="bn-item ${more}" data-drawer="1"><span class="bn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span><span>Menu</span></button>`;
   }
 
+  // Menu akun (Kelola Anggota & Ganti Password) di-render terpisah,
+  // tepat di atas footer sidebar.
+  const ACCOUNT_KEYS = ["akun", "sandi"];
+
+  function menuItemHtml(m, active) {
+    return `<button class="menu-item ${m.key === active ? "active" : ""}" data-menu="${m.key}">${icons[m.icon]}<span>${m.label}</span></button>`;
+  }
+
   function drawMenu(active) {
-    const nav = document.getElementById("menu");
-    nav.innerHTML = MENUS.filter((m) => access.canOpen(m.key)).map((m) =>
-      `<button class="menu-item ${m.key === active ? "active" : ""}" data-menu="${m.key}">${icons[m.icon]}<span>${m.label}</span></button>`
-    ).join("");
+    const main = MENUS.filter((m) => !ACCOUNT_KEYS.includes(m.key) && access.canOpen(m.key));
+    const acct = MENUS.filter((m) => ACCOUNT_KEYS.includes(m.key) && access.canOpen(m.key));
+    document.getElementById("menu").innerHTML = main.map((m) => menuItemHtml(m, active)).join("");
+    const acctNav = document.getElementById("menuAccount");
+    acctNav.innerHTML = acct.map((m) => menuItemHtml(m, active)).join("");
+    acctNav.style.display = acct.length ? "" : "none";
   }
 
   Haylen.navigate = async function (key) {
@@ -133,6 +143,10 @@
     document.getElementById("todayLabel").textContent = ui.today();
 
     document.getElementById("menu").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-menu]");
+      if (b) { Haylen.pendingAction = null; Haylen.navigate(b.dataset.menu); }
+    });
+    document.getElementById("menuAccount").addEventListener("click", (e) => {
       const b = e.target.closest("[data-menu]");
       if (b) { Haylen.pendingAction = null; Haylen.navigate(b.dataset.menu); }
     });

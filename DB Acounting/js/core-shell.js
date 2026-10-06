@@ -23,8 +23,16 @@ const NAV=[
   {r:'sandi',label:'Ganti Password',icon:'key'},
 ];
 
+// Menu akun (Kelola Anggota & Ganti Password) selalu di grup terpisah tepat di atas sidebar-foot.
+const ACCOUNT_ROUTES=['akun','sandi'];
+function navItemHtml(n){
+  return `<a class="navitem ${S.route===n.r?'active':''}" onclick="navigate('${n.r}');closeSidebarMobile();">${ic(n.icon,17)}<span>${n.label}</span></a>`;
+}
 function renderSidebar(){
   const c=co();
+  const vis=visibleNav();
+  const mainNav=vis.filter(n=>ACCOUNT_ROUTES.indexOf(n.r)===-1);
+  const acctNav=vis.filter(n=>ACCOUNT_ROUTES.indexOf(n.r)!==-1);
   document.getElementById('sidebar').innerHTML=`
     <div class="brand">
       <div class="logomark"><img src="${LOGO_DATA_URI}" alt="DB Accounting"></div>
@@ -36,8 +44,11 @@ function renderSidebar(){
       <div class="cp-arrow">${ic('chevdown',14)}</div>
     </div>
     <nav class="navlist">
-      ${visibleNav().map(n=>`<a class="navitem ${S.route===n.r?'active':''}" onclick="navigate('${n.r}');closeSidebarMobile();">${ic(n.icon,17)}<span>${n.label}</span></a>`).join('')}
+      ${mainNav.map(navItemHtml).join('')}
     </nav>
+    ${acctNav.length?`<nav class="navlist" style="flex:none;border-top:1px solid var(--border);padding-top:10px;margin-top:4px;">
+      ${acctNav.map(navItemHtml).join('')}
+    </nav>`:''}
     <div class="sidebar-foot">DB Accounting v1.0 · ${esc(c.name)}</div>
   `;
 }

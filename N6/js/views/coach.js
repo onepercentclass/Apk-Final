@@ -41,6 +41,11 @@ export const VIEW_COACH = `
         Absensi
       </button>
 </nav>
+<div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 12px 4px"></div>
+<button data-panel="sandi">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+<span>Ganti Password</span>
+</button>
 <div class="side-foot">
 <b>Rangga Saputra</b>
       Coach — N6 Running Training
@@ -497,10 +502,6 @@ export const VIEW_COACH = `
 <button data-panel="jadwal">
 <svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M16 2v4M8 2v4M3 10h18"></path><path d="M9 16l2 2 4-4"></path></svg>
 <span>Absensi</span>
-</button>
-<button data-panel="sandi">
-<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-<span>Ganti Password</span>
 </button>
 </nav>
 </div>

@@ -54,11 +54,12 @@ export const VIEW_ADMIN = `
         Pesan
         <span class="nav-dot" id="navDotPesan" style="display:none;">0</span>
 </button>
+</nav>
+<div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 12px 4px"></div>
 <button data-panel="sandi">
 <svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         Ganti Password
       </button>
-</nav>
 <div class="side-foot">
 <b>Admin CS</b>
       Customer Service — N6 Running Training

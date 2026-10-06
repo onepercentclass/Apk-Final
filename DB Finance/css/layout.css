@@ -361,6 +361,17 @@
   overflow: auto;
 }
 
+/* Grup menu akun di bawah sidebar, tepat di atas sb-card. */
+.sb-account nav {
+  display: grid;
+  gap: 3px;
+}
+
+.sb-sep {
+  border-top: 1px solid var(--bd);
+  margin: 10px 6px;
+}
+
 .sb-card {
   border: 1px solid var(--bd);
   border-radius: 16px;

@@ -31,11 +31,25 @@ const ICONS = {
 };
 function iconSvg(name){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`; }
 
+function navItemHtml(n){
+  return `<div class="nav-item" data-nav="${n.id}">${iconSvg(n.icon)}<span>${n.label}</span></div>`;
+}
+
+// Menu akun (Kelola Anggota & Ganti Password) dirender sebagai grup terpisah
+// yang menempel tepat di atas .sidebar-foot (margin-top:auto).
+const ACCOUNT_NAV_IDS = ['akun', 'sandi'];
+
 function renderNav(){
   const el = document.getElementById('navList');
-  el.innerHTML = '<div class="nav-group-label">Menu Utama</div>' + NAV.filter(n => Access.can(n.id)).map(n =>
-    `<div class="nav-item" data-nav="${n.id}">${iconSvg(n.icon)}<span>${n.label}</span></div>`
-  ).join('');
+  const main = NAV.filter(n => !ACCOUNT_NAV_IDS.includes(n.id) && Access.can(n.id));
+  const account = NAV.filter(n => ACCOUNT_NAV_IDS.includes(n.id) && Access.can(n.id));
+  let html = '<div class="nav-main-group"><div class="nav-group-label">Menu Utama</div>' +
+    main.map(navItemHtml).join('') + '</div>';
+  if (account.length) {
+    html += '<div class="nav-account-group"><div class="nav-group-label">Akun</div>' +
+      account.map(navItemHtml).join('') + '</div>';
+  }
+  el.innerHTML = html;
 }
 function goTo(view){
   if(!Access.can(view)) { toast('Anda tidak punya akses ke menu ini'); return; }

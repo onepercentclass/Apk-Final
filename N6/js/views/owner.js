@@ -28,14 +28,6 @@ export const VIEW_OWNER = `
 <svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M3 12l9-9 9 9"></path><path d="M5 10v10h14V10"></path></svg>
         Beranda
       </button>
-<button data-panel="akun">
-<svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        Kelola Anggota
-      </button>
-<button data-panel="sandi">
-<svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        Ganti Password
-      </button>
 <button data-panel="klien">
 <svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         Klien
@@ -71,6 +63,15 @@ export const VIEW_OWNER = `
         <span class="nav-dot" id="navDotPesan" style="display:none;">0</span>
 </button>
 </nav>
+<div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 12px 4px"></div>
+<button data-panel="akun">
+<svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        Kelola Anggota
+      </button>
+<button data-panel="sandi">
+<svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Ganti Password
+      </button>
 <div class="side-foot">
 <b>Owner</b>
       Akses penuh — N6 Running Training

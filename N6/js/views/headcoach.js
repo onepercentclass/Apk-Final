@@ -39,6 +39,20 @@ export const VIEW_HEADCOACH = `
 <svg class="ic" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"></path><path d="M17 5h3a2 2 0 0 1-2 4h-1M7 5H4a2 2 0 0 0 2 4h1"></path></svg>
         Atlet Binaan
       </button></nav>
+<div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 12px 4px"></div>
+<button data-panel="sandi" type="button">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+<span>Ganti Password</span>
+</button></div>
+</div>
+</div>
+<div class="modal-overlay" id="coachDetailModal" onclick="if(event.target===this) closeCoachDetail()">
+<div class="modal-box">
+<div class="modal-head">
+<h3 id="coachDetailTitle">Detail Coach</h3>
+<button class="modal-close" onclick="closeCoachDetail()">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+</button>
 <div class="side-foot">
 <b>Kevin Wibowo</b>
       Head Coach — N6 Running Training
@@ -466,19 +480,6 @@ Rabu: Recovery / istirahat
 <button data-panel="atlet" type="button">
 <svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"></path><path d="M17 5h3a2 2 0 0 1-2 4h-1M7 5H4a2 2 0 0 0 2 4h1"></path></svg>
 <span>Atlet Binaan</span>
-</button>
-<button data-panel="sandi" type="button">
-<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-<span>Ganti Password</span>
-</button></div>
-</div>
-</div>
-<div class="modal-overlay" id="coachDetailModal" onclick="if(event.target===this) closeCoachDetail()">
-<div class="modal-box">
-<div class="modal-head">
-<h3 id="coachDetailTitle">Detail Coach</h3>
-<button class="modal-close" onclick="closeCoachDetail()">
-<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M18 6L6 18M6 6l12 12"></path></svg>
 </button>
 </div>
 <div class="modal-body" id="coachDetailBody"></div>
