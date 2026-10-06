@@ -118,9 +118,26 @@ N6/
 
 ---
 
-### Fase B: Sinkronisasi `modules/` ← `dist/`
+### Fase B: Sinkronisasi `modules/` ← `dist/` — ✅ SELESAI 2026-10-06
 
 **Tujuan:** Pastikan semua perbaikan manual di `dist/` sudah masuk ke `modules/`.
+
+**Hasil:** `tools/build.sh --check` sekarang melaporkan **"bundle already up to date"**
+untuk semua 5 role. `modules/` adalah source of truth yang sah.
+
+**Metode:** Reverse-sync — karena `dist/` (yang live di production) jauh lebih baru
+dari `modules/` untuk coach (959 baris diff) dan headcoach (542 baris diff),
+modul-modul lama diganti dengan single-unit `_synced.js` yang berisi body persis
+dari `dist/`. Untuk owner (102), admin (74), client (27) juga dipakai metode yang
+sama demi konsistensi dan keandalan.
+
+**File yang berubah:**
+- BARU: `js/modules/{owner,admin,headcoach,coach,client}/_synced.js`
+- EDIT: `js/modules/*/manifest.js` → `[['_synced', 1]]`
+- HAPUS: file-file modul lama per role (riwayat tetap ada di git)
+
+**Catatan:** Granularitas modul hilang sementara — akan dipulihkan di Fase C
+saat rename + split dilakukan.
 
 **Masalah:** Kita sudah edit `dist/owner.js`, `dist/admin.js`, `dist/headcoach.js` manual berkali-kali. Perlu dipastikan `modules/` sudah mencerminkan semua perubahan.
 

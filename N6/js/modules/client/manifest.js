@@ -11,17 +11,5 @@
  */
 //__N6_MANIFEST__
 export const MANIFEST_CLIENT = [
-  ['_core', 20],
-  ['chat', 1],
-  ['_core', 4],
-  ['performa', 1],
-  ['_core', 2],
-  ['_core', 1],
-  ['chat', 1],
-  ['_core', 2],
-  ['chat', 1],
-  ['_core', 4],
-  ['performa', 1]
+  ['_synced', 1],
 ];
-
-export default MANIFEST_CLIENT;

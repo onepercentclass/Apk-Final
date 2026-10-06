@@ -11,39 +11,5 @@
  */
 //__N6_MANIFEST__
 export const MANIFEST_COACH = [
-  ['_core', 1],
-  ['klien', 1],
-  ['_core', 7],
-  ['klien', 1],
-  ['_core', 6],
-  ['klien', 3],
-  ['_core', 3],
-  ['jadwal', 2],
-  ['home', 1],
-  ['_core', 6],
-  ['klien', 1],
-  ['home', 1],
-  ['_core', 3],
-  ['klien', 4],
-  ['info', 1],
-  ['_core', 2],
-  ['info', 1],
-  ['_core', 3],
-  ['info', 1],
-  ['_core', 3],
-  ['info', 1],
-  ['_core', 1],
-  ['jadwal', 2],
-  ['_core', 2],
-  ['jadwal', 1],
-  ['_core', 8],
-  ['jadwal', 3],
-  ['klien', 1],
-  ['_core', 7],
-  ['jadwal', 1],
-  ['klien', 1],
-  ['_core', 1],
-  ['info', 1]
+  ['_synced', 1],
 ];
-
-export default MANIFEST_COACH;

@@ -11,41 +11,5 @@
  */
 //__N6_MANIFEST__
 export const MANIFEST_ADMIN = [
-  ['_core', 34],
-  ['harga', 1],
-  ['klien', 1],
-  ['_core', 13],
-  ['beranda', 2],
-  ['klien', 3],
-  ['_core', 4],
-  ['klien', 2],
-  ['_core', 4],
-  ['harga', 1],
-  ['jadwalcoach', 1],
-  ['jadwalklien', 1],
-  ['harga', 1],
-  ['_core', 2],
-  ['tiket', 2],
-  ['klien', 1],
-  ['pesan', 4],
-  ['_core', 3],
-  ['pesan', 1],
-  ['_core', 1],
-  ['jadwalcoach', 3],
-  ['_core', 8],
-  ['jadwalcoach', 3],
-  ['klien', 1],
-  ['jadwalcoach', 2],
-  ['_core', 1],
-  ['klien', 1],
-  ['_core', 4],
-  ['klien', 1],
-  ['_core', 1],
-  ['beranda', 2],
-  ['_core', 3],
-  ['beranda', 1],
-  ['_core', 1],
-  ['jadwalcoach', 1]
+  ['_synced', 1],
 ];
-
-export default MANIFEST_ADMIN;
