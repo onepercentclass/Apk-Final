@@ -413,7 +413,7 @@
   }
 /*__N6_UNIT__*/  function ensureInvoiceNumber(c){
     if (!c.invoiceNumber){
-      c.invoiceNumber = 'INV/N6/' + todayISO().replace(/-/g,'') + '/' + c.id.slice(0,6).toUpperCase();
+      c.invoiceNumber = 'INV/N6/' + todayISO().replace(/-/g,'') + '/' + String(c.id).slice(0,6).toUpperCase();
       persistClients();
     }
     return c.invoiceNumber;
