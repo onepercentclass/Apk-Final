@@ -328,19 +328,18 @@ saat rename + split dilakukan.
 
 ---
 
-### Fase D: Bersihkan `tools/split/`
+### Fase D: Bersihkan `tools/split/` ✅ SELESAI (2026-10-06)
 
 **Tujuan:** Hapus one-time migration tool yang sudah tidak dipakai.
 
-| Aksi | Detail |
-|------|--------|
-| D1 | Pindahkan `tools/split/` ke `tools/archive/split-2026-10/` ATAU hapus permanen |
-| D2 | Update `tools/build.ps1` jika masih referensi ke `split/` |
+| Aksi | Detail | Status |
+|------|--------|--------|
+| D1 | Pindahkan `tools/split/` ke `tools/archive/split-2026-10/` | ✅ Selesai |
+| D2 | Update referensi di `README.md` | ✅ Selesai |
 
-**Rekomendasi:** Archive dulu (jangan hapus permanen), hapus permanen setelah 30 hari jika tidak dibutuhkan.
-
-**Verifikasi (definition of done):**
-- [ ] `grep -r "tools/split" --include="*.sh" --include="*.ps1" --include="*.md" N6/` tidak menemukan referensi aktif
+**Verifikasi:**
+- ✅ `tools/split/` sudah tidak ada, pindah ke `tools/archive/split-2026-10/`
+- ✅ Tidak ada referensi aktif di code (hanya dokumentasi historis yang sudah diupdate)
 - Risiko rendah — tidak perlu browser test
 
 ---

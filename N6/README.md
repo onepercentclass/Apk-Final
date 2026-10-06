@@ -96,7 +96,7 @@ Both the frontend (`js/core/access.js`) and the backend (`app/api/deps.py` → `
 
 The five original HTML files were mixed cp1252/UTF-8 declared as UTF-8. We:
 
-1. **Normalised encoding** (`tools/split/00-normalize.ps1`) → real UTF-8. The only intentional deviation from "don't change anything" — documented here.
+1. **Normalised encoding** (`tools/archive/split-2026-10/00-normalize.ps1`) → real UTF-8. The only intentional deviation from "don't change anything" — documented here.
 2. **Split CSS** at banner comments → `css/<role>/*.css` + `ORDER.txt`.
 3. **Split JS** at line-anchored top-level declarations + `^\}\)\(\);` → per-menu fragments with `/*__N6_UNIT__*/` sentinel and `//__N6_BODY__` marker.
 4. **Deduped** `coach-requests.js` and `n6-monthly-pdf-reports.js` (byte-identical in owner+admin) → `js/shared/`.
@@ -108,7 +108,7 @@ The five original HTML files were mixed cp1252/UTF-8 declared as UTF-8. We:
 
 ## Build Tool (Provenance)
 
-The splitter scripts live in `tools/split/` for traceability. The delivered build tool is `js/tools/build.ps1`:
+The splitter scripts are archived in `tools/archive/split-2026-10/` for traceability. The delivered build tool is `tools/build.sh` (Linux) / `tools/build.ps1` (Windows):
 
 ```bash
 cd n6/js/tools
