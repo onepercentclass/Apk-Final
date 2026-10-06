@@ -466,3 +466,68 @@ Fase F+G+H independen terhadap Fase C/D/E — bisa paralel.
 - [ ] Buat `tools/smoke-test.sh`
 - [ ] Tambah `.eslintrc.json`
 - [ ] Dokumentasi JSDoc fungsi public
+
+---
+
+### Fase I: Contract Test (Frontend ↔ Backend)
+
+**Tujuan:** Deteksi otomatis ketika frontend mengharapkan field yang tidak
+dikembalikan backend (atau sebaliknya). Menggantikan kebutuhan mock server.
+
+**Latar:** Mock server ditolak karena menambah beban sinkronisasi 3 arah
+(frontend ↔ mock ↔ backend) yang pasti divergen. Contract test langsung
+memverifikasi backend asli melawan ekspektasi frontend.
+
+| Aksi | Detail |
+|------|--------|
+| I1 | Buat `tools/contract-test.sh` — script bash yang login pakai akun test, hit setiap endpoint yang dipakai frontend, verifikasi shape response |
+| I2 | Definisikan ekspektasi per endpoint di `tools/contract/expectations.json`, contoh: |
+| | ```json |
+| | { |
+| |   "GET /accounts?tier=3": { |
+| |     "items[]": ["id", "username", "full_name", "tier", "coach_id"] |
+| |   }, |
+| |   "GET /clients": { |
+| |     "items[]": ["id", "name", "status", "coach_id", "joined_on"] |
+| |   }, |
+| |   "GET /schedules/coach": { |
+| |     "required": ["coach_id", "coach_name", "slots"] |
+| |   } |
+| | } |
+| | ``` |
+| I3 | Script laporkan: ✅ field sesuai, ❌ field hilang, ⚠️ field tambahan tak terduga |
+| I4 | Ambil daftar endpoint otomatis dari `grep` di `js/dist/*.js` dan `js/modules/*/` (pola `n6Api('...')`, `fetch('.../v1/...')`) agar ekspektasi tidak kedaluwarsa |
+| I5 | Integrasikan ke alur deploy: jalankan contract test sebelum deploy frontend ke VPS |
+
+**File yang disentuh:**
+- BARU: `tools/contract-test.sh`
+- BARU: `tools/contract/expectations.json`
+- EDIT: `RESTRUKTURISASI.md` (file ini)
+
+**Contoh output:**
+```
+GET /accounts?tier=3 ............ ✅ (5/5 field)
+GET /clients .................... ❌ hilang: coach_id
+GET /schedules/coach ............. ✅ (3/3 field)
+```
+
+**Bukan mock server karena:**
+- Tidak ada server palsu yang perlu di-maintenance
+- Test langsung ke backend asli (staging/production)
+- Snapshot response bisa disimpan sebagai fixture untuk test offline (`tools/contract/fixtures/`)
+
+### Urutan Eksekusi Tambahan (Update)
+
+```
+Fase F (Logger) → Fase G (Error Tracking) → Fase H (DevEx)
+Fase I (Contract Test) — independen, bisa dikerjakan kapan saja setelah Fase A
+```
+
+### Checklist Tambahan (Update)
+
+**Fase I:**
+- [ ] Buat `tools/contract/expectations.json` (daftar endpoint + field yang diharapkan)
+- [ ] Buat `tools/contract-test.sh`
+- [ ] Test manual: jalankan melawan `api.denisbergkam.com`
+- [ ] Simpan fixture response ke `tools/contract/fixtures/`
+- [ ] Tambahkan ke checklist deploy
