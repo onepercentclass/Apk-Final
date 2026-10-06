@@ -171,6 +171,9 @@ async function boot() {
     dbg('.main exists', !!main);
     dbg('.main display', main ? getComputedStyle(main).display : 'n/a');
     dbg('.main offsetHeight', main?.offsetHeight);
+    dbg('.main parent', main?.parentElement ? main.parentElement.tagName + '.' + main.parentElement.className : 'n/a');
+    dbg('.main parent display', main?.parentElement ? getComputedStyle(main.parentElement).display : 'n/a');
+    dbg('.main parent height', main?.parentElement?.offsetHeight);
     const topbar = document.querySelector('.main .topbar');
     dbg('topbar exists', !!topbar);
     dbg('topbar display', topbar ? getComputedStyle(topbar).display : 'n/a');
