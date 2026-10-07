@@ -5,6 +5,7 @@ import { loadAccess, can, firstAllowed } from './access/access.js';
 import { MENUS, MOBILE_MENUS } from './menu/index.js';
 import { U, syncFromServer } from './core/store.js';
 import { $ } from './core/utils.js';
+import { logger } from './core/logger.js';
 import { setMenus, menuOrder, render } from './core/nav.js';
 import { applyTheme } from './core/theme.js';
 import { initEvents } from './core/events.js';
@@ -28,7 +29,7 @@ async function start() {
     // (pemegang perangkat = pemiliknya sendiri).
     await loadAccess(MENUS.map((m) => m.id));
   } catch (err) {
-    console.error(err);
+    logger.error('main', 'Gagal memuat hak akses', err);
     $('#app').textContent = USE_API
       ? 'Tidak dapat memuat hak akses dari server. Pastikan sudah login dan server dapat dijangkau.'
       : 'Tidak dapat memuat hak akses.';

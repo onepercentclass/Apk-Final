@@ -1,5 +1,6 @@
 /** State aplikasi (S), state tampilan (U), dan persistensinya. */
 import { USE_API } from '../config.js';
+import { logger } from './logger.js';
 import { readLocal, writeLocal, pullState, pushState } from '../services/storage.js';
 import { DEFAULT_ACCTS } from './catalog.js';
 import { defaults } from './seed.js';
@@ -26,13 +27,13 @@ export function replaceState(next) {
 
 export function save() {
   writeLocal(S);
-  if (USE_API) pushState(S).catch(err => console.error('Sinkron ke server gagal', err));
+  if (USE_API) pushState(S).catch(err => logger.error('store', 'Sinkron ke server gagal', err));
 }
 
 export async function syncFromServer() {
   try {
     replaceState(await pullState({ ...S }));
   } catch (err) {
-    console.error('Server tidak terjangkau, memakai data lokal', err);
+    logger.error('store', 'Server tidak terjangkau, memakai data lokal', err);
   }
 }

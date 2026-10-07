@@ -1,6 +1,7 @@
 /** Sumber data. localStorage selalu dipakai sebagai cache; API hanya bila USE_API = true. */
 import { STORAGE_KEY } from '../config.js';
 import { api } from './api.js';
+import { logger } from '../core/logger.js';
 import { ENDPOINTS } from './endpoints.js';
 import { toApi, fromApi } from './mappers.js';
 
@@ -16,7 +17,7 @@ export function readLocal() {
 export function writeLocal(state) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {}
+  } catch (e) { logger.caught('storage', e, 'writeLocal'); }
 }
 
 export async function pullState(current) {
