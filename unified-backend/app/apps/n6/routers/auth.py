@@ -15,6 +15,9 @@ from sqlalchemy import func, select
 
 from app.core import security
 from app.core.config import settings
+from app.core.logging import get_logger
+
+logger = get_logger("n6.auth")
 from ..tiers import TIER_ADMIN, TIER_MAX, TIER_OWNER, is_owner, tier_matrix_for
 from ..models import Account
 from ..schemas.auth import (
@@ -70,6 +73,7 @@ def login(payload: LoginRequest, db: DbSession) -> TokenPair:
     )
     if account is None or not security.verify_password(payload.password, account.password_hash):
         # One message for both cases: do not confirm which usernames exist.
+        logger.warning("login gagal: %s", payload.username.strip())
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Username or password is incorrect",
@@ -81,6 +85,7 @@ def login(payload: LoginRequest, db: DbSession) -> TokenPair:
     touch_last_login(db, account)
     db.commit()
     db.refresh(account)
+    logger.info("login berhasil: %s (tier %s)", account.username, account.tier)
 
     # ADAPTASI unified-backend: klaim app="n6" wajib; klaim "username" tidak
     # didukung app.core.security (tidak pernah dibaca server).

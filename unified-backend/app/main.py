@@ -27,10 +27,16 @@ from app.apps.n6.router import router as n6_router
 from app.apps.n6.seed import ensure_owner as n6_owner
 from app.core.config import settings
 from app.core.database import SessionLocal, init_db
+from app.core.logging import setup_logging, get_logger, request_logging_middleware
+
+# Setup centralized logging sepagi mungkin
+setup_logging()
+logger = get_logger("main")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("starting up, init_db()")
     init_db()
     db = SessionLocal()
     try:
@@ -40,12 +46,17 @@ async def lifespan(app: FastAPI):
         dbfin_owner(db)
         claisrox_owner(db)
         db.commit()
+        logger.info("owner seeds ensured")
     finally:
         db.close()
     yield
+    logger.info("shutting down")
 
 
 app = FastAPI(title="Apk-Final Unified API", lifespan=lifespan)
+
+# Request logging (method, path, status, durasi)
+request_logging_middleware(app)
 
 origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
 app.add_middleware(
