@@ -78,7 +78,7 @@ async function renderAkun(){
     </div>`;
 
   let me = null;
-  try { me = await api.me(); } catch(e){}
+  try { me = await api.me(); } catch(e){ if(window.logger) window.logger.caught('akun', e, 'loadMe'); }
 
   function paintStats(items, total){
     const aktif = items.filter((a) => a.is_active).length;

@@ -16,14 +16,14 @@ function load(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) return normalizeData(JSON.parse(raw));
-  }catch(e){ console.warn('storage read failed', e); }
+  }catch(e){ if(window.logger) window.logger.caught('storage', e, 'read'); }
   const seeded = seedData();
   persistLocal(seeded);
   return seeded;
 }
 function persistLocal(d){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-  catch(e){ console.warn('storage write failed', e); }
+  catch(e){ if(window.logger) window.logger.caught('storage', e, 'write'); }
 }
 function save(d){
   persistLocal(d || DATA);
@@ -34,7 +34,7 @@ function scheduleRemoteSync(){
   clearTimeout(remoteSyncTimer);
   remoteSyncTimer = setTimeout(async ()=>{
     try{ await api.put(ENDPOINTS.snapshot, DATA); }
-    catch(e){ console.warn('sinkronisasi ke server gagal', e); toast('Gagal menyimpan ke server'); }
+    catch(e){ if(window.logger) window.logger.caught('storage', e, 'sync'); toast('Gagal menyimpan ke server'); }
   }, APP_CONFIG.api.syncDebounceMs);
 }
 async function pullRemoteData(){

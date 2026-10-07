@@ -1,0 +1,39 @@
+{
+ "GET auth/me": {
+  "fields": [
+   "username",
+   "name",
+   "tier"
+  ],
+  "type": "object"
+ },
+ "GET bahan-baku": {
+  "fields": [],
+  "note": "items bisa kosong",
+  "type": "array"
+ },
+ "GET customer": {
+  "fields": [],
+  "note": "items bisa kosong",
+  "type": "array"
+ },
+ "GET keuangan": {
+  "fields": [],
+  "type": "object"
+ },
+ "GET penjualan": {
+  "fields": [],
+  "note": "items bisa kosong",
+  "type": "array"
+ },
+ "GET produk": {
+  "fields": [],
+  "note": "items bisa kosong",
+  "type": "array"
+ },
+ "GET snapshot": {
+  "fields": [],
+  "type": "object"
+ },
+ "_comment": "Contract expectations Claisrox. Base: https://api.denisbergkam.com/api/claisrox"
+}

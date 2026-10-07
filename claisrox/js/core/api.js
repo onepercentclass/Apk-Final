@@ -4,7 +4,7 @@ const api = {
     try{ return localStorage.getItem(TOKEN_KEY); }catch(e){ return null; }
   },
   setToken(token){
-    try{ token ? localStorage.setItem(TOKEN_KEY, token) : localStorage.removeItem(TOKEN_KEY); }catch(e){}
+    try{ token ? localStorage.setItem(TOKEN_KEY, token) : localStorage.removeItem(TOKEN_KEY); }catch(e){ if(window.logger) window.logger.caught('api', e, 'setToken'); }
   },
   // Hook: dipanggil saat server mengembalikan 401 di luar endpoint login
   // (token kedaluwarsa / tidak valid). Diisi oleh app.js dengan login gate.
@@ -22,7 +22,7 @@ const api = {
     if(res.status === 401){
       api.setToken(null);
       if(path !== ENDPOINTS.login && typeof api.onUnauthorized === 'function'){
-        try{ api.onUnauthorized(); }catch(e){ console.error(e); }
+        try{ api.onUnauthorized(); }catch(e){ if(window.logger) window.logger.caught('api', e, 'onUnauthorized'); }
       }
     }
     if(!res.ok) throw new Error(`API ${method} ${path} gagal (${res.status})`);

@@ -84,7 +84,7 @@ async function bootstrap(){
     await Access.init();
     if(APP_CONFIG.api.enabled) await pullRemoteData();
   }catch(e){
-    console.error(e);
+    if(window.logger) window.logger.error('app', 'boot gagal', e);
     // Token kedaluwarsa/invalid: api.request sudah membersihkan token dan
     // menampilkan login gate lewat onUnauthorized — tidak perlu toast lagi.
     if(APP_CONFIG.api.enabled && !api.token()) return;
