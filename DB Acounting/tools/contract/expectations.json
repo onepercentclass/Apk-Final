@@ -1,0 +1,15 @@
+{
+ "GET auth/me": {
+  "fields": [
+   "tier",
+   "name"
+  ],
+  "type": "object"
+ },
+ "GET companies": {
+  "fields": [],
+  "note": "items bisa kosong",
+  "type": "array"
+ },
+ "_comment": "Contract expectations DB Accounting. Base: https://api.denisbergkam.com/api/dbacc. Login pakai email."
+}

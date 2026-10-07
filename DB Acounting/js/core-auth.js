@@ -14,11 +14,11 @@ function getSession(){
 }
 function setSession(sess){
   S.session=sess;
-  try{ localStorage.setItem(SESSION_KEY, JSON.stringify(sess)); }catch(e){}
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify(sess)); }catch(e){ if(window.logger) window.logger.caught('auth', e, 'saveSession'); }
 }
 function clearSession(){
   S.session=null;
-  try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+  try{ localStorage.removeItem(SESSION_KEY); }catch(e){ if(window.logger) window.logger.caught('auth', e, 'clearSession'); }
 }
 async function loadAccount(){
   // Mode lokal: akun tersimpan di localStorage perangkat ini.
@@ -40,9 +40,9 @@ async function loadAccount(){
 }
 async function saveAccount(acc){
   S.account=acc;
-  try{ localStorage.setItem('dbacc_account_v1', JSON.stringify(acc)); }catch(e){}
+  try{ localStorage.setItem('dbacc_account_v1', JSON.stringify(acc)); }catch(e){ if(window.logger) window.logger.caught('auth', e, 'saveAccount'); }
   if(typeof ApiClient!=='undefined' && ApiClient.enabled()){
-    try{ await ApiClient.saveAccount(acc); }catch(e){ console.error(e); }
+    try{ await ApiClient.saveAccount(acc); }catch(e){ if(window.logger) window.logger.caught('auth', e, 'saveAccountApi'); }
   }
 }
 async function registerAccount(f){

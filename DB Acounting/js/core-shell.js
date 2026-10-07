@@ -122,7 +122,7 @@ function renderAll(){
   try{
     view.innerHTML = PAGES[S.route] ? PAGES[S.route]() : PAGES.dashboard();
   }catch(e){
-    console.error(e);
+    if(window.logger) window.logger.error('shell', 'Gagal render halaman', e);
     view.innerHTML=`<div class="empty"><div class="et">Terjadi kesalahan menampilkan halaman</div><div class="es">${esc(e.message)}</div></div>`;
   }
 }

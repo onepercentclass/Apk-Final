@@ -1,7 +1,7 @@
 /* ============================= BOOT ============================= */
 async function boot(){
   await initDb();
-  if(typeof TierAccess!=='undefined'){ try{ await TierAccess.init(); }catch(e){} }
+  if(typeof TierAccess!=='undefined'){ try{ await TierAccess.init(); }catch(e){ if(window.logger) window.logger.caught('boot', e, 'TierAccess.init'); } }
   // Cegah route tersimpan/di-request di luar hak tier (tier 0 = semua lolos).
   if(typeof TierAccess!=='undefined' && !TierAccess.canAccess(S.route)) S.route='dashboard';
   S.downloads = null; /* unduhan via browser bawaan; integrasi native nonaktif (lihat js/config.js) */
