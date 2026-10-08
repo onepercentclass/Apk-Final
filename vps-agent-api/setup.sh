@@ -26,7 +26,7 @@ DBPASS=$(openssl rand -hex 24)
 printf '%s' "$DBPASS" > /etc/agent-api/dbpass
 chmod 600 /etc/agent-api/dbpass
 chown "$API_USER:$API_USER" /etc/agent-api/dbpass
-sudo -u postgres psql -v ON_ERROR_STOP=1 <<EOF
+sudo -u postgres psql -d apkfinal -v ON_ERROR_STOP=1 <<EOF
 DO \$\$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='agentapi') THEN
