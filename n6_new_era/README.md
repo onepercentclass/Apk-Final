@@ -16,12 +16,16 @@ n6-new-era/
   MENU_MAP.md            # peta menu aplikasi lama (acuan)
   design_vnpc.md         # desain hasil Phase 1
   assets/icons/  assets/images/
-  css/                   # tokens, reset, base, components, pages, dark
+  css/                   # tokens, reset, base, components, pages
   js/
     core/                # api, auth, router, store, config, logger, utils
     ui/                  # komponen presentasional
     shared/              # fitur dipakai 2+ role (clients, schedule, messaging, members, password, pricing)
     owner/  admin/  head-coach/  coach/  client/   # khusus tiap role
+
+Keputusan struktur:
+- Layar login dimiliki core/auth.js (alur sesi).
+- Tema gelap hidup di tokens.css ([data-theme="dark"]); tidak ada dark.css.
   tools/                 # contract-test.sh, smoke-test.sh
 ```
 
