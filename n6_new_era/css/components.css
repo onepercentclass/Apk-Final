@@ -80,3 +80,29 @@
 .empty-state { text-align: center; padding: 40px 16px; color: var(--ink-soft); }
 .empty-state-title { font-weight: 700; color: var(--ink); font-size: 17px; margin-bottom: 8px; }
 .empty-state-desc { margin-bottom: 16px; }
+
+/* pola konten (bug8): dipakai js/shared/ dan halaman role */
+.msg-list, .schedule-list { display: flex; flex-direction: column; gap: 8px; }
+.msg, .ticket, .schedule-item {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px; background: var(--white);
+}
+.msg-text { margin-bottom: 4px; }
+.msg-meta, .ticket-meta { color: var(--ink-soft); font-size: 13px; }
+.ticket-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.ticket-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.ticket-actions .btn { min-height: 36px; padding: 0 12px; font-size: 14px; }
+.schedule-item { display: flex; flex-direction: column; gap: 4px; }
+.price-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.send-form { display: flex; gap: 8px; margin-bottom: 16px; }
+.send-form input {
+  flex: 1; min-height: var(--touch); padding: 8px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--white); color: var(--ink);
+}
+.muted { color: var(--ink-soft); }
+.pw-form { max-width: 420px; }
+.pw-form .btn-primary { width: 100%; margin-top: 8px; }
