@@ -24,6 +24,9 @@ body {
 .btn-primary { background: var(--accent-ink); border-color: var(--accent-ink); color: #fff; }
 .btn-danger { background: var(--red); border-color: var(--red); color: #fff; }
 .btn-ghost { background: transparent; border-color: transparent; color: var(--ink-soft); }
+/* bug17: di dark mode varian warna menjadi terang, teks tombol ikut gelap */
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .btn-danger { color: var(--paper); }
 
 .field { display: block; margin-bottom: 12px; }
 .field > span { display: block; margin-bottom: 4px; font-weight: 500; }

@@ -48,9 +48,12 @@ export async function currentUser() {
 
 // Layar login: satu aksi utama (Masuk). Validasi inline.
 export function renderLogin(container, onSuccess) {
+  const logo = document.documentElement.getAttribute('data-theme') === 'dark'
+    ? 'assets/images/logo-white.png'
+    : 'assets/images/logo-black.png';
   container.innerHTML =
     '<div class="login-wrap">' +
-    '<img class="login-logo" src="assets/images/logo-black.png" alt="NUMBER SIX">' +
+    '<img class="login-logo" src="' + logo + '" alt="NUMBER SIX">' +
     '<form class="login-form" id="loginForm" novalidate>' +
     '<label class="field"><span>Username</span>' +
     '<input type="text" name="username" autocomplete="username" required></label>' +
