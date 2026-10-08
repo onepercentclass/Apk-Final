@@ -21,7 +21,17 @@ export function modal({ title, bodyHTML, actions = [] }) {
   });
 
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-  overlay.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  overlay.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+    const items = Array.from(overlay.querySelectorAll('button, input, select, textarea, a[href]'))
+      .filter((el) => !el.disabled);
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
   document.body.appendChild(overlay);
   const first = overlay.querySelector('.modal-actions .btn');
   if (first) first.focus();
