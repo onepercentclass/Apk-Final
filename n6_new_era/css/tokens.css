@@ -1,0 +1,54 @@
+/* N6 New Era — design tokens.
+   Bahasa pemilik dipertahankan (netral hangat, aksen hijau segar),
+   nilai teks diperbaiki agar lolos WCAG AA (4.5:1).
+   Satu-satunya sumber nilai desain — tidak ada warna hardcoded di file lain. */
+
+:root {
+  /* Netral hangat (milik pemilik, sudah lolos) */
+  --paper: #F5F3EE;        /* background utama — 17.04:1 vs --ink */
+  --ink: #111110;          /* teks utama */
+  --ink-soft: #57544A;     /* teks sekunder — 6.83:1 vs --paper */
+  --line: #E7E4DB;         /* garis pembatas */
+  --white: #FFFFFF;
+
+  /* Aksen hijau segar (milik pemilik) */
+  --accent: #1eb682;       /* hanya untuk grafis/fill besar, BUKAN teks (2.60:1) */
+  --accent-ink: #0E7A52;   /* aksen sebagai teks — 5.35:1 vs putih */
+  --accent-tint: #E8F5EC;  /* latar tint aksen */
+
+  /* Semantik — teks (semua lolos AA di putih) */
+  --red: #D62828;          /* 5.01:1 */
+  --red-tint: #FCEBEB;
+  --green: #146C2E;        /* 6.53:1 (digelapkan dari #1E8E3E) */
+  --green-tint: #E8F5EC;
+  --amber: #8A5A12;        /* 5.91:1 (digelapkan dari #B7791F) */
+  --amber-tint: #FBF1DF;
+  --blue: #2563AE;         /* 6.04:1 */
+  --blue-tint: #E8F0FB;
+
+  /* Bentuk */
+  --radius: 10px;
+  --touch: 44px;           /* target sentuh minimal (aturan 14) */
+}
+
+/* Tema gelap — basis navy milik pemilik (#14243c) */
+[data-theme="dark"] {
+  --paper: #14243c;        /* background */
+  --ink: #F5F3EE;          /* teks utama — 14.06:1 */
+  --ink-soft: #B8B4A8;     /* teks sekunder — 7.52:1 */
+  --line: #2A3A52;
+  --white: #1E2F47;
+
+  --accent: #4ADE9E;       /* 9.08:1 vs --paper */
+  --accent-ink: #4ADE9E;
+  --accent-tint: #1A3A2C;
+
+  --red: #F28B8B;          /* 6.56:1 */
+  --red-tint: #3A1E1E;
+  --green: #6FD598;        /* 8.64:1 */
+  --green-tint: #1A3A2C;
+  --amber: #F5C86E;        /* 9.92:1 */
+  --amber-tint: #3A2E18;
+  --blue: #8FB8F5;         /* 7.68:1 */
+  --blue-tint: #1E2E47;
+}
