@@ -44,6 +44,7 @@ export async function renderPricing(container, ctx = {}) {
 
   async function onEdit(id, programs, standalone) {
     const p = programs.concat(standalone).find((x) => String(x.id) === String(id));
+    if (!p) return;
     const val = prompt('Harga baru untuk ' + (p ? p.name : '') + ' (Rp):', p ? p.price : '');
     const price = Number(String(val).replace(/[^0-9]/g, ''));
     if (!Number.isFinite(price) || price <= 0) return;
