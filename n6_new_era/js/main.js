@@ -27,6 +27,7 @@ async function boot() {
     caught(e, 'boot currentUser');
   }
   bootEl.remove();
+  appEl.hidden = false;
   if (!user) {
     renderLogin(appEl, () => {
       appEl.innerHTML = '';
