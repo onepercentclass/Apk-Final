@@ -29,6 +29,9 @@
   /* Bentuk */
   --radius: 10px;
   --touch: 44px;           /* target sentuh minimal (aturan 14) */
+
+  /* Tipografi — satu family: Google Sans */
+  --font: 'Google Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 /* Tema gelap — basis navy milik pemilik (#14243c) */
