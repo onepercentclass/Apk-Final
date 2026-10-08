@@ -8,6 +8,7 @@ import { caught } from '../../core/logger.js';
 import { esc, formatTanggal } from '../../core/utils.js';
 
 export async function renderMessages(container, ctx = {}) {
+  const base = ctx.role === 'client' ? '/portal/messages' : '/messages';
   container.innerHTML = '<h1 class="page-title">Pesan</h1>' +
     '<div id="list"><div class="loading">Memuat…</div></div>' +
     '<form id="sendForm" class="send-form">' +
@@ -18,7 +19,7 @@ export async function renderMessages(container, ctx = {}) {
 
   async function load() {
     try {
-      const data = await get('/messages', { limit: 50 });
+      const data = await get(base, { limit: 50 });
       const items = (data && data.items) || [];
       if (!items.length) {
         list.innerHTML = emptyStateHTML({ title: 'Belum ada percakapan' });
@@ -41,7 +42,7 @@ export async function renderMessages(container, ctx = {}) {
     const text = form.text.value.trim();
     if (!text) return;
     try {
-      await post('/messages', { text });
+      await post(base, { text });
       form.reset();
       toast('Pesan terkirim.', 'success');
       load();

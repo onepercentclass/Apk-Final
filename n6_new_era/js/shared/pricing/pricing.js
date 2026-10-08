@@ -31,7 +31,7 @@ export async function renderPricing(container, ctx = {}) {
         (standalone.length ? '<h2>Satuan</h2>' + standalone.map(row).join('') : '');
       if (editable) {
         list.querySelectorAll('[data-edit]').forEach((b) =>
-          b.addEventListener('click', () => onEdit(b.dataset.edit, programs.concat(standalone)))
+          b.addEventListener('click', () => onEdit(b.dataset.edit, programs, standalone))
         );
       }
     } catch (e) {
@@ -42,13 +42,14 @@ export async function renderPricing(container, ctx = {}) {
     }
   }
 
-  async function onEdit(id, items) {
-    const p = items.find((x) => String(x.id) === String(id));
+  async function onEdit(id, programs, standalone) {
+    const p = programs.concat(standalone).find((x) => String(x.id) === String(id));
     const val = prompt('Harga baru untuk ' + (p ? p.name : '') + ' (Rp):', p ? p.price : '');
     const price = Number(String(val).replace(/[^0-9]/g, ''));
     if (!Number.isFinite(price) || price <= 0) return;
+    p.price = price;
     try {
-      await put('/pricing/' + id, { price });
+      await put('/pricing', { programs, standalone });
       toast('Harga diperbarui.', 'success');
       load();
     } catch (e) {

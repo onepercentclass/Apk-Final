@@ -86,6 +86,7 @@ export async function request(path, opts = {}) {
       if (ok) return request(path, { ...opts, _retried: true });
       warn('sesi berakhir, membersihkan token');
       clearSession();
+      window.location.replace(window.location.pathname);
     }
     throw e;
   }
