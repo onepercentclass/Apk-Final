@@ -23,14 +23,24 @@ if [ -z "${N6_TOKEN:-}" ]; then
   echo "lewati 3-10: set N6_TOKEN untuk cek endpoint ber-token"
 else
   auth() { curl -s -o /dev/null -w "%{http_code}" --max-time 15 -H "Authorization: Bearer $N6_TOKEN" "$1"; }
-  check "GET /auth/me" 200 "$(auth "$BASE/auth/me")"
-  check "GET /clients" 200 "$(auth "$BASE/clients?limit=1")"
-  check "GET /accounts" 200 "$(auth "$BASE/accounts?limit=1")"
-  check "GET /pricing" 200 "$(auth "$BASE/pricing")"
-  check "GET /tickets" 200 "$(auth "$BASE/tickets?limit=1")"
-  check "GET /schedules/coach/requests" 200 "$(auth "$BASE/schedules/coach/requests?limit=1")"
-  check "GET /dashboards/headcoach/team" 200 "$(auth "$BASE/dashboards/headcoach/team")"
-  check "GET /finance/summary" 200 "$(auth "$BASE/finance/summary")"
+  # bug12: periksa tier token agar 403 pada endpoint owner-only tidak
+  # dilaporkan gagal saat token bukan milik owner.
+  ROLE="$(curl -s --max-time 15 -H "Authorization: Bearer $N6_TOKEN" "$BASE/auth/me" | grep -o '"role":"[^"]*"' | cut -d'"' -f4)"
+  [ -z "$ROLE" ] && ROLE="?"
+  echo "token role: $ROLE"
+  check_role() { # check_role <nama> <kode_aktual>
+    if [ "$2" = 200 ]; then PASS=$((PASS+1)); echo "ok   $1 ($2)";
+    elif [ "$2" = 403 ] && [ "$ROLE" != "owner" ]; then echo "skip $1 (403, butuh token owner)";
+    else FAIL=$((FAIL+1)); echo "FAIL $1 (harap 200, dapat $2)"; fi
+  }
+  check_role "GET /auth/me" "$(auth "$BASE/auth/me")"
+  check_role "GET /clients" "$(auth "$BASE/clients?limit=1")"
+  check_role "GET /accounts" "$(auth "$BASE/accounts?limit=1")"
+  check_role "GET /pricing" "$(auth "$BASE/pricing")"
+  check_role "GET /tickets" "$(auth "$BASE/tickets?limit=1")"
+  check_role "GET /schedules/coach/requests" "$(auth "$BASE/schedules/coach/requests?limit=1")"
+  check_role "GET /dashboards/headcoach/team" "$(auth "$BASE/dashboards/headcoach/team")"
+  check_role "GET /finance/summary" "$(auth "$BASE/finance/summary")"
 fi
 
 echo "---"
