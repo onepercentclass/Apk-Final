@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Helper istimewa untuk agent-api. Dimiliki root, dipanggil via:
+    sudo -n /usr/local/sbin/agent-api-priv <subcommand> [args...]
+Memvalidasi argumen secara ketat sebelum menjalankan apa pun.
+"""
+import os
+import re
+import subprocess
+import sys
+
+REPO = os.environ.get("AGENT_API_REPO", "/home/ubuntu/Apk-Final")
+BACKEND_SRC = os.environ.get("AGENT_API_BACKEND_SRC", "backend")  # relatif thd REPO
+DEMO_ROOT = "/var/www/demo"
+BACKEND_DST = "/opt/apkfinal/app"
+APP_RE = re.compile(r"^[a-z0-9][a-z0-9\-]{0,40}$")
+SERVICES = {"apkfinal", "nginx"}
+ACTIONS = {"status", "restart", "reload"}
+
+
+def run(*args, as_user=None, timeout=240):
+    if as_user:
+        args = ["sudo", "-u", as_user, *args]
+    p = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+    if p.returncode != 0:
+        print(p.stderr.strip()[-1000:], file=sys.stderr)
+        sys.exit(1)
+    return p.stdout.strip()
+
+
+def git_pull():
+    run("git", "-C", REPO, "pull", "--ff-only", "origin", "main", as_user="ubuntu")
+
+
+def deploy_frontend(app):
+    if not APP_RE.fullmatch(app):
+        sys.exit("nama app tidak valid")
+    src = os.path.join(REPO, app)
+    if not os.path.isdir(src):
+        sys.exit("folder app tidak ada di repo")
+    dst = os.path.join(DEMO_ROOT, app)
+    git_pull()
+    os.makedirs(dst, exist_ok=True)
+    run("rsync", "-a", "--delete", src + "/", dst + "/")
+    print(f"deployed {app}")
+
+
+def deploy_backend():
+    src = os.path.join(REPO, BACKEND_SRC)
+    if not os.path.isdir(src):
+        sys.exit("folder backend tidak ada di repo "
+                 "(cek AGENT_API_BACKEND_SRC)")
+    git_pull()
+    run("rsync", "-a", "--delete", src + "/", BACKEND_DST + "/")
+    run("systemctl", "restart", "apkfinal")
+    print("backend deployed & apkfinal restarted")
+
+
+def service(name, action):
+    if name not in SERVICES or action not in ACTIONS:
+        sys.exit("service/action tidak diizinkan")
+    out = run("systemctl", action, name)
+    print(out or "ok")
+
+
+def main(argv):
+    if len(argv) < 2:
+        sys.exit("butuh subcommand")
+    cmd, rest = argv[1], argv[2:]
+    try:
+        if cmd == "deploy-frontend" and len(rest) == 1:
+            deploy_frontend(rest[0])
+        elif cmd == "deploy-backend" and len(rest) == 0:
+            deploy_backend()
+        elif cmd == "service" and len(rest) == 2:
+            service(*rest)
+        else:
+            sys.exit("subcommand tidak dikenal")
+    except subprocess.TimeoutExpired:
+        sys.exit("timeout")
+
+
+main(sys.argv)
