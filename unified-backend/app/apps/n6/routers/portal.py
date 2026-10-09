@@ -20,15 +20,16 @@ Lihat PORTING.md.
 """
 
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from ..period import current_month
-from ..models import Message, MonthlyReport
+from ..models import Message, MonthlyReport, TrainingLog
 from ..schemas.account import AccountPatch, AccountRead
-from ..schemas.common import Ok, Page
+from ..schemas.common import Ok, ORMModel, Page
 from ..schemas.report import ClientSummary, MonthlyReportRead, ReportSummary
 from ..schemas.support import MessageCreate, MessageRead
 from .reports import build_report, client_summary
@@ -222,3 +223,50 @@ def unread(db: DbSession, principal: CurrentPrincipal) -> dict:
         )
     )
     return {"unread": int(count or 0)}
+
+# ------------------------------------------------------- training logs
+class TrainingLogCreate(BaseModel):
+    log_date: date
+    content: str = Field(min_length=1, max_length=5000)
+
+
+class TrainingLogRead(ORMModel):
+    id: int
+    client_id: int
+    log_date: date
+    content: str
+    created_at: datetime | None = None
+
+
+@router.post("/training-logs", response_model=TrainingLogRead,
+             summary="Submit a training log (client)")
+def submit_training_log(payload: TrainingLogCreate, db: DbSession,
+                        principal: CurrentPrincipal) -> TrainingLogRead:
+    client_id = _require_linked(principal)
+    row = TrainingLog(
+        client_id=client_id,
+        log_date=payload.log_date,
+        content=payload.content.strip(),
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return TrainingLogRead.model_validate(row)
+
+
+@router.get("/training-logs", response_model=Page[TrainingLogRead],
+            summary="My training logs (client)")
+def my_training_logs(db: DbSession, principal: CurrentPrincipal,
+                     limit: int = Query(50, ge=1, le=200),
+                     offset: int = Query(0, ge=0)) -> Page[TrainingLogRead]:
+    client_id = _require_linked(principal)
+    base = select(TrainingLog).where(TrainingLog.client_id == client_id)
+    total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
+    rows = db.scalars(
+        base.order_by(TrainingLog.log_date.desc(), TrainingLog.id.desc())
+        .limit(limit).offset(offset)
+    ).all()
+    return Page[TrainingLogRead](
+        items=[TrainingLogRead.model_validate(r) for r in rows],
+        total=total, limit=limit, offset=offset,
+    )

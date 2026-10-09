@@ -530,6 +530,23 @@ class MonthlyReport(Base, TimestampMixin):
     )
 
 
+class TrainingLog(Base, TimestampMixin):
+    """A client's workout log entry. Dikirim client, dibaca coach/head coach."""
+
+    __tablename__ = "training_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    client_id: Mapped[int] = mapped_column(
+        ForeignKey("n6.clients.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    log_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    client: Mapped["Client"] = relationship()
+
+    __table_args__ = {"schema": "n6"}
+
+
 __all__ = [
     "Base",
     "Account",
@@ -550,6 +567,7 @@ __all__ = [
     "Correction",
     "AthleteNote",
     "MonthlyReport",
+    "TrainingLog",
     "ROLE_OWNER",
     "ROLE_ADMIN",
     "ROLE_HEADCOACH",
