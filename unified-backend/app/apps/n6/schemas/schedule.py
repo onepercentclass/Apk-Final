@@ -66,7 +66,7 @@ class RequestDecision(BaseModel):
 
 class ScheduleRequestRead(ORMModel):
     id: int
-    client_id: int
+    client_id: int | None = None
     coach_id: int | None = None
     requested_on: date
     current_start: str | None = None
