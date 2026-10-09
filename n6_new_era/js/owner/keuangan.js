@@ -64,6 +64,7 @@ export async function render(container) {
   container.querySelector('#addBtn').addEventListener('click', () => {
     const bodyHTML =
       '<label class="field"><span>Keterangan</span><input type="text" id="expNote" required></label>' +
+      '<label class="field"><span>Kategori</span><input type="text" id="expCat" placeholder="mis. operasional" required></label>' +
       '<label class="field"><span>Jumlah (Rp)</span><input type="number" id="expAmount" min="1" required></label>';
     const close = modal({
       title: 'Catat Pengeluaran',
@@ -73,13 +74,14 @@ export async function render(container) {
         {
           label: 'Simpan', kind: 'primary', keepOpen: true, onClick: async () => {
             const note = document.getElementById('expNote').value.trim();
+            const category = document.getElementById('expCat').value.trim();
             const amount = Number(document.getElementById('expAmount').value);
-            if (!note || !Number.isFinite(amount) || amount <= 0) {
-              toast('Isi keterangan dan jumlah yang valid.', 'error');
+            if (!note || !category || !Number.isFinite(amount) || amount <= 0) {
+              toast('Isi keterangan, kategori, dan jumlah yang valid.', 'error');
               return;
             }
             try {
-              await post('/finance/expenses', { note, amount });
+              await post('/finance/expenses', { note, category, amount });
               toast('Pengeluaran dicatat.', 'success');
               close();
               load();
@@ -94,7 +96,14 @@ export async function render(container) {
   });
 
   function friendly(e) {
-    return e instanceof ApiError && e.body && e.body.detail ? e.body.detail : 'terjadi gangguan, coba lagi.';
+    if (!(e instanceof ApiError) || !e.body || !e.body.detail) return 'terjadi gangguan, coba lagi.';
+    const d = e.body.detail;
+    if (typeof d === 'string') return d;
+    if (Array.isArray(d) && d.length && d[0].msg) {
+      const loc = d[0].loc ? d[0].loc[d[0].loc.length - 1] : '';
+      return (loc ? loc + ': ' : '') + d[0].msg;
+    }
+    return 'terjadi gangguan, coba lagi.';
   }
 
   await load();

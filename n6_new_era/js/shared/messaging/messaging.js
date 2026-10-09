@@ -20,21 +20,19 @@ export async function renderMessages(container, ctx = {}) {
   const form = container.querySelector('#sendForm');
   const pick = container.querySelector('#contactPick');
 
-  // Daftar kontak: owner/admin/head-coach melihat klien; client melihat head coach.
+  // Daftar kontak: owner/admin/head-coach melihat klien; client chat ke head coach.
   try {
-    let contacts = [];
     if (role === 'client') {
-      const d = await get('/accounts', { tier: 2, limit: 50 });
-      contacts = (d && d.items) || [];
+      pick.innerHTML = '<p class="muted">Ke: Head Coach</p>';
     } else {
       const d = await get('/clients', { limit: 100 });
-      contacts = (d && d.items) || [];
-    }
-    if (contacts.length) {
-      pick.innerHTML = '<label class="field"><span>Kirim ke</span><select id="contactSel">' +
-        '<option value="">Semua / Umum</option>' +
-        contacts.map((c) => '<option value="' + c.id + '">' + esc(c.full_name || c.name || c.username) + '</option>').join('') +
-        '</select></label>';
+      const contacts = (d && d.items) || [];
+      if (contacts.length) {
+        pick.innerHTML = '<label class="field"><span>Kirim ke</span><select id="contactSel">' +
+          '<option value="">Semua / Umum</option>' +
+          contacts.map((c) => '<option value="' + c.id + '">' + esc(c.full_name || c.name || c.username) + '</option>').join('') +
+          '</select></label>';
+      }
     }
   } catch (e) {
     caught(e, 'pesan kontak');
