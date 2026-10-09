@@ -1,21 +1,28 @@
-# Bug 47 — POST /corrections/{correction_id}/resolve tidak ada UI
+# Bug 47 — Modul koreksi latihan belum ada di frontend (termasuk POST /corrections/{id}/resolve)
 
 ## Gejala
-Menu Koreksi (Head Coach) menampilkan daftar koreksi/pengajuan, tetapi
-tidak ada cara untuk menandai koreksi sebagai selesai (resolve).
+Menu "Koreksi" di aplikasi sebenarnya menampilkan pengajuan reschedule/cuti
+coach (dari /schedules/coach/requests), BUKAN koreksi latihan.
 
 ## Dugaan penyebab
-Backend menyediakan `POST /corrections/{correction_id}/resolve` untuk
-resolve koreksi, tetapi frontend tidak memiliki tombol/UI untuk memanggilnya.
+Backend memiliki modul koreksi latihan terpisah:
+- `GET /corrections` — daftar koreksi
+- `POST /corrections` — buat koreksi
+- `POST /corrections/{correction_id}/resolve` — selesaikan koreksi
+
+Tetapi frontend tidak memiliki UI sama sekali untuk modul ini. Tidak ada
+panggilan ke /corrections di seluruh kode frontend.
+
+Ini bukan sekadar "tombol resolve hilang" — seluruh modul belum dibuat.
 
 ## Lokasi
-- Backend: `unified-backend/app/apps/n6/routers/corrections.py` —
-  `@router.post("/{correction_id}/resolve")` ada.
-- Frontend: tidak ada panggilan POST ke /corrections/*/resolve.
+- Backend: `unified-backend/app/apps/n6/routers/corrections.py` — lengkap.
+- Frontend: tidak ada file yang memanggil /corrections.
 
 ## Verifikasi
-- Kode backend diperiksa 2026-10-09: endpoint POST resolve ada.
-- Kode frontend diperiksa: tidak ada panggilan ke endpoint resolve.
+- Kode backend diperiksa 2026-10-09: 3 endpoint corrections ada.
+- Kode frontend diperiksa: tidak ada referensi ke /corrections.
+- Menu "Koreksi" yang ada memakai /schedules/coach/requests (fitur berbeda).
 
 ## Status
-Terkonfirmasi. Backend siap, frontend belum ada UI.
+Terkonfirmasi. Fitur belum ada — perlu keputusan desain sebelum implementasi.
