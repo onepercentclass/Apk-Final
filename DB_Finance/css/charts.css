@@ -1,0 +1,158 @@
+/* Grafik batang, garis, donat, legenda, dan tooltip. */
+
+.chart {
+  width: 100%;
+  position: relative;
+}
+
+.chart svg {
+  display: block;
+}
+
+.gl {
+  stroke: var(--bd);
+  stroke-dasharray: 3 4;
+}
+
+.ax {
+  fill: var(--mu);
+  font-size: 11px;
+  font-family: inherit;
+}
+
+.b-in {
+  fill: var(--gr);
+}
+
+.b-out {
+  fill: var(--rd);
+}
+
+.legend {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--mu);
+}
+
+.legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.donut {
+  position: relative;
+  flex: none;
+}
+
+.donut svg {
+  display: block;
+}
+
+.dc {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.dc b {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.dc small {
+  font-size: 11px;
+  color: var(--mu);
+}
+
+.dn {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.lgd {
+  flex: 1;
+  min-width: 190px;
+  display: grid;
+  gap: 9px;
+}
+
+.lgd div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+}
+
+.lgd i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.lgd span {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lgd em {
+  font-style: normal;
+  color: var(--mu);
+  font-size: 12px;
+}
+
+.lgd b {
+  font-weight: 700;
+  min-width: 34px;
+  text-align: right;
+}
+
+#tip {
+  position: fixed;
+  z-index: 70;
+  display: none;
+  pointer-events: none;
+  background: var(--sf);
+  border: 1px solid var(--bd);
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 220px;
+}
+
+#tip b {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.dc b {
+  font-size: 12.5px;
+  letter-spacing: -.01em;
+}
+
+@media (max-width:719px) {
+  .dn {
+    gap: 14px;
+  }
+  .lgd {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+}

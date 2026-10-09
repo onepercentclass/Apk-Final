@@ -1,0 +1,14 @@
+/* Utilitas tampil/sembunyi per perangkat. Dimuat paling akhir agar mengalahkan display komponen. */
+
+.only-d {
+  display: none;
+}
+
+@media (min-width:1024px) {
+  .only-m {
+    display: none;
+  }
+  .only-d {
+    display: flex;
+  }
+}

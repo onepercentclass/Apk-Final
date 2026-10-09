@@ -1,0 +1,106 @@
+/* Baris daftar: transaksi, item ringkas, dan pengelompokan tanggal. */
+
+.tx {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 4px;
+  border-radius: 12px;
+}
+
+.tx:hover {
+  background: var(--sf2);
+}
+
+.tx-m {
+  flex: 1;
+  min-width: 0;
+}
+
+.tx-m b {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tx-m small {
+  color: var(--mu);
+  font-size: 12px;
+}
+
+.tx-a {
+  font-weight: 700;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+.tx-a.in {
+  color: var(--gr);
+}
+
+.tx-a.out {
+  color: var(--rd);
+}
+
+.tx-a.tf {
+  color: var(--bl);
+}
+
+.grp {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--mu);
+  margin: 16px 4px 4px;
+}
+
+.list>*+* {
+  border-top: 1px solid var(--bd);
+}
+
+.mini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.mini .m {
+  flex: 1;
+  min-width: 0;
+}
+
+.mini .m b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.mini .m small {
+  color: var(--mu);
+  font-size: 12px;
+}
+
+.mini .r {
+  text-align: right;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+button.mini {
+  border-radius: 10px;
+}
+
+button.mini:hover {
+  background: var(--sf2);
+}
+
+.tx-m small {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
