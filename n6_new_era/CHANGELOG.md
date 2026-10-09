@@ -1,6 +1,12 @@
 # Changelog N6 New Era
 Format: Keep a Changelog.
 
+## [0.1.4] — 2026-10-09
+
+### Fixed
+- Laporan latihan client kini bisa dikirim (bug42): endpoint POST/GET /portal/training-logs ditambahkan, menu Laporan client berfungsi.
+- Menu Jadwal Klien kini menampilkan daftar jadwal (bug43): endpoint GET /schedules/clients ditambahkan.
+
 ## [0.1.3] — 2026-10-09
 
 ### Fixed
