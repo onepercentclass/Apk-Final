@@ -15,6 +15,23 @@ Format: Keep a Changelog.
 - Ubah harga kini menyimpan lewat `PUT /pricing` dengan data utuh; sebelumnya memakai endpoint per-id yang tidak ada.
 - Daftar pesan, tiket, jadwal, harga, dan formulir kini memiliki gaya tampilan lengkap; sebelumnya tampil polos tanpa CSS.
 
+## [0.1.2] - 2026-10-09
+
+### Fixed
+- Splash boot tidak lagi flash terang di dark mode (tema diterapkan sebelum splash dirender).
+- Hapus assignment `appEl.hidden = false` yang ganda di boot.
+- Hapus fungsi `todayISO()` yang tidak terpakai.
+- Hapus cabang baca `n6:theme` yang tidak pernah ditulis (tema kini murni mengikuti preferensi OS).
+- Jadwal Coach: owner/admin kini memilih coach dari dropdown (mengirim `coach_id` yang wajib); coach langsung melihat jadwalnya sendiri.
+- Jadwal Klien: menampilkan empty state yang jelas (backend belum menyediakan endpoint).
+- Keuangan: ringkasan "Pendapatan per Kategori" kini terbaca dari `revenue_by_category`; form "Catat Pengeluaran" memakai modal (bukan `prompt()`).
+- Pesan: tambah pemilih kontak; kirim memakai field `body` (bukan `text`); pesan error validasi tidak lagi tampil sebagai "[object Object]".
+- Beranda coach: kartu "Klien Aktif" kini membaca `clients.aktif` dari API.
+- Beranda owner: kartu "Pendapatan" kini membaca `revenue` dari API.
+- Harga: tambah tombol "Tambah Harga" dengan modal form; edit harga memakai modal (bukan `prompt()`).
+- Absensi coach: backend mengizinkan coach melihat riwayat pengajuannya sendiri (permission `requests_view` baru).
+- Laporan client: pesan error lebih jelas saat backend belum mendukung kirim laporan.
+
 ## [0.1.1] - 2026-10-08
 
 ### Fixed
