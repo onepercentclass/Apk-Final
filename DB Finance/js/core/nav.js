@@ -49,7 +49,7 @@ export function render() {
   $('#app').innerHTML = `
  <aside class="sidebar"><div class="brand"><div class="logo">${logoImg()}</div><div><b>DB Track</b></div></div>
   <nav class="sb-nav" aria-label="Navigasi utama">${mainNavItems().map(navBtn).join('')}</nav>
-  ${accNav.length ? `<div class="sb-account"><div class="sb-sep" role="separator"></div><nav aria-label="Akun">${accNav.map(navBtn).join('')}</nav></div>` : ''}
+  ${accNav.length ? `<div class="sb-account"><div class="sb-sep" role="separator"></div><nav aria-label="Akun">${accNav.map(navBtn).join('')}<button class="nv" data-act="logout">${ic('logout', 20)}Keluar</button></nav></div>` : ''}
   <div class="sb-card"><span class="g-t">${ic('target', 26)}</span><b>Disiplin hari ini, kebebasan finansial nanti.</b><button class="btn pri full" data-act="nav" data-v="goals">Atur Tujuan Keuangan</button></div></aside>
  <div class="main"><header class="topbar">
   <div class="tb-brand"><div class="logo">${logoImg()}</div><span>DB Track</span></div>
@@ -88,5 +88,11 @@ registerActions({
   month: v => {
     U.month = shiftMK(U.month, (U.page === 'report' && U.rmode === 'year' ? 12 : 1) * Number(v));
     render();
+  },
+  logout: () => {
+    if (confirm('Keluar dari aplikasi?')) {
+      localStorage.removeItem('claisrox-token');
+      location.reload();
+    }
   },
 });

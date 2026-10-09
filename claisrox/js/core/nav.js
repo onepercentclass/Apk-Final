@@ -47,11 +47,19 @@ function renderNav(){
     main.map(navItemHtml).join('') + '</div>';
   if (account.length) {
     html += '<div class="nav-account-group"><div class="nav-group-label">Akun</div>' +
-      account.map(navItemHtml).join('') + '</div>';
+      account.map(navItemHtml).join('') +
+      '<button class="nav-item" data-nav="logout"><span>Keluar</span></button></div>';
   }
   el.innerHTML = html;
 }
 function goTo(view){
+  if(view === 'logout'){
+    if(confirm('Keluar dari aplikasi?')){
+      localStorage.removeItem('claisrox-token');
+      location.reload();
+    }
+    return;
+  }
   if(!Access.can(view)) { toast('Anda tidak punya akses ke menu ini'); return; }
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+view).classList.add('active');

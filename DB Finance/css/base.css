@@ -68,3 +68,13 @@ button:focus-visible, input:focus-visible, select:focus-visible {
     transition: none!important;
   }
 }
+
+/* Nominal besar: cegah overflow kolom */
+.num-big {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: bottom;
+}

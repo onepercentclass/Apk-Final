@@ -98,12 +98,17 @@ export function bindAkun() {
   async function updateStats() {
     try {
       const data = await api.get('/accounts?limit=1000&offset=0');
-      const items = data.items || [];
-      const aktif = items.filter(a => a.is_active).length;
+      const items = data.items || data || [];
+      const aktif = items.filter(a => a.is_active !== false).length;
       setStat('dbfStatTotal', items.length);
       setStat('dbfStatAktif', aktif);
       setStat('dbfStatNonaktif', items.length - aktif);
-    } catch (e) { /* statistik opsional, abaikan */ }
+    } catch (e) {
+      console.warn('Gagal memuat statistik anggota:', e);
+      setStat('dbfStatTotal', '–');
+      setStat('dbfStatAktif', '–');
+      setStat('dbfStatNonaktif', '–');
+    }
   }
 
   async function load() {
