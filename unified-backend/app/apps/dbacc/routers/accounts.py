@@ -154,3 +154,23 @@ def deactivate_account(
     u.is_active = False
     db.commit()
     return {"ok": True}
+
+
+@router.delete("/accounts/{account_id}/hard")
+def hard_delete_account(
+    account_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Hapus permanen akun. Hanya owner."""
+    _require_owner(user)
+    u = db.get(User, account_id)
+    if not u:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User tidak ditemukan")
+    if u.id == user.id:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Tidak bisa menghapus akun sendiri")
+    if u.tier == TIER_OWNER:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Akun owner tidak bisa dihapus")
+    db.delete(u)
+    db.commit()
+    return {"ok": True}

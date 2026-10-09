@@ -120,8 +120,9 @@ export function bindAkun() {
       list.innerHTML = items.map(a => {
         const status = a.is_active ? '<span class="badge">Aktif</span>' : '<span class="badge r">Nonaktif</span>';
         const aksi = a.tier === 0 ? '<span class="mu">—</span>'
-          : a.is_active ? `<button class="btn sm danger" data-off="${a.id}">Nonaktifkan</button>`
-          : `<button class="btn sm" data-on="${a.id}">Aktifkan</button>`;
+          : (a.is_active ? `<button class="btn sm danger" data-off="${a.id}">Nonaktifkan</button>`
+          : `<button class="btn sm" data-on="${a.id}">Aktifkan</button>`) +
+          ` <button class="btn sm danger" data-hard="${a.id}" title="Hapus permanen">Hapus</button>`;
         return `<div class="set"><span class="dbf-row"><span class="dbf-av">${ic('user', 20)}</span>
           <span><span class="dbf-un">${esc(a.username)}</span><div class="dbf-fn">${esc(a.name || '')}</div></span></span>
           <span class="dbf-right">${tierCell(a)}${status}${aksi}</span></div>`;
@@ -152,6 +153,15 @@ export function bindAkun() {
           toast('Akun diaktifkan kembali.');
         } catch (e) { toast('Gagal: ' + e.message); }
         load();
+      }));
+      list.querySelectorAll('[data-hard]').forEach(b => b.addEventListener('click', () => {
+        confirmBox('HAPUS PERMANEN akun ini? Data tidak bisa dikembalikan!', async () => {
+          try {
+            await api.delete(`/accounts/${b.getAttribute('data-hard')}/hard`);
+            toast('Akun dihapus permanen.');
+          } catch (e) { toast('Gagal: ' + e.message); }
+          load(); updateStats();
+        }, 'Hapus Permanen');
       }));
     } catch (e) {
       list.innerHTML = `<p class="badge r">Gagal memuat: ${esc(e.message)}</p>`;

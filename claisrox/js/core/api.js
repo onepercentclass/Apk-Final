@@ -45,6 +45,7 @@ const api = {
   async updateAccount(id, data){ return api.request('PATCH', '/accounts/' + id, data); },
   async setAccountTier(id, tier){ return api.put('/accounts/' + id + '/tier', { tier }); },
   async deactivateAccount(id){ return api.del('/accounts/' + id); },
+  async deleteAccountHard(id){ return api.del('/accounts/' + id + '/hard'); },
   // Ganti password sendiri.
   async changePassword(current_password, new_password){
     return api.put('/auth/password', { current_password, new_password });

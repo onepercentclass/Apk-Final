@@ -107,8 +107,9 @@ async function renderAkun(){
           ? `<span class="pill pill-green">Aktif</span>`
           : `<span class="pill pill-red">Nonaktif</span>`;
         const aksi = isSelf ? `<span class="cell-muted">akun ini</span>`
-          : a.is_active ? `<button class="btn btn-sm btn-danger" data-off="${a.id}">Nonaktifkan</button>`
-          : `<button class="btn btn-sm btn-primary" data-on="${a.id}">Aktifkan</button>`;
+          : (a.is_active ? `<button class="btn btn-sm btn-danger" data-off="${a.id}">Nonaktifkan</button>`
+          : `<button class="btn btn-sm btn-primary" data-on="${a.id}">Aktifkan</button>`) +
+          ` <button class="btn btn-sm btn-danger" data-hard="${a.id}" title="Hapus permanen">Hapus</button>`;
         return `<tr><td><div class="clx-user">${clxAvatar(a.name || a.username)}` +
           `<div><div class="clx-uname">${akunEsc(a.username)}</div>` +
           `<div class="cell-muted" style="font-size:12px">${akunEsc(a.name)}</div></div></div></td>` +
@@ -131,6 +132,12 @@ async function renderAkun(){
       }));
       tbody.querySelectorAll("[data-on]").forEach((b) => b.addEventListener("click", async () => {
         try{ await api.updateAccount(b.getAttribute("data-on"), { is_active: true }); toast("Akun diaktifkan.", "success"); }
+        catch(e){ toast("Gagal: " + e.message); }
+        load();
+      }));
+      tbody.querySelectorAll("[data-hard]").forEach((b) => b.addEventListener("click", async () => {
+        if(!confirm("HAPUS PERMANEN akun ini? Data tidak bisa dikembalikan!")) return;
+        try{ await api.deleteAccountHard(b.getAttribute("data-hard")); toast("Akun dihapus permanen.", "success"); }
         catch(e){ toast("Gagal: " + e.message); }
         load();
       }));
