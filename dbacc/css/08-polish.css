@@ -1,0 +1,186 @@
+   UI REFRESH — Montserrat, sidebar gelap, kartu & tabel lebih rapi
+   ===================================================== */
+:root{
+  --font-h:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-b:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-m:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --r-sm:10px; --r-md:14px; --r-lg:20px;
+  --ink:#0C1B15; --ink-2:#12271F;
+  --ring:0 0 0 3px rgba(30,182,130,.20);
+  --shadow-1:0 1px 2px rgba(12,27,21,.05),0 10px 28px -14px rgba(12,27,21,.14);
+  --shadow-2:0 2px 4px rgba(12,27,21,.06),0 18px 40px -16px rgba(12,27,21,.22);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--shadow-1:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.6);--shadow-2:0 2px 4px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.7);--ink:#070D0B;--ink-2:#0C1511;}
+}
+:root[data-theme="dark"]{--shadow-1:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.6);--shadow-2:0 2px 4px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.7);--ink:#070D0B;--ink-2:#0C1511;}
+
+html{font-size:15px;}
+body{
+  font-weight:500;letter-spacing:-.005em;line-height:1.5;
+  background:radial-gradient(900px 420px at 88% -8%,rgba(30,182,130,.09),transparent 65%),var(--bg-0);
+  background-attachment:fixed;
+}
+.num,.stat-value,.acct-pill,.kv b,.co-stat-row b,.jline-total b,td.right,th.right{font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1;}
+h1,h2,h3{letter-spacing:-.02em;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+::selection{background:rgba(30,182,130,.25);}
+
+/* ---------- Sidebar (gelap, kontras dengan konten) ---------- */
+#sidebar{
+  --bg-2:rgba(255,255,255,.06); --bg-3:rgba(255,255,255,.09);
+  --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.18);
+  --text-1:#EAF5F0; --text-2:#A3BDB1; --text-3:#6F8D80;
+  --accent:#35D6A0; --accent-dim:rgba(53,214,160,.14);
+  background:linear-gradient(180deg,var(--ink-2),var(--ink));border-right:none;
+  width:264px;flex-basis:264px;
+}
+.brand{padding:24px 20px 18px;}
+.logomark{background:linear-gradient(135deg,#27CC93,#139066);box-shadow:0 6px 16px -4px rgba(30,182,130,.55);border-radius:12px;}
+.brand-text{font-size:17px;letter-spacing:-.01em;color:#fff;}
+.brand-sub{color:var(--text-3);font-weight:500;}
+.company-picker{margin:0 14px 16px;padding:10px 12px;border-radius:12px;transition:background .15s,border-color .15s;}
+.company-picker:hover{background:rgba(255,255,255,.1);}
+.company-picker .cp-name{color:#fff;}
+nav.navlist{padding:2px 12px;gap:3px;}
+.navitem{padding:10px 12px;border-radius:11px;font-weight:600;font-size:13px;position:relative;transition:background .15s,color .15s;}
+.navitem:hover{background:rgba(255,255,255,.07);color:#fff;}
+.navitem.active{background:var(--accent-dim);color:var(--accent);}
+.navitem.active::before{content:"";position:absolute;left:-12px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--accent);}
+.navitem svg{width:18px;height:18px;flex-basis:18px;}
+.navdivider{background:rgba(255,255,255,.08);}
+.navlabel{font-weight:600;letter-spacing:.04em;}
+.sidebar-foot{border-top:1px solid rgba(255,255,255,.08);}
+
+/* ---------- Topbar ---------- */
+#topbar{
+  background:color-mix(in srgb,var(--bg-0) 82%,transparent);
+  -webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);
+  padding:12px 28px;padding-top:calc(12px + env(safe-area-inset-top,0px));
+}
+.searchbox{background:var(--bg-1);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow-1);transition:border-color .15s,box-shadow .15s;}
+.searchbox:focus-within{border-color:var(--accent);box-shadow:var(--ring);}
+.icon-btn{width:38px;height:38px;border-radius:11px;background:var(--bg-1);transition:all .15s;}
+.icon-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-1);}
+.btn-dl{border-radius:11px;padding:9px 14px;background:var(--bg-1);}
+.userchip{padding-left:14px;}
+.avatar{width:36px;height:36px;border-radius:11px;box-shadow:0 6px 14px -6px rgba(30,182,130,.6);}
+
+/* ---------- Konten ---------- */
+#view{padding:30px 28px 72px;}
+.page-title{font-size:27px;letter-spacing:-.025em;margin-bottom:4px;}
+.page-sub{font-size:13.5px;font-weight:500;margin-bottom:26px;}
+.grid{gap:20px;}
+
+.card{border-radius:var(--r-md);box-shadow:var(--shadow-1);border-color:color-mix(in srgb,var(--border) 70%,transparent);}
+.card-head{padding:18px 22px;}
+.card-head h3{font-size:15px;}
+.card-pad{padding:22px;}
+
+.stat-card{padding:20px 22px;}
+.stat-card::after{content:"";position:absolute;right:-34px;top:-34px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,var(--accent-dim),transparent 70%);pointer-events:none;}
+.stat-icon{width:38px;height:38px;border-radius:12px;margin-bottom:16px;}
+.stat-icon svg{width:18px;height:18px;}
+.stat-label{font-size:12px;font-weight:600;}
+.stat-value{font-size:25px;font-weight:700;letter-spacing:-.03em;margin-top:6px;}
+.stat-delta{font-size:11.5px;}
+
+/* ---------- Tombol ---------- */
+.btn{padding:10px 17px;border-radius:11px;font-weight:600;box-shadow:0 1px 2px rgba(12,27,21,.05);transition:transform .12s,box-shadow .15s,border-color .15s,background .15s;}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-1);}
+.btn:active{transform:translateY(0);}
+.btn-primary{background:linear-gradient(135deg,#25C48D,#169467);border-color:transparent;box-shadow:0 8px 18px -8px rgba(22,148,103,.7);}
+.btn-primary:hover{background:linear-gradient(135deg,#2BD19A,#1AA574);box-shadow:0 12px 22px -8px rgba(22,148,103,.8);}
+.btn-sm{padding:7px 12px;border-radius:9px;}
+.btn-ghost{box-shadow:none;}
+.btn-ghost:hover{box-shadow:none;transform:none;}
+
+/* ---------- Tabel ---------- */
+th{background:var(--bg-3);font-size:11.5px;font-weight:700;padding:12px 16px;border-bottom:none;}
+th:first-child{border-radius:10px 0 0 10px;} th:last-child{border-radius:0 10px 10px 0;}
+.table-wrap{padding:0 8px 8px;}
+td{padding:14px 16px;font-weight:500;}
+tbody tr{transition:background .12s;}
+tbody tr:hover{background:color-mix(in srgb,var(--accent-dim) 55%,transparent);}
+.badge{padding:4px 11px;font-weight:700;font-size:11px;}
+
+/* ---------- Form ---------- */
+label{font-weight:600;margin-bottom:7px;}
+input[type=text],input[type=number],input[type=date],input[type=password],input[type=email],select,textarea{
+  padding:11px 13px;border-radius:11px;font-weight:500;transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:var(--ring);}
+input::placeholder,textarea::placeholder{color:var(--text-3);font-weight:500;}
+.linebox{border-radius:12px;padding:12px;}
+
+/* ---------- Tab (segmented) ---------- */
+.tabs{display:inline-flex;max-width:100%;gap:4px;padding:5px;background:var(--bg-3);border:none;border-radius:13px;margin-bottom:22px;}
+.tab{padding:8px 16px;border-radius:9px;border-bottom:none;transition:background .15s,color .15s;}
+.tab:hover{color:var(--text-1);}
+.tab.active{background:var(--bg-1);color:var(--accent-strong);box-shadow:var(--shadow-1);border:none;}
+
+/* ---------- Perusahaan ---------- */
+.co-card{padding:20px;transition:border-color .15s,transform .15s,box-shadow .15s;}
+.co-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);}
+.co-card.active{box-shadow:0 0 0 1px var(--accent),var(--shadow-2);}
+.co-badge{border-radius:9px;}
+.add-co-card{border-radius:var(--r-md);box-shadow:none;}
+.quickbtn{padding:14px;border-radius:12px;transition:all .15s;}
+.quickbtn:hover{transform:translateY(-1px);box-shadow:var(--shadow-1);background:var(--accent-dim);}
+.progress-bar{height:8px;border-radius:6px;}
+.progress-fill{border-radius:6px;}
+.ri-icon{border-radius:11px;}
+.banner{border-radius:12px;padding:14px 18px;}
+.empty{padding:56px 20px;}
+.empty svg{width:44px;height:44px;opacity:.4;}
+
+/* ---------- Layar masuk ---------- */
+#authScreen{background:radial-gradient(700px 480px at 12% 8%,rgba(30,182,130,.20),transparent 60%),radial-gradient(640px 460px at 92% 96%,rgba(47,143,224,.14),transparent 60%),var(--bg-0);}
+.auth-box{max-width:408px;}
+.auth-brand .logomark{width:58px;height:58px;border-radius:16px;}
+.auth-brand h1{font-size:21px;letter-spacing:-.02em;}
+.auth-card{padding:30px 28px;border-radius:var(--r-lg);box-shadow:var(--shadow-2);}
+.auth-title{font-size:18px;letter-spacing:-.02em;}
+.auth-card .btn-primary{width:100%;justify-content:center;padding:12px 16px;}
+
+/* ---------- Menu, modal, toast ---------- */
+.acct-menu{border-radius:14px;box-shadow:var(--shadow-2);top:52px;animation:pop .16s ease-out;}
+.acct-menu-item{transition:background .12s;}
+.modal-overlay{background:rgba(6,14,11,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:fade .16s ease-out;}
+.modal{border-radius:var(--r-lg);box-shadow:var(--shadow-2);animation:pop .2s ease-out;}
+.modal-head{padding:20px 24px;} .modal-body{padding:24px;} .modal-foot{padding:16px 24px;}
+.modal-close{border-radius:10px;}
+.toast{border-radius:13px;padding:13px 20px;box-shadow:var(--shadow-2);animation:rise .22s ease-out;}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ---------- Mobile ---------- */
+@media(max-width:900px){
+  #sidebar{left:-280px;width:264px;}
+  #topbar{padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));}
+  #view{padding:20px 16px 64px;}
+  .page-title{font-size:23px;}
+  .userchip .un,.userchip .ur{display:none;}
+}
+@media(max-width:640px){
+  .modal-overlay{padding:16px 10px;}
+  .stat-value{font-size:22px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;}
+}
+
+/* =====================================================
+
+/* Fase 5 (B7): Perbaikan mobile */
+@media(max-width:640px){
+  .page-title{font-size:18px;}
+  .card-pad{padding:12px;}
+  .field-row{flex-direction:column;gap:0;}
+  table{font-size:12px;}
+  th,td{padding:6px 8px;}
+  .btn{padding:8px 12px;font-size:13px;}
+  .tabs{overflow-x:auto;white-space:nowrap;}
+  .stat-card{padding:10px;}
+}

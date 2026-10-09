@@ -1,0 +1,33 @@
+   PERBAIKAN SISTEM TEMA (terang / gelap)
+   ===================================================== */
+/* Tombol <button> tidak mewarisi warna teks secara bawaan -> paksa ikut tema */
+button{color:inherit;}
+.quickbtn{color:var(--text-1);}
+.quickbtn:hover{color:var(--accent);}
+.btn-ghost{color:var(--text-2);}
+.btn-ghost:hover{color:var(--text-1);}
+.btn-primary,.btn-primary:hover{color:#fff;}
+.btn-danger{color:var(--neg);}
+.btn-dl{color:var(--text-2);}
+
+/* Kontrol bawaan browser (dropdown, kalender, scrollbar) ikut tema */
+:root{color-scheme:light;}
+:root[data-theme="dark"]{color-scheme:dark;}
+:root[data-theme="light"]{color-scheme:light;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;}}
+select option{background:var(--bg-1);color:var(--text-1);}
+
+/* Kontras warna di mode gelap */
+:root[data-theme="dark"]{--warn:#F0A93B;--accent-text:#35D6A0;--neg:#FF6B70;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--warn:#F0A93B;--accent-text:#35D6A0;--neg:#FF6B70;}}
+:root{--accent-text:var(--accent-strong);}
+:root[data-theme="light"]{--accent-text:var(--accent-strong);}
+.tab.active{color:var(--accent-text);}
+.banner-warn{border-color:color-mix(in srgb,var(--warn) 30%,transparent);}
+.badge.b-pos,.stat-delta.up{color:var(--accent-text);}
+.b-pos{color:var(--accent-text);}
+th{color:var(--text-2);}
+.hint,.chsub{color:var(--text-3);}
+
+/* Lencana perusahaan berwarna terang (mis. "1%") tetap terbaca di tema terang */
+.co-badge{box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);}
