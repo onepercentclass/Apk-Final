@@ -6,7 +6,6 @@ import { caught } from '../core/logger.js';
 import { esc, formatTanggal } from '../core/utils.js';
 
 export async function render(container, ctx = {}) {
-  const clientId = ctx.user && ctx.user.client_id;
   container.innerHTML = '<h1 class="page-title">Laporan Latihan</h1>' +
     '<form id="repForm" class="send-form">' +
     '<input type="text" name="text" placeholder="Tulis laporan latihan…" required aria-label="Tulis laporan">' +
@@ -18,7 +17,7 @@ export async function render(container, ctx = {}) {
   async function load() {
     list.innerHTML = '<div class="loading">Memuat…</div>';
     try {
-      const data = await get('/portal/reports');
+      const data = await get('/portal/training-logs');
       const items = (data && data.items) || data || [];
       const arr = Array.isArray(items) ? items : [];
       if (!arr.length) {
@@ -26,8 +25,8 @@ export async function render(container, ctx = {}) {
         return;
       }
       list.innerHTML = arr.map((r) =>
-        '<div class="msg"><p class="msg-text">' + esc(r.text || r.note || '') + '</p>' +
-        '<p class="msg-meta">' + esc(formatTanggal(r.created_at)) + '</p></div>'
+        '<div class="msg"><p class="msg-text">' + esc(r.content || '') + '</p>' +
+        '<p class="msg-meta">' + esc(formatTanggal(r.log_date || r.created_at)) + '</p></div>'
       ).join('');
     } catch (e) {
       caught(e, 'laporan load');
@@ -42,7 +41,8 @@ export async function render(container, ctx = {}) {
     const text = form.text.value.trim();
     if (!text) return;
     try {
-      await post('/portal/reports', { body: text, client_id: clientId });
+      const today = new Date().toISOString().slice(0, 10);
+      await post('/portal/training-logs', { log_date: today, content: text });
       form.reset();
       toast('Laporan terkirim.', 'success');
       load();
