@@ -1,6 +1,12 @@
 # Changelog N6 New Era
 Format: Keep a Changelog.
 
+## [0.1.3] — 2026-10-09
+
+### Fixed
+- Harga kini tersimpan setelah disimpan (bug40): program baru tidak lagi terhapus oleh logika deletions di backend.
+- Pengajuan cuti/reschedule coach kini bisa dikirim (bug41): endpoint POST /schedules/coach/requests ditambahkan.
+
 ## [Unreleased]
 
 ### Added
