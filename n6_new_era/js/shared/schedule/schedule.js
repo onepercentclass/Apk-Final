@@ -1,5 +1,5 @@
 // N6 New Era — jadwal.
-import { get, ApiError } from '../../core/api.js';
+import { get, put, ApiError } from '../../core/api.js';
 import { emptyStateHTML } from '../../ui/empty-state.js';
 import { toast } from '../../ui/toast.js';
 import { caught } from '../../core/logger.js';
@@ -63,21 +63,115 @@ async function fetchList(path, params, list) {
 
 export async function renderClientSchedule(container) {
   container.innerHTML = '<h1 class="page-title">Jadwal Klien</h1>' +
+    '<div class="page-actions"><label class="field"><span>Klien</span><select id="clientSel"><option value="">Pilih klien…</option></select></label></div>' +
+    '<div id="slotList"></div>' +
+    '<h2>Tambah Jadwal</h2>' +
+    '<form id="slotForm">' +
+    '<label class="field"><span>Hari</span><select name="weekday" required>' +
+    '<option value="1">Senin</option><option value="2">Selasa</option><option value="3">Rabu</option>' +
+    '<option value="4">Kamis</option><option value="5">Jumat</option><option value="6">Sabtu</option>' +
+    '<option value="7">Minggu</option></select></label>' +
+    '<label class="field"><span>Jam mulai</span><input type="time" name="start_time" required></label>' +
+    '<label class="field"><span>Jam selesai</span><input type="time" name="end_time"></label>' +
+    '<label class="field"><span>Lokasi</span><input type="text" name="location" maxlength="160"></label>' +
+    '<label class="field"><span>Kategori</span><input type="text" name="training_category" maxlength="80"></label>' +
+    '<label class="field"><span>Catatan</span><input type="text" name="note"></label>' +
+    '<button type="submit" class="btn btn-primary">Tambah</button></form>' +
     '<div id="list"></div>';
+
+  const sel = container.querySelector('#clientSel');
+  const slotList = container.querySelector('#slotList');
+  const form = container.querySelector('#slotForm');
   const list = container.querySelector('#list');
+  let currentSlots = [];
+  let currentClientId = null;
+
+  const dayNames = ['', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
+  function renderSlots() {
+    if (!currentSlots.length) {
+      slotList.innerHTML = emptyStateHTML({ title: 'Belum ada jadwal', desc: 'Tambahkan jadwal via form di bawah.' });
+      return;
+    }
+    slotList.innerHTML = '<div class="schedule-list">' + currentSlots.map((s, i) =>
+      '<div class="schedule-item"><strong>' + esc(dayNames[s.weekday] || '') + ' ' + esc(s.start_time || '') +
+      (s.end_time ? '–' + esc(s.end_time) : '') + '</strong>' +
+      '<span>' + esc(s.training_category || '') + (s.location ? ' @ ' + esc(s.location) : '') + '</span>' +
+      (s.note ? '<span class="muted">' + esc(s.note) + '</span>' : '') +
+      ' <button class="btn-sm" data-del="' + i + '">Hapus</button></div>'
+    ).join('') + '</div>';
+    slotList.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentSlots.splice(parseInt(btn.dataset.del), 1);
+        renderSlots();
+      });
+    });
+  }
+
+  async function loadClient(id) {
+    currentClientId = id;
+    currentSlots = [];
+    if (!id) { renderSlots(); return; }
+    try {
+      const data = await get('/schedules/clients/' + id);
+      currentSlots = (data && data.slots) || [];
+    } catch (e) {
+      caught(e, 'jadwal klien load');
+      currentSlots = [];
+    }
+    renderSlots();
+  }
+
+  async function saveSlots() {
+    if (!currentClientId) return;
+    try {
+      await put('/schedules/clients/' + currentClientId, { slots: currentSlots });
+      toast('Jadwal tersimpan.', 'success');
+    } catch (e) {
+      caught(e, 'jadwal klien save');
+      toast('Gagal menyimpan.', 'error');
+    }
+  }
+
+  // Load client list
+  try {
+    const data = await get('/clients', { limit: 200 });
+    const clients = (data && data.items) || [];
+    sel.innerHTML = '<option value="">Pilih klien…</option>' +
+      clients.map(c => '<option value="' + c.id + '">' + esc(c.name || c.full_name || ('#' + c.id)) + '</option>').join('');
+  } catch (e) {
+    caught(e, 'jadwal klien daftar klien');
+  }
+
+  sel.addEventListener('change', () => loadClient(sel.value));
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    if (!currentClientId) { toast('Pilih klien dulu.', 'error'); return; }
+    const fd = new FormData(form);
+    currentSlots.push({
+      weekday: parseInt(fd.get('weekday')),
+      start_time: fd.get('start_time'),
+      end_time: fd.get('end_time') || null,
+      location: fd.get('location') || null,
+      training_category: fd.get('training_category') || null,
+      note: fd.get('note') || null,
+      active: true,
+    });
+    form.reset();
+    renderSlots();
+    await saveSlots();
+  });
+
+  renderSlots();
   await fetchList('/schedules/clients', {}, list);
 }
 
 export async function renderCoachSchedule(container, ctx = {}) {
   const role = ctx.role || '';
   container.innerHTML = '<h1 class="page-title">Jadwal Coach</h1>' +
-    '<div class="page-actions"><button class="btn" id="dlBtn">Unduh (JPG)</button></div>' +
     '<div id="coachPick"></div><div id="list"></div>';
   const list = container.querySelector('#list');
   const pick = container.querySelector('#coachPick');
-  container.querySelector('#dlBtn').addEventListener('click', () => {
-    toast('Ekspor JPG belum tersedia di versi ini.', 'info');
-  });
 
   // Coach: backend menginfer coach_id dari token. Owner/admin: pilih coach.
   if (role === 'coach') {
