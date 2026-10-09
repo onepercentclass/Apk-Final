@@ -1,7 +1,7 @@
 // N6 New Era — owner: keuangan (pendapatan per kategori, pengeluaran).
 import { get, post, del, ApiError } from '../core/api.js';
 import { emptyStateHTML } from '../ui/empty-state.js';
-import { confirmDialog } from '../ui/modal.js';
+import { confirmDialog, modal } from '../ui/modal.js';
 import { toast } from '../ui/toast.js';
 import { caught } from '../core/logger.js';
 import { esc, formatRupiah, formatTanggal } from '../core/utils.js';
@@ -21,10 +21,13 @@ export async function render(container) {
       ]);
       const items = (expenses && expenses.items) || [];
       let html = '';
-      if (summary && summary.by_category) {
-        html += '<h2>Pendapatan per Kategori</h2>' + Object.entries(summary.by_category).map(([k, v]) =>
-          '<div class="price-row"><span>' + esc(k) + '</span><strong>' + esc(formatRupiah(v)) + '</strong></div>'
-        ).join('');
+      const cats = summary && summary.revenue_by_category;
+      if (cats && cats.length) {
+        const rows = Array.isArray(cats)
+          ? cats.map((c) => '<div class="price-row"><span>' + esc(c.category || c.name || '-') + '</span><strong>' + esc(formatRupiah(c.amount ?? c.total ?? 0)) + '</strong></div>').join('')
+          : Object.entries(cats).map(([k, v]) =>
+              '<div class="price-row"><span>' + esc(k) + '</span><strong>' + esc(formatRupiah(v)) + '</strong></div>').join('');
+        html += '<h2>Pendapatan per Kategori</h2>' + rows;
       }
       html += '<h2>Pengeluaran</h2>';
       html += items.length ? items.map((x) =>
@@ -58,19 +61,36 @@ export async function render(container) {
     }
   }
 
-  container.querySelector('#addBtn').addEventListener('click', async () => {
-    const note = prompt('Keterangan:');
-    if (!note) return;
-    const amount = Number(String(prompt('Jumlah (Rp):')).replace(/[^0-9]/g, ''));
-    if (!Number.isFinite(amount) || amount <= 0) { toast('Jumlah tidak valid.', 'error'); return; }
-    try {
-      await post('/finance/expenses', { note: note.trim(), amount });
-      toast('Pengeluaran dicatat.', 'success');
-      load();
-    } catch (e) {
-      caught(e, 'catat pengeluaran');
-      toast('Gagal: ' + friendly(e), 'error');
-    }
+  container.querySelector('#addBtn').addEventListener('click', () => {
+    const bodyHTML =
+      '<label class="field"><span>Keterangan</span><input type="text" id="expNote" required></label>' +
+      '<label class="field"><span>Jumlah (Rp)</span><input type="number" id="expAmount" min="1" required></label>';
+    const close = modal({
+      title: 'Catat Pengeluaran',
+      bodyHTML,
+      actions: [
+        { label: 'Batal', kind: 'ghost' },
+        {
+          label: 'Simpan', kind: 'primary', keepOpen: true, onClick: async () => {
+            const note = document.getElementById('expNote').value.trim();
+            const amount = Number(document.getElementById('expAmount').value);
+            if (!note || !Number.isFinite(amount) || amount <= 0) {
+              toast('Isi keterangan dan jumlah yang valid.', 'error');
+              return;
+            }
+            try {
+              await post('/finance/expenses', { note, amount });
+              toast('Pengeluaran dicatat.', 'success');
+              close();
+              load();
+            } catch (e) {
+              caught(e, 'catat pengeluaran');
+              toast('Gagal: ' + friendly(e), 'error');
+            }
+          },
+        },
+      ],
+    });
   });
 
   function friendly(e) {

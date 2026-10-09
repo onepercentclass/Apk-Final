@@ -1,4 +1,4 @@
-// N6 New Era — jadwal. Satu modul menggantikan 2 modul identik jadwal-coach-export.js.
+// N6 New Era — jadwal.
 import { get, ApiError } from '../../core/api.js';
 import { emptyStateHTML } from '../../ui/empty-state.js';
 import { toast } from '../../ui/toast.js';
@@ -17,32 +17,76 @@ function scheduleListHTML(items) {
   ).join('') + '</div>';
 }
 
-async function fetchList(path, list) {
+function slotsToItems(data) {
+  // Backend /schedules/coach mengembalikan { slots: [...] }.
+  const slots = (data && data.slots) || (data && data.items) || [];
+  return slots.map((s) => ({
+    date: s.date || s.scheduled_on,
+    title: s.title || s.session || s.client_name || '',
+    coach_name: s.coach_name || '',
+  }));
+}
+
+async function fetchList(path, params, list) {
   list.innerHTML = '<div class="loading">Memuat…</div>';
   try {
-    const data = await get(path, { limit: 100 });
-    const items = (data && data.items) || [];
-    list.innerHTML = scheduleListHTML(items);
+    const data = await get(path, params);
+    list.innerHTML = scheduleListHTML(slotsToItems(data));
   } catch (e) {
     caught(e, 'jadwal load ' + path);
-    list.innerHTML = '<div class="page-error"><p>Terjadi gangguan, coba lagi.</p>' +
+    const msg = e instanceof ApiError && e.status === 404
+      ? 'Data jadwal belum tersedia.'
+      : 'Terjadi gangguan, coba lagi.';
+    list.innerHTML = '<div class="page-error"><p>' + esc(msg) + '</p>' +
       '<button class="btn btn-primary" id="retryBtn">Coba Lagi</button></div>';
-    list.querySelector('#retryBtn').addEventListener('click', () => fetchList(path, list));
+    list.querySelector('#retryBtn').addEventListener('click', () => fetchList(path, params, list));
   }
 }
 
 export async function renderClientSchedule(container) {
-  container.innerHTML = '<h1 class="page-title">Jadwal Klien</h1><div id="list"></div>';
-  await fetchList('/schedules/clients', container.querySelector('#list'));
+  // Backend belum menyediakan GET /schedules/clients (404).
+  // Tampilkan empty state yang jelas alih-alih error generik.
+  container.innerHTML = '<h1 class="page-title">Jadwal Klien</h1>' +
+    emptyStateHTML({
+      title: 'Jadwal klien belum tersedia',
+      desc: 'Backend belum menyediakan data jadwal klien.',
+    });
 }
 
-export async function renderCoachSchedule(container) {
+export async function renderCoachSchedule(container, ctx = {}) {
+  const role = ctx.role || '';
   container.innerHTML = '<h1 class="page-title">Jadwal Coach</h1>' +
     '<div class="page-actions"><button class="btn" id="dlBtn">Unduh (JPG)</button></div>' +
-    '<div id="list"></div>';
+    '<div id="coachPick"></div><div id="list"></div>';
   const list = container.querySelector('#list');
-  await fetchList('/schedules/coach', list);
+  const pick = container.querySelector('#coachPick');
   container.querySelector('#dlBtn').addEventListener('click', () => {
     toast('Ekspor JPG belum tersedia di versi ini.', 'info');
   });
+
+  // Coach: backend menginfer coach_id dari token. Owner/admin: pilih coach.
+  if (role === 'coach') {
+    await fetchList('/schedules/coach', {}, list);
+    return;
+  }
+  try {
+    const data = await get('/accounts', { tier: 3, limit: 100 });
+    const coaches = (data && data.items) || [];
+    if (!coaches.length) {
+      list.innerHTML = emptyStateHTML({ title: 'Belum ada coach' });
+      return;
+    }
+    pick.innerHTML = '<label class="field"><span>Coach</span><select id="coachSel">' +
+      coaches.map((c) => '<option value="' + c.id + '">' + esc(c.full_name || c.username) + '</option>').join('') +
+      '</select></label>';
+    const sel = pick.querySelector('#coachSel');
+    const loadSel = () => fetchList('/schedules/coach', { coach_id: sel.value }, list);
+    sel.addEventListener('change', loadSel);
+    await loadSel();
+  } catch (e) {
+    caught(e, 'jadwal coach daftar coach');
+    list.innerHTML = '<div class="page-error"><p>Terjadi gangguan, coba lagi.</p>' +
+      '<button class="btn btn-primary" id="retryBtn">Coba Lagi</button></div>';
+    list.querySelector('#retryBtn').addEventListener('click', () => renderCoachSchedule(container, ctx));
+  }
 }

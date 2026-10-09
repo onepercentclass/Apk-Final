@@ -107,7 +107,7 @@ def save_coach_schedule(payload: CoachScheduleWrite, db: DbSession,
 # ----------------------------------------------------------- change requests
 @router.get("/coach/requests", response_model=Page[ScheduleRequestRead],
             summary="List change requests",
-            dependencies=[Depends(require("coach_schedule", "requests"))])
+            dependencies=[Depends(require("coach_schedule", "requests_view"))])
 def list_requests(
     db: DbSession,
     principal: CurrentPrincipal,

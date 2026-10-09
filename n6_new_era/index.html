@@ -21,7 +21,17 @@
   html, body { margin: 0; padding: 0; background: #F5F3EE; }
   .n6-boot { min-height: 100vh; display: flex; align-items: center;
     justify-content: center; font-family: system-ui, sans-serif; color: #111110; }
+  html[data-theme="dark"], html[data-theme="dark"] body { background: #14243c; }
+  html[data-theme="dark"] .n6-boot { color: #F5F3EE; }
 </style>
+<script>
+  /* Set tema sebelum splash dirender agar tidak flash di dark mode. */
+  try {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  } catch (e) {}
+</script>
 </head>
 <body>
 <div class="n6-boot" id="n6-boot">Memuat N6…</div>

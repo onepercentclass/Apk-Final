@@ -15,7 +15,7 @@ export async function render(container) {
       return;
     }
     const cards = [
-      { label: 'Klien Aktif', value: String(data.active_clients ?? data.client_count ?? '-') },
+      { label: 'Klien Aktif', value: String(data.clients?.aktif ?? data.clients?.total ?? '-') },
       { label: 'Sesi Bulan Ini', value: String(data.sessions_this_month ?? '-') },
       { label: 'Kehadiran', value: data.attendance_pct != null ? data.attendance_pct + '%' : '-' },
       { label: 'Rating', value: data.rating != null ? String(data.rating) : '-' },

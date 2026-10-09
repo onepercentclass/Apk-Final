@@ -34,7 +34,10 @@ export async function render(container) {
       ).join('');
     } catch (e) {
       caught(e, 'absensi load');
-      list.innerHTML = '<div class="page-error"><p>Terjadi gangguan, coba lagi.</p>' +
+      const msg = e instanceof ApiError && e.status === 403
+        ? 'Akses riwayat ditolak oleh backend.'
+        : 'Terjadi gangguan, coba lagi.';
+      list.innerHTML = '<div class="page-error"><p>' + esc(msg) + '</p>' +
         '<button class="btn btn-primary" id="retryBtn">Coba Lagi</button></div>';
       list.querySelector('#retryBtn').addEventListener('click', load);
     }

@@ -4,7 +4,6 @@ export const TOKEN_KEY = 'n6:access_token';
 export const REFRESH_KEY = 'n6:refresh_token';
 export const USER_KEY = 'n6:user';
 export const DEBUG_KEY = 'n6:debug';
-export const THEME_KEY = 'n6:theme';
 export const TIER_ROLE = {
   0: 'owner',
   1: 'admin',

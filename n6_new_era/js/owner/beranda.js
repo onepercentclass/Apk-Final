@@ -13,7 +13,7 @@ export async function render(container) {
       get('/clients', { limit: 1 }).catch((e) => { caught(e, 'owner clients'); return null; }),
     ]);
     const cards = [
-      { label: 'Pendapatan', value: finance && finance.total_revenue != null ? formatRupiah(finance.total_revenue) : '-' },
+      { label: 'Pendapatan', value: finance && finance.revenue != null ? formatRupiah(finance.revenue) : '-' },
       { label: 'Total Klien', value: String(clients ? clients.total ?? '-' : '-') },
     ];
     body.innerHTML = '<div class="card-grid">' + cards.map(statCardHTML).join('') + '</div>';

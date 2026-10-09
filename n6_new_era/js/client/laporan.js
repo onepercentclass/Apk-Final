@@ -42,15 +42,26 @@ export async function render(container, ctx = {}) {
     const text = form.text.value.trim();
     if (!text) return;
     try {
-      await post('/portal/reports', { text, client_id: clientId });
+      await post('/portal/reports', { body: text, client_id: clientId });
       form.reset();
       toast('Laporan terkirim.', 'success');
       load();
     } catch (e) {
       caught(e, 'kirim laporan');
-      toast('Gagal: ' + (e instanceof ApiError && e.body && e.body.detail ? e.body.detail : 'terjadi gangguan, coba lagi.'), 'error');
+      const msg = e instanceof ApiError && e.status === 405
+        ? 'Fitur kirim laporan belum tersedia di backend.'
+        : 'Gagal: ' + friendlyDetail(e);
+      toast(msg, 'error');
     }
   });
+
+  function friendlyDetail(e) {
+    if (!(e instanceof ApiError) || !e.body || !e.body.detail) return 'terjadi gangguan, coba lagi.';
+    const d = e.body.detail;
+    if (typeof d === 'string') return d;
+    if (Array.isArray(d) && d.length && d[0].msg) return d[0].msg;
+    return 'terjadi gangguan, coba lagi.';
+  }
 
   await load();
 }

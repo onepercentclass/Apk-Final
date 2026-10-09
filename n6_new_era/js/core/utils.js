@@ -18,7 +18,3 @@ export function formatTanggal(iso) {
   if (Number.isNaN(d.getTime())) return '-';
   return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 }
-
-export function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}

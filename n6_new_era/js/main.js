@@ -3,16 +3,14 @@ import { initLogger, caught } from './core/logger.js';
 import { currentUser } from './core/auth.js';
 import { renderLogin } from './core/auth.js';
 import { render, initRouter } from './core/router.js';
-import { THEME_KEY } from './core/config.js';
 
 initLogger();
 
 function applyTheme() {
   try {
-    const saved = localStorage.getItem(THEME_KEY);
-    const dark = saved === 'dark' ||
-      (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
   } catch (e) { caught(e, 'applyTheme'); }
 }
 
@@ -36,7 +34,6 @@ async function boot() {
     });
     return;
   }
-  appEl.hidden = false;
   initRouter();
   render();
 }

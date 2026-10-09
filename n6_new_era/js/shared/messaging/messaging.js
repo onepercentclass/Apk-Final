@@ -9,13 +9,36 @@ import { esc, formatTanggal } from '../../core/utils.js';
 
 export async function renderMessages(container, ctx = {}) {
   const base = ctx.role === 'client' ? '/portal/messages' : '/messages';
+  const role = ctx.role || '';
   container.innerHTML = '<h1 class="page-title">Pesan</h1>' +
+    '<div id="contactPick"></div>' +
     '<div id="list"><div class="loading">Memuat…</div></div>' +
     '<form id="sendForm" class="send-form">' +
     '<input type="text" name="text" placeholder="Tulis pesan…" required aria-label="Tulis pesan">' +
     '<button type="submit" class="btn btn-primary">Kirim</button></form>';
   const list = container.querySelector('#list');
   const form = container.querySelector('#sendForm');
+  const pick = container.querySelector('#contactPick');
+
+  // Daftar kontak: owner/admin/head-coach melihat klien; client melihat head coach.
+  try {
+    let contacts = [];
+    if (role === 'client') {
+      const d = await get('/accounts', { tier: 2, limit: 50 });
+      contacts = (d && d.items) || [];
+    } else {
+      const d = await get('/clients', { limit: 100 });
+      contacts = (d && d.items) || [];
+    }
+    if (contacts.length) {
+      pick.innerHTML = '<label class="field"><span>Kirim ke</span><select id="contactSel">' +
+        '<option value="">Semua / Umum</option>' +
+        contacts.map((c) => '<option value="' + c.id + '">' + esc(c.full_name || c.name || c.username) + '</option>').join('') +
+        '</select></label>';
+    }
+  } catch (e) {
+    caught(e, 'pesan kontak');
+  }
 
   async function load() {
     try {
@@ -41,8 +64,11 @@ export async function renderMessages(container, ctx = {}) {
     ev.preventDefault();
     const text = form.text.value.trim();
     if (!text) return;
+    const sel = pick.querySelector('#contactSel');
+    const payload = { body: text };
+    if (sel && sel.value) payload.recipient_id = Number(sel.value);
     try {
-      await post(base, { text });
+      await post(base, payload);
       form.reset();
       toast('Pesan terkirim.', 'success');
       load();
@@ -53,7 +79,11 @@ export async function renderMessages(container, ctx = {}) {
   });
 
   function friendly(e) {
-    return e instanceof ApiError && e.body && e.body.detail ? e.body.detail : 'terjadi gangguan, coba lagi.';
+    if (!(e instanceof ApiError) || !e.body || !e.body.detail) return 'terjadi gangguan, coba lagi.';
+    const d = e.body.detail;
+    if (typeof d === 'string') return d;
+    if (Array.isArray(d) && d.length && d[0].msg) return d[0].msg;
+    return 'terjadi gangguan, coba lagi.';
   }
 
   await load();
