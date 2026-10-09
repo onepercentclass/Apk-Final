@@ -127,6 +127,9 @@ def write_pricing(payload: PricingWrite, db: DbSession) -> PricingRead:
             row.published_on = datetime.now(timezone.utc).date()
         db.add(row)
         db.flush()
+        # Program baru mendapat id setelah flush; masukkan ke keep agar
+        # tidak ikut terhapus di bagian deletions di bawah.
+        keep_program_ids.add(row.id)
 
         for position, item in enumerate(program.prices):
             _apply_item(db, row.id, item, position)

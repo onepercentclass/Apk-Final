@@ -17,9 +17,10 @@ Lihat PORTING.md.
 """
 
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from ..models import (
@@ -136,6 +137,33 @@ def list_requests(
     return Page[ScheduleRequestRead](
         items=[ScheduleRequestRead.model_validate(r) for r in rows], total=total, limit=limit, offset=offset
     )
+
+
+class ScheduleRequestCreate(BaseModel):
+    type: str = Field(pattern=r"^(reschedule|cuti)$")
+    date: date
+    reason: str = Field(min_length=1, max_length=500)
+
+
+@router.post("/coach/requests", response_model=ScheduleRequestRead,
+             summary="Submit a change request (coach)",
+             dependencies=[Depends(require("coach_schedule", "requests_view"))])
+def create_request(payload: ScheduleRequestCreate, db: DbSession,
+                   principal: CurrentPrincipal) -> ScheduleRequestRead:
+    # Coach mengajukan cuti/reschedule. client_id null (butuh ALTER TABLE
+    # agar kolom nullable) — untuk reschedule sesi tertentu, client_id
+    # diisi via PUT oleh admin/headcoach saat memproses.
+    row = ScheduleRequest(
+        client_id=None,  # type: ignore — kolom akan dibuat nullable
+        coach_id=principal.coach_id,
+        requested_on=payload.date,
+        reason=f"[{payload.type}] {payload.reason}",
+        status=REQUEST_PENDING,
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return ScheduleRequestRead.model_validate(row)
 
 
 @router.put("/coach/requests/{request_id}", response_model=ScheduleRequestRead,
