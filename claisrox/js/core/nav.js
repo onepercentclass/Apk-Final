@@ -11,9 +11,11 @@ const NAV = [
   {id:'online', label:'Toko Online', icon:'store'},
   {id:'laporan', label:'Laporan', icon:'file'},
   {id:'keuangan', label:'Keuangan', icon:'coin'},
+  {id:'akun-center', label:'Akun Saya', icon:'users'},
   {id:'akun', label:'Kelola Anggota', icon:'users'},
   {id:'sandi', label:'Ganti Password', icon:'lock'},
 ];
+const ACCOUNT_NAV_IDS = ['akun-center', 'akun', 'sandi'];
 const ICONS = {
   home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
   box:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
@@ -35,10 +37,7 @@ function navItemHtml(n){
   return `<div class="nav-item" data-nav="${n.id}">${iconSvg(n.icon)}<span>${n.label}</span></div>`;
 }
 
-// Menu akun (Kelola Anggota & Ganti Password) dirender sebagai grup terpisah
-// yang menempel tepat di atas .sidebar-foot (margin-top:auto).
-const ACCOUNT_NAV_IDS = ['akun', 'sandi'];
-
+// Menu akun dirender sebagai grup terpisah yang menempel di atas .sidebar-foot.
 function renderNav(){
   const el = document.getElementById('navList');
   const main = NAV.filter(n => !ACCOUNT_NAV_IDS.includes(n.id) && Access.can(n.id));
@@ -65,7 +64,32 @@ function goTo(view){
   document.getElementById('view-'+view).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.nav===view));
   if(window.innerWidth<=760) document.getElementById('sidebar').classList.remove('open');
+  if(view === 'akun-center') initAkunCenter();
   renderAll();
+}
+
+function initAkunCenter(){
+  // Tab switching
+  document.querySelectorAll('#view-akun-center [data-act="ac-tab"]').forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll('#view-akun-center .tab').forEach(x => x.classList.remove('on'));
+      t.classList.add('on');
+      ['anggota','sandi','tema'].forEach(k => {
+        document.getElementById('ac-'+k).hidden = (k !== t.dataset.v);
+      });
+      if(t.dataset.v === 'anggota' && typeof loadAkun === 'function') loadAkun('ac-anggota');
+      if(t.dataset.v === 'sandi' && typeof loadSandi === 'function') loadSandi('ac-sandi');
+    };
+  });
+  document.querySelectorAll('#view-akun-center [data-act="ac-theme"]').forEach(b => {
+    b.onclick = () => {
+      document.documentElement.setAttribute('data-theme', b.dataset.v);
+      try{ localStorage.setItem('clx-theme', b.dataset.v); }catch(e){}
+      toast('Tema diubah.');
+    };
+  });
+  // Load default tab
+  if(typeof loadAkun === 'function') loadAkun('ac-anggota');
 }
 document.addEventListener('click', (e)=>{
   const nav = e.target.closest('[data-nav]');

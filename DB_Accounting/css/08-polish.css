@@ -172,3 +172,15 @@ input::placeholder,textarea::placeholder{color:var(--text-3);font-weight:500;}
 }
 
 /* =====================================================
+
+/* Fase 5 (B7): Perbaikan mobile */
+@media(max-width:640px){
+  .page-title{font-size:18px;}
+  .card-pad{padding:12px;}
+  .field-row{flex-direction:column;gap:0;}
+  table{font-size:12px;}
+  th,td{padding:6px 8px;}
+  .btn{padding:8px 12px;font-size:13px;}
+  .tabs{overflow-x:auto;white-space:nowrap;}
+  .stat-card{padding:10px;}
+}

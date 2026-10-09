@@ -14,6 +14,7 @@ import { renderTujuan } from './tujuan.js';
 import { renderPengaturan } from './pengaturan.js';
 import { renderAkun, bindAkun } from './akun.js';
 import { renderSandi, bindSandi } from './sandi.js';
+import { renderAkunCenter, bindAkunCenter } from './akun-center.js';
 
 export const MENUS = [
   { id: 'home', label: 'Beranda', icon: 'home', render: renderBeranda },
@@ -25,6 +26,7 @@ export const MENUS = [
   { id: 'bills', label: 'Tagihan & Pengingat', icon: 'bell', render: renderTagihan },
   { id: 'goals', label: 'Tujuan Keuangan', icon: 'target', render: renderTujuan },
   { id: 'settings', label: 'Pengaturan', icon: 'gear', render: renderPengaturan },
+  { id: 'akun-center', label: 'Akun Saya', icon: 'user', render: renderAkunCenter, afterRender: bindAkunCenter },
   { id: 'akun', label: 'Kelola Anggota', icon: 'user', render: renderAkun, afterRender: bindAkun },
   { id: 'sandi', label: 'Ganti Password', icon: 'shield', render: renderSandi, afterRender: bindSandi },
 ];

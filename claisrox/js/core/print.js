@@ -20,7 +20,6 @@ function openPrintReport(title, periodLabel, bodyHTML){
       <div class="rp-title"><h1>${title}</h1><div class="muted">${periodLabel}</div></div>
     </div>
     ${bodyHTML}
-    <div class="rp-foot">Claisrox — Dokumen ini dicetak otomatis dari sistem manajemen bisnis.</div>
     </body></html>`);
   w.document.close();
 }

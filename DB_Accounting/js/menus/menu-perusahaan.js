@@ -29,7 +29,14 @@ PAGES.perusahaan=function(){
     <div class="card add-co-card" onclick="openCompanyModal()">${ic('plus',22)}<span style="font-size:13px;font-weight:600;">Tambah Perusahaan</span></div>
   </div>`;
 };
-function switchCompany(id){S.activeId=id;navigate('dashboard');toast('Berpindah ke '+coMeta(id).name);}
+function switchCompany(id){
+  if(id === S.activeId){ navigate('dashboard'); return; }
+  if(!confirm('Pindah ke '+coMeta(id).name+'?\n\nAnda harus login ulang dengan akun perusahaan tersebut.')) return;
+  // B8: ganti perusahaan = logout, login dengan akun perusahaan lain
+  try{ localStorage.removeItem('dbacc-token'); }catch(e){}
+  try{ sessionStorage.setItem('dbacc-pending-company', id); }catch(e){}
+  location.reload();
+}
 function openCompanyModal(editId){
   const m=editId?coMeta(editId):null;
   openModal(editId?'Edit Profil Perusahaan':'Tambah Perusahaan Baru',`

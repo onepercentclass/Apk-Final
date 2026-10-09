@@ -70,7 +70,7 @@ PAGES.dashboard=function(){
 
   <div class="grid g-main" style="margin-bottom:16px;">
     <div class="card">
-      <div class="card-head"><h3>Laporan Laba Rugi</h3><span class="chsub">12 bulan terakhir</span></div>
+      <div class="card-head"><h3>Laporan Laba Rugi</h3><span class="chsub">12 bulan terakhir · dari jurnal yang diposting</span></div>
       <div class="card-pad">
         <div class="row" style="gap:16px;margin-bottom:6px;">
           <div class="legend-row"><span class="dot" style="background:var(--pos)"></span>Pendapatan</div>
@@ -78,6 +78,7 @@ PAGES.dashboard=function(){
           <div class="legend-row"><span class="dot" style="background:var(--accent-2)"></span>Laba Bersih</div>
         </div>
         ${barLineChart(months,revArr,expArr,profArr)}
+        <p class="hint" style="margin-top:8px">Angka = total jurnal per bulan. Cocokkan dengan menu Laporan → Laba Rugi untuk verifikasi.</p>
       </div>
     </div>
     <div class="card">

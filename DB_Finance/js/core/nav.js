@@ -27,7 +27,7 @@ const navItems = () => MENUS.filter(m => can(m.id)).map(m => [m.id, m.label, m.i
 const mobileNavItems = () => MOBILE.filter(m => can(m[0]));
 
 /** Menu akun (Kelola Anggota & Ganti Password) di-render terpisah di bawah sidebar. */
-const ACCOUNT_IDS = ['akun', 'sandi'];
+const ACCOUNT_IDS = ['akun-center', 'akun', 'sandi'];
 const mainNavItems = () => navItems().filter(n => !ACCOUNT_IDS.includes(n[0]));
 const accountNavItems = () => navItems().filter(n => ACCOUNT_IDS.includes(n[0]));
 const navBtn = n => `<button class="nv ${U.page === n[0] ? 'on' : ''}" data-act="nav" data-v="${n[0]}">${ic(n[2], 20)}${n[1]}</button>`;

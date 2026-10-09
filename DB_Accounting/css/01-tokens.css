@@ -1,11 +1,11 @@
 :root{
   --bg-0:#F4F6F5; --bg-1:#FFFFFF; --bg-2:#FFFFFF; --bg-3:#F0F3F2;
   --border:#E2E7E5; --border-strong:#CBD3D0;
-  --text-1:#0F1712; --text-2:#556259; --text-3:#8A9691;
+  --text-1:#0F1712; --text-2:#3D4A44; --text-3:#6B7A73;
   --accent:#1EB682; --accent-strong:#169467; --accent-dim:#E3F7EF; --accent-2:#2F8FE0;
   --pos:#1EB682; --pos-dim:#E3F7EF; --neg:#E5484D; --neg-dim:#FCEAEA;
   --warn:#C97A16; --warn-dim:#FBF0DF;
-  --font-h:'Montserrat',sans-serif; --font-b:'Montserrat',sans-serif; --font-m:'Montserrat',sans-serif;
+  --font-h:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --font-b:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --font-m:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --r-sm:8px; --r-md:12px; --r-lg:16px;
 }
 @media (prefers-color-scheme: dark){

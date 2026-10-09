@@ -19,12 +19,13 @@ const NAV=[
   {r:'pajak',label:'Manajemen Pajak',icon:'tax'},
   {r:'perusahaan',label:'Multi Perusahaan',icon:'multico'},
   {r:'pengaturan',label:'Pengaturan',icon:'settings'},
+  {r:'akun-center',label:'Akun Saya',icon:'people'},
   {r:'akun',label:'Kelola Anggota',icon:'people'},
   {r:'sandi',label:'Ganti Password',icon:'key'},
 ];
 
 // Menu akun (Kelola Anggota & Ganti Password) selalu di grup terpisah tepat di atas sidebar-foot.
-const ACCOUNT_ROUTES=['akun','sandi'];
+const ACCOUNT_ROUTES=['akun-center','akun','sandi'];
 function navItemHtml(n){
   return `<a class="navitem ${S.route===n.r?'active':''}" onclick="navigate('${n.r}');closeSidebarMobile();">${ic(n.icon,17)}<span>${n.label}</span></a>`;
 }
