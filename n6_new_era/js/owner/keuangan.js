@@ -8,9 +8,21 @@ import { esc, formatRupiah, formatTanggal } from '../core/utils.js';
 
 export async function render(container) {
   container.innerHTML = '<h1 class="page-title">Keuangan</h1>' +
-    '<div class="page-actions"><button class="btn btn-primary" id="addBtn">Catat Pengeluaran</button></div>' +
+    '<div class="page-actions"><button class="btn btn-primary" id="addBtn">Catat Pengeluaran</button> ' +
+    '<button class="btn" id="genReportBtn">Generate Laporan Bulanan</button></div>' +
     '<div id="body"><div class="loading">Memuat…</div></div>';
   const body = container.querySelector('#body');
+
+  container.querySelector('#genReportBtn').addEventListener('click', async () => {
+    if (!confirm('Generate laporan bulanan untuk periode berjalan?')) return;
+    try {
+      await post('/reports/monthly', {});
+      toast('Laporan bulanan digenerate.', 'success');
+    } catch (e) {
+      caught(e, 'generate laporan');
+      toast('Gagal generate laporan.', 'error');
+    }
+  });
 
   async function load() {
     body.innerHTML = '<div class="loading">Memuat…</div>';

@@ -10,11 +10,13 @@ import { esc, formatTanggal } from '../../core/utils.js';
 export async function renderMessages(container, ctx = {}) {
   const base = ctx.role === 'client' ? '/portal/messages' : '/messages';
   const role = ctx.role || '';
+  const canBroadcast = role === 'owner' || role === 'admin';
   container.innerHTML = '<h1 class="page-title">Pesan</h1>' +
     '<div id="contactPick"></div>' +
     '<div id="list"><div class="loading">Memuat…</div></div>' +
     '<form id="sendForm" class="send-form">' +
     '<input type="text" name="text" placeholder="Tulis pesan…" required aria-label="Tulis pesan">' +
+    (canBroadcast ? '<label><input type="checkbox" name="broadcast"> Broadcast ke semua</label>' : '') +
     '<button type="submit" class="btn btn-primary">Kirim</button></form>';
   const list = container.querySelector('#list');
   const form = container.querySelector('#sendForm');
@@ -63,10 +65,15 @@ export async function renderMessages(container, ctx = {}) {
     const text = form.text.value.trim();
     if (!text) return;
     const sel = pick.querySelector('#contactSel');
-    const payload = { body: text };
-    if (sel && sel.value) payload.recipient_id = Number(sel.value);
+    const isBroadcast = form.broadcast && form.broadcast.checked;
     try {
-      await post(base, payload);
+      if (isBroadcast) {
+        await post('/messages/broadcast', { body: text });
+      } else {
+        const payload = { body: text };
+        if (sel && sel.value) payload.recipient_id = Number(sel.value);
+        await post(base, payload);
+      }
       form.reset();
       toast('Pesan terkirim.', 'success');
       load();

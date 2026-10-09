@@ -1,11 +1,13 @@
 // N6 New Era — ganti password. Satu modul untuk 5 role.
-import { put, ApiError } from '../../core/api.js';
+import { get, put, patch, ApiError } from '../../core/api.js';
 import { toast } from '../../ui/toast.js';
 import { caught } from '../../core/logger.js';
 import { esc } from '../../core/utils.js';
 
-export async function render(container) {
+export async function render(container, ctx = {}) {
+  const isClient = ctx.role === 'client';
   container.innerHTML =
+    (isClient ? '<h1 class="page-title">Profil</h1><div id="profileSec"></div>' : '') +
     '<h1 class="page-title">Ganti Password</h1>' +
     '<form id="pwForm" class="pw-form" novalidate>' +
     '<label class="field"><span>Password saat ini</span>' +
@@ -17,6 +19,37 @@ export async function render(container) {
     '<p class="form-error" id="pwError" role="alert" hidden></p>' +
     '<button type="submit" class="btn btn-primary" id="pwBtn">Simpan Password</button>' +
     '</form>';
+
+  // Profile edit for client (Bug49)
+  if (isClient) {
+    const sec = container.querySelector('#profileSec');
+    try {
+      const me = await get('/portal/me');
+      sec.innerHTML = '<form id="profileForm">' +
+        '<label class="field"><span>Nama</span><input type="text" name="full_name" value="' + esc(me.full_name || '') + '"></label>' +
+        '<label class="field"><span>Email</span><input type="email" name="email" value="' + esc(me.email || '') + '"></label>' +
+        '<label class="field"><span>Telepon</span><input type="text" name="phone" value="' + esc(me.phone || '') + '"></label>' +
+        '<button type="submit" class="btn btn-primary">Simpan Profil</button></form>';
+      const pf = sec.querySelector('#profileForm');
+      pf.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const fd = new FormData(pf);
+        try {
+          await patch('/portal/me', {
+            full_name: fd.get('full_name') || null,
+            email: fd.get('email') || null,
+            phone: fd.get('phone') || null,
+          });
+          toast('Profil tersimpan.', 'success');
+        } catch (e) {
+          caught(e, 'simpan profil');
+          toast('Gagal menyimpan profil.', 'error');
+        }
+      });
+    } catch (e) {
+      caught(e, 'profil load');
+    }
+  }
 
   const form = container.querySelector('#pwForm');
   const errEl = container.querySelector('#pwError');
