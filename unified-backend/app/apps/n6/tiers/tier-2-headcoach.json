@@ -56,7 +56,8 @@
       "export"
     ],
     "attendance": [
-      "view"
+      "view",
+      "manage"
     ],
     "pricing": [
       "view"
@@ -98,9 +99,5 @@
       "GET /api/v1/commissions/*",
       "GET /api/v1/accounts"
     ]
-  },
-  "attendance": [
-    "view",
-    "manage"
-  ]
+  }
 }
