@@ -1,6 +1,20 @@
 # Changelog N6 New Era
 Format: Keep a Changelog.
 
+## [0.1.5] — 2026-10-09
+
+### Added
+- Form atur jadwal klien (bug44): pilih klien, tambah/hapus slot jadwal mingguan.
+- Tombol hapus atlet binaan (bug45): hapus atlet dari daftar dengan konfirmasi.
+- UI absensi coach (bug46): form catat absensi + riwayat dengan tombol batalkan.
+- UI koreksi latihan (bug47): form buat koreksi + tombol selesaikan.
+- Broadcast pesan (bug48): checkbox broadcast ke semua untuk owner/admin.
+- Edit profil client (bug49): form ubah nama, email, telepon di menu Profil.
+- Generate laporan bulanan (bug50): tombol di menu Keuangan owner.
+
+### Fixed
+- Hapus tombol "Unduh (JPG)" yang mati di Jadwal Coach (bug51).
+
 ## [0.1.4] — 2026-10-09
 
 ### Fixed
