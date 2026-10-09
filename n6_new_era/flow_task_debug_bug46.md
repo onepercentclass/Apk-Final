@@ -31,3 +31,9 @@ Ini bukan sekadar "tombol hapus hilang" — seluruh modul belum dibuat.
 ## Status
 Terkonfirmasi. Fitur belum ada — perlu keputusan desain sebelum implementasi.
 Diputuskan 2026-10-09: dokumentasikan saja, tidak dibuatkan UI sekarang.
+
+## Update 2026-10-09
+Diimplementasikan: UI absensi ditambahkan ke Head Coach > Coach.
+- Form "Catat Absensi" (klien, tanggal, status, catatan)
+- Daftar "Riwayat Absensi" dengan tombol "Batalkan"
+- Menggunakan GET/POST/DELETE /attendance

@@ -26,3 +26,9 @@ Ini bukan sekadar "tombol resolve hilang" — seluruh modul belum dibuat.
 
 ## Status
 Terkonfirmasi. Fitur belum ada — perlu keputusan desain sebelum implementasi.
+
+## Update 2026-10-09
+Diimplementasikan: UI koreksi latihan ditambahkan ke menu Koreksi (Head Coach).
+- Form "Buat Koreksi" (klien, field, nilai baru, alasan)
+- Daftar koreksi dengan tombol "Selesaikan"
+- Menggunakan GET/POST /corrections dan POST /corrections/{id}/resolve
