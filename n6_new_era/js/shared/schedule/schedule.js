@@ -19,7 +19,25 @@ function scheduleListHTML(items) {
 
 function slotsToItems(data) {
   // Backend /schedules/coach mengembalikan { slots: [...] }.
-  const slots = (data && data.slots) || (data && data.items) || [];
+  // Backend /schedules/clients mengembalikan Page { items: [{client_id, client_name, slots}] }.
+  const items = (data && data.items) || [];
+  // Jika items adalah ClientScheduleRead (punya slots), flatten jadi list jadwal
+  if (items.length && items[0].slots !== undefined) {
+    const flat = [];
+    for (const c of items) {
+      for (const s of (c.slots || [])) {
+        flat.push({
+          date: s.date || s.scheduled_on,
+          title: (c.client_name || '') + (s.title ? ' - ' + s.title : ''),
+          coach_name: s.coach_name || '',
+          weekday: s.weekday,
+          start_time: s.start_time,
+        });
+      }
+    }
+    return flat;
+  }
+  const slots = (data && data.slots) || items;
   return slots.map((s) => ({
     date: s.date || s.scheduled_on,
     title: s.title || s.session || s.client_name || '',
@@ -44,13 +62,10 @@ async function fetchList(path, params, list) {
 }
 
 export async function renderClientSchedule(container) {
-  // Backend belum menyediakan GET /schedules/clients (404).
-  // Tampilkan empty state yang jelas alih-alih error generik.
   container.innerHTML = '<h1 class="page-title">Jadwal Klien</h1>' +
-    emptyStateHTML({
-      title: 'Jadwal klien belum tersedia',
-      desc: 'Backend belum menyediakan data jadwal klien.',
-    });
+    '<div id="list"></div>';
+  const list = container.querySelector('#list');
+  await fetchList('/schedules/clients', {}, list);
 }
 
 export async function renderCoachSchedule(container, ctx = {}) {

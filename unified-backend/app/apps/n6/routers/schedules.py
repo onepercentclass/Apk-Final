@@ -215,6 +215,46 @@ def _apply_move(db, request: ScheduleRequest, payload: RequestDecision) -> None:
 
 
 # ------------------------------------------------------------ client schedule
+@router.get("/clients", response_model=Page[ClientScheduleRead],
+            summary="List all client schedules",
+            dependencies=[Depends(require("client_schedule", "view"))])
+def list_client_schedules(
+    db: DbSession,
+    principal: CurrentPrincipal,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+) -> Page[ClientScheduleRead]:
+    # Ambil semua client yang punya jadwal, dengan pagination
+    # Untuk setiap client, ambil slots-nya
+    client_ids = db.scalars(
+        select(ClientSchedule.client_id)
+        .distinct()
+        .order_by(ClientSchedule.client_id)
+        .limit(limit)
+        .offset(offset)
+    ).all()
+
+    total = int(db.scalar(
+        select(func.count(func.distinct(ClientSchedule.client_id)))
+    ) or 0)
+
+    items = []
+    for cid in client_ids:
+        client = db.get(Client, cid)
+        rows = db.scalars(
+            select(ClientSchedule)
+            .where(ClientSchedule.client_id == cid)
+            .order_by(ClientSchedule.weekday, ClientSchedule.start_time)
+        ).all()
+        items.append(ClientScheduleRead(
+            client_id=cid,
+            client_name=client.name if client else None,
+            slots=_slots(rows),
+        ))
+
+    return Page[ClientScheduleRead](items=items, total=total, limit=limit, offset=offset)
+
+
 @router.get("/clients/{client_id}", response_model=ClientScheduleRead,
             summary="A client's weekly plan",
             dependencies=[Depends(require("client_schedule", "view"))])
