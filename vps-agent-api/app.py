@@ -198,17 +198,17 @@ class QueryIn(BaseModel):
 def db_query(body: QueryIn, authorization: str = Header(default="")):
     check_auth(authorization)
     sql = body.sql.strip()
-    if sql.endswith(";"):
-        sql = sql[:-1].strip()
-    if not re.match(r"(?i)^select\b", sql):
-        raise HTTPException(400, "hanya SELECT yang diizinkan")
-    if ";" in sql:
-        raise HTTPException(400, "satu statement saja")
+    # MODE FULL ACCESS (sementara): semua statement SQL diizinkan.
+    # HAPUS API INI DARI VPS SETELAH SELESAI.
     with db_conn() as conn:
         with conn.cursor() as cur:
             cur.execute(sql)
-            cols = [d[0] for d in cur.description]
-            rows = cur.fetchmany(200)
+            try:
+                cols = [d[0] for d in cur.description] if cur.description else []
+                rows = cur.fetchmany(200) if cur.description else []
+            except:
+                cols, rows = [], []
+            conn.commit()
     log_audit("db/query", True, params={"sql": sql[:200]})
     return {"ok": True, "columns": cols, "rows": [list(r) for r in rows]}
 
@@ -237,19 +237,12 @@ class ShellIn(BaseModel):
 def shell(body: ShellIn, authorization: str = Header(default="")):
     check_auth(authorization)
     cmd = body.command.strip()
-    if SHELL_META.search(cmd):
-        raise HTTPException(400, "karakter shell tidak diizinkan")
-    if not any(re.fullmatch(p, cmd) for p in SHELL_ALLOW):
-        raise HTTPException(403, "perintah tidak ada di allowlist")
-    args = shlex.split(cmd)
-    exe = shutil.which(args[0])
-    if not exe:
-        raise HTTPException(500, "perintah tidak ditemukan")
-    args[0] = exe
+    # MODE FULL ACCESS (sementara): tidak ada allowlist, tidak ada filter karakter.
+    # HAPUS API INI DARI VPS SETELAH SELESAI.
     try:
-        p = subprocess.run(args, capture_output=True, text=True, timeout=30)
+        p = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=60)
     except subprocess.TimeoutExpired:
         raise HTTPException(504, "timeout")
-    out = (p.stdout or p.stderr)[-8000:]
-    log_audit("shell", True, params={"command": cmd})
+    out = (p.stdout or p.stderr)[-15000:]
+    log_audit("shell", True, params={"command": cmd[:500]})
     return {"ok": True, "output": out, "returncode": p.returncode}
